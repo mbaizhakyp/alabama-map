@@ -13,11 +13,21 @@
 
     <div id="map"></div>
 
-    <div class="map-overlay">
-        <h3>Alabama Precipitation (inches)</h3>
+    <div id="controls" class="map-overlay">
+        <h3>Alabama Precipitation</h3>
         <label for="month-selector">Select a month:</label>
         <select id="month-selector" name="month"></select>
     </div>
+    
+    <div id="legend" class="map-overlay">
+        <h4>Precipitation (inches)</h4>
+        <div><span class="legend-key" style="background-color: #eff3ff;"></span><span>0 - 3</span></div>
+        <div><span class="legend-key" style="background-color: #bdd7e7;"></span><span>3 - 5</span></div>
+        <div><span class="legend-key" style="background-color: #6baed6;"></span><span>5 - 7</span></div>
+        <div><span class="legend-key" style="background-color: #3182bd;"></span><span>7 - 9</span></div>
+        <div><span class="legend-key" style="background-color: #08519c;"></span><span>≥ 9</span></div>
+    </div>
+
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
     <script src="script.js"></script>

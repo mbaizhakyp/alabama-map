@@ -13,11 +13,9 @@ body {
     width: 100%;
 }
 
-/* Style the overlay container for the month selector */
+/* Base style for overlay panels */
 .map-overlay {
     position: absolute;
-    top: 15px;
-    right: 15px;
     background: rgba(255, 255, 255, 0.9);
     padding: 15px;
     border-radius: 5px;
@@ -25,10 +23,33 @@ body {
     z-index: 1; /* Ensures it's on top of the map */
 }
 
-.map-overlay h3 {
+/* Position the controls panel in the top right */
+#controls {
+    top: 15px;
+    right: 15px;
+}
+
+/* Position the legend panel in the bottom right */
+#legend {
+    bottom: 30px;
+    right: 15px;
+}
+
+#legend h4, #controls h3 {
     margin-top: 0;
     margin-bottom: 10px;
 }
+
+/* Style for the colored squares in the legend */
+.legend-key {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 8px;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+}
+
 
 /* Style the popup content */
 .mapboxgl-popup-content {
