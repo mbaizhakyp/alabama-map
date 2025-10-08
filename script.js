@@ -7,19 +7,23 @@ const months = [
     'july', 'august', 'september', 'october', 'november', 'december'
 ];
 const years = [2020, 2021, 2022, 2023, 2024, 2025];
+const INITIAL_VIEW_STATE = {
+    center: [-86.9, 32.8],
+    zoom: 6.5
+};
 
 // --- MAP INITIALIZATION ---
 const map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
-    center: [-86.9, 32.8],
-    zoom: 6.5
+    style: 'mapbox://styles/mapbox/dark-v11', // Using Mapbox's dark theme base map
+    center: INITIAL_VIEW_STATE.center,
+    zoom: INITIAL_VIEW_STATE.zoom
 });
 
-// Create a single popup instance
 const popup = new mapboxgl.Popup({
     closeButton: false,
-    closeOnClick: false
+    closeOnClick: false,
+    className: 'map-popup' // Add a class for potential custom styling
 });
 
 // --- MAP LOAD EVENT ---
@@ -46,7 +50,7 @@ map.on('load', () => {
                 'step', ['get', 'total_precipitation_inches'],
                 '#eff3ff', 3, '#bdd7e7', 5, '#6baed6', 7, '#3182bd', 9, '#08519c'
             ],
-            'fill-opacity': 0.75, 'fill-outline-color': '#ffffff'
+            'fill-opacity': 0.7, 'fill-outline-color': '#0f172a'
         }
     });
     map.addLayer({
@@ -55,85 +59,78 @@ map.on('load', () => {
         source: 'flood-data',
         layout: { 'visibility': 'none' },
         paint: {
-            'circle-radius': 6, 'circle-color': '#007cba',
-            'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1
+            'circle-radius': 6, 'circle-color': '#22d3ee', // Using accent cyan
+            'circle-stroke-color': '#0f172a', 'circle-stroke-width': 2
         }
     });
 
     // --- 3. UI SETUP AND EVENT LISTENERS ---
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
     const monthSlider = document.getElementById('month-slider');
     const monthLabel = document.getElementById('month-label');
     const yearSlider = document.getElementById('year-slider');
     const yearLabel = document.getElementById('year-label');
     const dataTypeRadios = document.querySelectorAll('input[name="datatype"]');
+    const recenterButton = document.getElementById('recenter-button');
+
+    // ** NEW: Sidebar toggle listener **
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
 
     // Radio button listener
     dataTypeRadios.forEach(radio => {
         radio.addEventListener('change', (e) => toggleDataType(e.target.value));
     });
     
-    // Month slider listener
+    // Slider listeners
     monthSlider.addEventListener('input', (e) => {
         const monthIndex = parseInt(e.target.value, 10);
         const monthName = months[monthIndex];
-        // Update label
         monthLabel.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-        // Update data source
-        const url = `precipitation-data/${monthName}.geojson`;
-        map.getSource('precipitation-data').setData(url);
+        map.getSource('precipitation-data').setData(`precipitation-data/${monthName}.geojson`);
     });
-    
-    // Year slider listener
     yearSlider.addEventListener('input', (e) => {
         const yearIndex = parseInt(e.target.value, 10);
         const year = years[yearIndex];
-        // Update label
         yearLabel.textContent = year;
-        // Update data source
-        const url = `flood-data/Flood_Events_${year}.geojson`;
-        map.getSource('flood-data').setData(url);
+        map.getSource('flood-data').setData(`flood-data/Flood_Events_${year}.geojson`);
     });
 
+    // Recenter button listener
+    recenterButton.addEventListener('click', () => map.flyTo(INITIAL_VIEW_STATE));
+
     // --- 4. POPUP EVENT LISTENERS ---
-    // Precipitation popups
+    // (Popup logic remains the same)
     map.on('mousemove', 'precipitation-fill-layer', (e) => {
         map.getCanvas().style.cursor = 'pointer';
         const props = e.features[0].properties;
-        const content = `<h4>${props.name}</h4><p><strong>Precipitation:</strong> ${props.total_precipitation_inches} inches</p>`;
+        const content = `<h4>${props.name}</h4><p>Precipitation: <strong>${props.total_precipitation_inches} in</strong></p>`;
         popup.setLngLat(e.lngLat).setHTML(content).addTo(map);
     });
     map.on('mouseleave', 'precipitation-fill-layer', () => {
-        map.getCanvas().style.cursor = '';
-        popup.remove();
+        map.getCanvas().style.cursor = ''; popup.remove();
     });
-
-    // Flood popups
     map.on('mousemove', 'flood-points-layer', (e) => {
         map.getCanvas().style.cursor = 'pointer';
         const props = e.features[0].properties;
         const date = new Date(props.BEGIN_DATE).toLocaleDateString();
-        const content = `<h4>Flood Event</h4><p><strong>County:</strong> ${props.CZ_NAME_STR}</p><p><strong>Date:</strong> ${date}</p>`;
+        const content = `<h4>Flood Event</h4><p>${props.CZ_NAME_STR}</p><p>Date: <strong>${date}</strong></p>`;
         popup.setLngLat(e.features[0].geometry.coordinates.slice()).setHTML(content).addTo(map);
     });
     map.on('mouseleave', 'flood-points-layer', () => {
-        map.getCanvas().style.cursor = '';
-        popup.remove();
+        map.getCanvas().style.cursor = ''; popup.remove();
     });
 });
 
-// --- HELPER FUNCTION to switch between data types ---
+// --- HELPER FUNCTION ---
 function toggleDataType(dataType) {
     const isPrecipitation = dataType === 'precipitation';
-    
-    // Toggle layer visibility
     map.setLayoutProperty('precipitation-fill-layer', 'visibility', isPrecipitation ? 'visible' : 'none');
     map.setLayoutProperty('flood-points-layer', 'visibility', isPrecipitation ? 'none' : 'visible');
-    
-    // Toggle UI selectors visibility
     document.getElementById('precipitation-selector-container').style.display = isPrecipitation ? 'block' : 'none';
     document.getElementById('flood-selector-container').style.display = isPrecipitation ? 'none' : 'block';
-    
-    // Toggle legend visibility
     document.getElementById('precipitation-legend').style.display = isPrecipitation ? 'block' : 'none';
     document.getElementById('flood-legend').style.display = isPrecipitation ? 'none' : 'block';
 }

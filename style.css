@@ -1,11 +1,31 @@
-/* Make the body and html elements take up the full screen */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Helvetica', 'Arial', sans-serif;
+/* --- GLOBAL & TYPOGRAPHY --- */
+:root {
+    --bg-dark: #0f172a; /* Midnight Blue */
+    --panel-bg: rgba(15, 23, 42, 0.6); /* Semi-transparent panel */
+    --accent-cyan: #22d3ee;
+    --text-primary: #e2e8f0; /* Light Gray */
+    --text-secondary: #94a3b8; /* Muted Gray */
+    --border-color: rgba(148, 163, 184, 0.2);
 }
 
-/* Style the map container to fill the screen */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+h1, h2, h4, strong {
+    font-weight: 600;
+}
+
+/* --- LAYOUT & MAP --- */
 #map {
     position: absolute;
     top: 0;
@@ -13,71 +33,182 @@ body {
     width: 100%;
 }
 
-/* Base style for overlay panels */
-.map-overlay {
+header {
     position: absolute;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    z-index: 1; /* Ensures it's on top of the map */
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 30px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    pointer-events: none; /* Allow clicks to go through to map */
 }
 
-/* Position the controls panel in the top right */
-#controls {
-    top: 15px;
-    right: 15px;
-    min-width: 220px;
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--accent-cyan);
+}
+.logo h1 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
 }
 
+/* --- SIDEBAR --- */
+#sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 320px;
+    transform: translateX(-320px);
+    transition: transform 0.3s ease-in-out;
+    z-index: 3;
+}
+#sidebar.active {
+    transform: translateX(0);
+}
+
+#sidebar-toggle {
+    /* FIX: Position the toggle button independently of the panel's transform */
+    position: absolute;
+    top: 50%;
+    left: 320px; /* Position it at the right edge of its parent container */
+    transform: translateY(-50%);
+    transition: transform 0.3s ease-in-out;
+    
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    width: 40px;
+    height: 48px;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#sidebar.active #sidebar-toggle {
+    /* Optional: Animate the button icon */
+    transform: translateY(-50%) rotate(180deg);
+}
+#sidebar-toggle svg { fill: var(--text-primary); }
+
+#sidebar-content {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border-color);
+}
+#sidebar-content h2 {
+    margin-top: 60px; /* Space below header */
+    margin-bottom: 20px;
+}
+
+/* --- CONTROLS --- */
 .control-group {
-    margin-bottom: 10px;
+    margin-bottom: 25px;
+    font-weight: 300;
 }
-.control-group:last-child {
-    margin-bottom: 0;
+.control-group label {
+    color: var(--text-secondary);
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--text-secondary);
+    border-radius: 5px;
+    outline: none;
+    margin-top: 10px;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent-cyan);
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid var(--bg-dark);
 }
 #data-type-selector label {
-    margin-right: 10px;
+    color: var(--text-primary);
+    margin-right: 15px;
+    cursor: pointer;
 }
 
-/* Style for the new range sliders */
-input[type="range"] {
-    width: 100%;
-    margin-top: 5px;
-}
-
-/* Position all legends in the bottom right */
+/* --- LEGEND & BUTTONS --- */
 .legend {
+    position: absolute;
     bottom: 30px;
-    right: 15px;
+    right: 20px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    z-index: 1;
 }
-
-.legend h4, #controls h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-/* Style for the colored squares in the legend */
+.legend h4 { margin-bottom: 10px; }
 .legend-key {
     display: inline-block;
     width: 15px;
     height: 15px;
     margin-right: 8px;
-    border: 1px solid #ccc;
     vertical-align: middle;
+    border-radius: 3px;
 }
 
-/* Style the popup content */
+.map-control-button {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+.map-control-button svg { fill: var(--text-primary); }
+.map-control-button:hover { background-color: rgba(34, 211, 238, 0.2); }
+
+/* --- MAPBOX OVERRIDES --- */
 .mapboxgl-popup-content {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
     padding: 10px 15px;
-    font-size: 14px;
 }
-
-.mapboxgl-popup-content h4 {
-    margin: 0 0 5px 0;
-    color: #3182bd;
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+    border-bottom-color: var(--border-color);
 }
-
-.mapboxgl-popup-content p {
-    margin: 0;
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+    border-top-color: var(--border-color);
+}
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+    border-right-color: var(--border-color);
+}
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+    border-left-color: var(--border-color);
+}
+.mapboxgl-popup-close-button {
+    color: var(--text-primary);
 }

@@ -3,56 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alabama Climate Data</title>
+    <title>AL ClimateView</title>
+    
+    <link rel="icon" href="data:,">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    
 </head>
 <body>
-
     <div id="map"></div>
 
-    <div id="controls" class="map-overlay">
-        <h3>Alabama Climate Data</h3>
-        
-        <div class="control-group">
-            <label>Data Type:</label>
-            <div id="data-type-selector">
-                <input type="radio" id="precipitation" name="datatype" value="precipitation" checked>
-                <label for="precipitation">Precipitation</label>
-                <input type="radio" id="floods" name="datatype" value="floods">
-                <label for="floods">Flood Events</label>
+    <header>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12S7.59 4 12 4S20 7.59 20 12S16.41 20 12 20Z"/>
+                <path d="M12 6C9.17 6 6.84 8.04 6.22 10.78C6.09 11.33 6.49 11.89 7.04 11.89C7.43 11.89 7.77 11.64 7.89 11.27C8.31 9.93 9.77 9 12 9C14.23 9 15.69 9.93 16.11 11.27C16.23 11.64 16.57 11.89 16.96 11.89C17.51 11.89 17.91 11.33 17.78 10.78C17.16 8.04 14.83 6 12 6Z"/>
+            </svg>
+            <h1>AL ClimateView</h1>
+        </div>
+    </header>
+
+    <nav id="sidebar">
+        <button id="sidebar-toggle" title="Toggle Controls">
+            <svg xmlns="http://www.w.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+        <div id="sidebar-content">
+            <h2>Controls</h2>
+            <div class="control-group">
+                <label>Data Type</label>
+                <div id="data-type-selector">
+                    <input type="radio" id="precipitation" name="datatype" value="precipitation" checked>
+                    <label for="precipitation">Precipitation</label>
+                    <input type="radio" id="floods" name="datatype" value="floods">
+                    <label for="floods">Floods</label>
+                </div>
+            </div>
+            <div id="time-selectors">
+                <div id="precipitation-selector-container" class="control-group">
+                    <label for="month-slider">Month: <strong id="month-label">January</strong></label>
+                    <input id="month-slider" type="range" min="0" max="11" step="1" value="0">
+                </div>
+                <div id="flood-selector-container" class="control-group" style="display: none;">
+                    <label for="year-slider">Year: <strong id="year-label">2020</strong></label>
+                    <input id="year-slider" type="range" min="0" max="5" step="1" value="0">
+                </div>
             </div>
         </div>
-        
-        <div id="time-selectors">
-            <div id="precipitation-selector-container" class="control-group">
-                <label for="month-slider">Month: <strong id="month-label">January</strong></label>
-                <input id="month-slider" type="range" min="0" max="11" step="1" value="0">
-            </div>
-            <div id="flood-selector-container" class="control-group" style="display: none;">
-                 <label for="year-slider">Year: <strong id="year-label">2020</strong></label>
-                 <input id="year-slider" type="range" min="0" max="5" step="1" value="0">
-            </div>
-        </div>
-    </div>
+    </nav>
+
+    <button id="recenter-button" class="map-control-button" title="Recenter Map">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+    </button>
     
-    <div id="precipitation-legend" class="legend map-overlay">
-        <h4>Precipitation (inches)</h4>
+    <div id="precipitation-legend" class="legend">
+        <h4>Precipitation (in)</h4>
         <div><span class="legend-key" style="background-color: #eff3ff;"></span><span>0 - 3</span></div>
         <div><span class="legend-key" style="background-color: #bdd7e7;"></span><span>3 - 5</span></div>
         <div><span class="legend-key" style="background-color: #6baed6;"></span><span>5 - 7</span></div>
         <div><span class="legend-key" style="background-color: #3182bd;"></span><span>7 - 9</span></div>
         <div><span class="legend-key" style="background-color: #08519c;"></span><span>≥ 9</span></div>
     </div>
-    <div id="flood-legend" class="legend map-overlay" style="display: none;">
+    <div id="flood-legend" class="legend" style="display: none;">
         <h4>Legend</h4>
-        <div><span class="legend-key" style="background-color: #007cba;"></span><span>Flood Event</span></div>
+        <div><span class="legend-key" style="background-color: #22d3ee;"></span><span>Flood Event</span></div>
     </div>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
     <script src="script.js"></script>
-
 </body>
 </html>
