@@ -1,0 +1,20 @@
+{
+"type": "FeatureCollection",
+"name": "AL_Flood_Events_2021",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "EVENT_ID": 948257, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-03-18T00:00:00", "CZ_NAME_STR": "CULLMAN CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.79, 34.25 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 948244, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-03-31T00:00:00", "CZ_NAME_STR": "MORGAN CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.89, 34.34 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987207, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.67, 34.71 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987208, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "JACKSON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.24, 34.84 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987209, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.6, 34.74 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987210, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MORGAN CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -87.05, 34.57 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987211, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.59, 34.71 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987212, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.72, 34.67 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987214, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.58, 34.69 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987215, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.57, 34.71 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987216, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.4, 34.7 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987218, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MORGAN CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -87.04, 34.58 ] } },
+{ "type": "Feature", "properties": { "EVENT_ID": 987219, "EVENT_TYPE": "Flood", "BEGIN_DATE": "2021-09-19T00:00:00", "CZ_NAME_STR": "MADISON CO.", "STATE_ABBR": "AL" }, "geometry": { "type": "Point", "coordinates": [ -86.67, 34.92 ] } }
+]
+}

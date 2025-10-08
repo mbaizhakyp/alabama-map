@@ -39,7 +39,7 @@ map.on('load', () => {
     // We'll start by loading January's data by default.
     map.addSource('precipitation-data', {
         type: 'geojson',
-        data: `data/${months[0]}.geojson` // Load the first month by default
+        data: `precipitation-data/${months[0]}.geojson` // Load the first month by default
     });
 
     // 3. ADD THE FILL LAYER FOR THE CHOROPLETH
@@ -68,7 +68,7 @@ map.on('load', () => {
     // 4. ADD AN EVENT LISTENER FOR THE DROPDOWN
     monthSelector.addEventListener('change', (event) => {
         const selectedMonth = event.target.value;
-        const dataUrl = `data/${selectedMonth}.geojson`;
+        const dataUrl = `precipitation-data/${selectedMonth}.geojson`;
         
         // Efficiently update the data for the existing source
         map.getSource('precipitation-data').setData(dataUrl);
