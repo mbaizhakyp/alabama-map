@@ -22,7 +22,6 @@ const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
 // --- MAP LAYERS & SOURCES FUNCTION ---
 function addSourcesAndLayers() {
-    // FIX: Read the current UI state *before* adding layers.
     const currentDataType = document.querySelector('input[name="datatype"]:checked').value;
     const isPrecipitationVisible = currentDataType === 'precipitation';
 
@@ -31,17 +30,14 @@ function addSourcesAndLayers() {
 
     map.addLayer({
         id: 'precipitation-fill-layer', type: 'fill', source: 'precipitation-data',
-        // Use the current state to set visibility, not a hardcoded default.
         layout: { 'visibility': isPrecipitationVisible ? 'visible' : 'none' },
         paint: {
             'fill-color': ['step', ['get', 'total_precipitation_inches'], '#eff3ff', 3, '#bdd7e7', 5, '#6baed6', 7, '#3182bd', 9, '#08519c'],
-            'fill-opacity': 0.7,
-            'fill-outline-color': currentTheme === 'dark' ? '#0f172a' : '#f1f5f9'
+            'fill-opacity': 0.7, 'fill-outline-color': currentTheme === 'dark' ? '#0f172a' : '#f1f5f9'
         }
     });
     map.addLayer({
         id: 'flood-points-layer', type: 'circle', source: 'flood-data',
-        // Use the current state to set visibility.
         layout: { 'visibility': isPrecipitationVisible ? 'none' : 'visible' },
         paint: {
             'circle-radius': 6, 'circle-color': '#22d3ee',
@@ -49,7 +45,6 @@ function addSourcesAndLayers() {
         }
     });
     
-    // Ensure the correct UI (sliders, legends) is also visible.
     toggleDataType(currentDataType, false);
 }
 
@@ -73,7 +68,9 @@ function setupPopupListeners() {
 
 // --- UI EVENT LISTENERS (SETUP ONCE) ---
 document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.getElementById('sidebar');
+    // UPDATED: Set sidebar to be active by default
+    document.body.classList.add('sidebar-active');
+
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const recenterButton = document.getElementById('recenter-button');
     const themeToggle = document.getElementById('theme-toggle');
@@ -83,7 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const yearSlider = document.getElementById('year-slider');
     const yearLabel = document.getElementById('year-label');
 
-    sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+    // UPDATED: Sidebar logic now toggles a class on the body
+    sidebarToggle.addEventListener('click', () => {
+        document.body.classList.toggle('sidebar-active');
+    });
+
     recenterButton.addEventListener('click', () => map.flyTo(INITIAL_VIEW_STATE));
     
     themeToggle.addEventListener('click', () => {

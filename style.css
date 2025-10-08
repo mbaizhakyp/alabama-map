@@ -47,11 +47,11 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    pointer-events: none;
     background: var(--header-bg);
     backdrop-filter: blur(10px);
+    /* UPDATED: Add transition for the push effect */
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
-header > * { pointer-events: auto; } /* Re-enable pointer events for children */
 
 .logo { display: flex; align-items: center; gap: 12px; }
 .logo svg { fill: var(--accent-color); }
@@ -61,20 +61,27 @@ header > * { pointer-events: auto; } /* Re-enable pointer events for children */
 #sidebar {
     position: absolute; top: 0; left: 0; height: 100%;
     width: 320px; transform: translateX(-320px);
-    transition: transform 0.3s ease-in-out; z-index: 3;
+    transition: transform 0.3s ease-in-out; z-index: 1; /* Lowered z-index */
 }
-#sidebar.active { transform: translateX(0); }
+/* UPDATED: Use a class on <body> to control the sidebar */
+body.sidebar-active #sidebar {
+    transform: translateX(0);
+}
 
 #sidebar-toggle {
     position: absolute; top: 50%; left: 320px;
-    transform: translateY(-50%); transition: transform 0.3s ease-in-out;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease-in-out;
     background: var(--panel-bg); backdrop-filter: blur(10px);
     border: 1px solid var(--border-color); border-left: none;
     color: var(--text-primary); cursor: pointer;
     width: 40px; height: 48px; border-radius: 0 8px 8px 0;
     display: flex; align-items: center; justify-content: center;
 }
-#sidebar.active #sidebar-toggle { transform: translateY(-50%) rotate(180deg); }
+/* UPDATED: Rotate based on body class */
+body.sidebar-active #sidebar-toggle {
+    transform: translateY(-50%) rotate(180deg);
+}
 #sidebar-toggle svg { fill: var(--icon-fill); }
 
 #sidebar-content {
@@ -117,18 +124,25 @@ input[type="range"]::-webkit-slider-thumb {
     background: var(--panel-bg); backdrop-filter: blur(10px);
     border: 1px solid var(--border-color); border-radius: 50%;
     cursor: pointer; display: flex; justify-content: center; align-items: center;
-    transition: background-color 0.2s; width: 40px; height: 40px; z-index: 1;
+    transition: background-color 0.2s, transform 0.3s ease-in-out; /* Add transform to transition */
+    width: 40px; height: 40px; z-index: 2; /* Ensure buttons are above sidebar */
 }
-.map-control-button.header-button { position: relative; } /* Don't use absolute positioning */
-.map-control-button svg { fill: var(--icon-fill); }
-.map-control-button:hover { background-color: rgba(34, 211, 238, 0.2); }
+.map-control-button.header-button { position: relative; }
 
 #recenter-button { position: absolute; bottom: 30px; left: 20px; }
+
+/* --- NEW: Push-aside rules --- */
+body.sidebar-active header {
+    transform: translateX(320px);
+    width: calc(100% - 320px);
+}
+body.sidebar-active #recenter-button {
+    transform: translateX(320px);
+}
 
 /* --- THEME TOGGLE ICONS --- */
 #theme-toggle .icon-moon, .light-theme #theme-toggle .icon-sun { display: none; }
 .light-theme #theme-toggle .icon-moon { display: block; }
-
 
 /* --- MAPBOX OVERRIDES --- */
 .mapboxgl-popup-content {
