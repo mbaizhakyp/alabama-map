@@ -27,15 +27,26 @@ body {
 #controls {
     top: 15px;
     right: 15px;
+    min-width: 200px;
 }
 
-/* Position the legend panel in the bottom right */
-#legend {
+.control-group {
+    margin-bottom: 10px;
+}
+.control-group:last-child {
+    margin-bottom: 0;
+}
+#data-type-selector label {
+    margin-right: 10px;
+}
+
+/* Position all legends in the bottom right */
+.legend {
     bottom: 30px;
     right: 15px;
 }
 
-#legend h4, #controls h3 {
+.legend h4, #controls h3 {
     margin-top: 0;
     margin-bottom: 10px;
 }
@@ -49,7 +60,6 @@ body {
     border: 1px solid #ccc;
     vertical-align: middle;
 }
-
 
 /* Style the popup content */
 .mapboxgl-popup-content {
