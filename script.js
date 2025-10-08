@@ -26,85 +26,71 @@ const popup = new mapboxgl.Popup({
 map.on('load', () => {
 
     // --- 1. ADD DATA SOURCES ---
-    // Precipitation source
     map.addSource('precipitation-data', {
         type: 'geojson',
         data: `precipitation-data/${months[0]}.geojson`
     });
-
-    // Flood data source
     map.addSource('flood-data', {
         type: 'geojson',
         data: `flood-data/Flood_Events_${years[0]}.geojson`
     });
 
     // --- 2. ADD MAP LAYERS ---
-    // Precipitation fill layer (visible by default)
     map.addLayer({
         id: 'precipitation-fill-layer',
         type: 'fill',
         source: 'precipitation-data',
-        layout: { 'visibility': 'visible' }, // Start visible
+        layout: { 'visibility': 'visible' },
         paint: {
             'fill-color': [
                 'step', ['get', 'total_precipitation_inches'],
                 '#eff3ff', 3, '#bdd7e7', 5, '#6baed6', 7, '#3182bd', 9, '#08519c'
             ],
-            'fill-opacity': 0.75,
-            'fill-outline-color': '#ffffff'
+            'fill-opacity': 0.75, 'fill-outline-color': '#ffffff'
         }
     });
-
-    // Flood points layer (hidden by default)
     map.addLayer({
         id: 'flood-points-layer',
         type: 'circle',
         source: 'flood-data',
-        layout: { 'visibility': 'none' }, // Start hidden
+        layout: { 'visibility': 'none' },
         paint: {
-            'circle-radius': 6,
-            'circle-color': '#007cba',
-            'circle-stroke-color': '#ffffff',
-            'circle-stroke-width': 1
+            'circle-radius': 6, 'circle-color': '#007cba',
+            'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1
         }
     });
 
     // --- 3. UI SETUP AND EVENT LISTENERS ---
-    // Get UI elements
-    const monthSelector = document.getElementById('month-selector');
-    const yearSelector = document.getElementById('year-selector');
+    const monthSlider = document.getElementById('month-slider');
+    const monthLabel = document.getElementById('month-label');
+    const yearSlider = document.getElementById('year-slider');
+    const yearLabel = document.getElementById('year-label');
     const dataTypeRadios = document.querySelectorAll('input[name="datatype"]');
 
-    // Populate dropdowns
-    months.forEach(month => {
-        const option = document.createElement('option');
-        option.text = month.charAt(0).toUpperCase() + month.slice(1);
-        option.value = month;
-        monthSelector.add(option);
-    });
-    years.forEach(year => {
-        const option = document.createElement('option');
-        option.text = year;
-        option.value = year;
-        yearSelector.add(option);
-    });
-
-    // Listen for changes on the data type radio buttons
+    // Radio button listener
     dataTypeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            toggleDataType(e.target.value);
-        });
+        radio.addEventListener('change', (e) => toggleDataType(e.target.value));
     });
     
-    // Listen for changes on the month selector
-    monthSelector.addEventListener('change', (e) => {
-        const url = `precipitation-data/${e.target.value}.geojson`;
+    // Month slider listener
+    monthSlider.addEventListener('input', (e) => {
+        const monthIndex = parseInt(e.target.value, 10);
+        const monthName = months[monthIndex];
+        // Update label
+        monthLabel.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+        // Update data source
+        const url = `precipitation-data/${monthName}.geojson`;
         map.getSource('precipitation-data').setData(url);
     });
     
-    // Listen for changes on the year selector
-    yearSelector.addEventListener('change', (e) => {
-        const url = `flood-data/Flood_Events_${e.target.value}.geojson`;
+    // Year slider listener
+    yearSlider.addEventListener('input', (e) => {
+        const yearIndex = parseInt(e.target.value, 10);
+        const year = years[yearIndex];
+        // Update label
+        yearLabel.textContent = year;
+        // Update data source
+        const url = `flood-data/Flood_Events_${year}.geojson`;
         map.getSource('flood-data').setData(url);
     });
 
@@ -125,7 +111,7 @@ map.on('load', () => {
     map.on('mousemove', 'flood-points-layer', (e) => {
         map.getCanvas().style.cursor = 'pointer';
         const props = e.features[0].properties;
-        const date = new Date(props.BEGIN_DATE).toLocaleDateString(); // Format date
+        const date = new Date(props.BEGIN_DATE).toLocaleDateString();
         const content = `<h4>Flood Event</h4><p><strong>County:</strong> ${props.CZ_NAME_STR}</p><p><strong>Date:</strong> ${date}</p>`;
         popup.setLngLat(e.features[0].geometry.coordinates.slice()).setHTML(content).addTo(map);
     });
@@ -134,7 +120,6 @@ map.on('load', () => {
         popup.remove();
     });
 });
-
 
 // --- HELPER FUNCTION to switch between data types ---
 function toggleDataType(dataType) {

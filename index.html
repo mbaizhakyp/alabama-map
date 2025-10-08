@@ -28,12 +28,12 @@
         
         <div id="time-selectors">
             <div id="precipitation-selector-container" class="control-group">
-                <label for="month-selector">Select Month:</label>
-                <select id="month-selector" name="month"></select>
+                <label for="month-slider">Month: <strong id="month-label">January</strong></label>
+                <input id="month-slider" type="range" min="0" max="11" step="1" value="0">
             </div>
             <div id="flood-selector-container" class="control-group" style="display: none;">
-                 <label for="year-selector">Select Year:</label>
-                <select id="year-selector" name="year"></select>
+                 <label for="year-slider">Year: <strong id="year-label">2020</strong></label>
+                 <input id="year-slider" type="range" min="0" max="5" step="1" value="0">
             </div>
         </div>
     </div>
@@ -46,7 +46,6 @@
         <div><span class="legend-key" style="background-color: #3182bd;"></span><span>7 - 9</span></div>
         <div><span class="legend-key" style="background-color: #08519c;"></span><span>≥ 9</span></div>
     </div>
-
     <div id="flood-legend" class="legend map-overlay" style="display: none;">
         <h4>Legend</h4>
         <div><span class="legend-key" style="background-color: #007cba;"></span><span>Flood Event</span></div>

@@ -27,7 +27,7 @@ body {
 #controls {
     top: 15px;
     right: 15px;
-    min-width: 200px;
+    min-width: 220px;
 }
 
 .control-group {
@@ -38,6 +38,12 @@ body {
 }
 #data-type-selector label {
     margin-right: 10px;
+}
+
+/* Style for the new range sliders */
+input[type="range"] {
+    width: 100%;
+    margin-top: 5px;
 }
 
 /* Position all legends in the bottom right */
