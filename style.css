@@ -6,7 +6,8 @@
     --text-primary: #e2e8f0;
     --text-secondary: #94a3b8;
     --border-color: rgba(148, 163, 184, 0.2);
-    --icon-fill: #e2e8f0;
+    --icon-fill-dark: #e2e8f0; /* Bright icon for dark theme */
+    --icon-fill-light: #1e293b; /* Dark icon for light theme */
     --header-bg: rgba(15, 23, 42, 0.3);
 }
 
@@ -17,7 +18,6 @@ body.light-theme {
     --text-primary: #1e293b;
     --text-secondary: #475569;
     --border-color: rgba(30, 41, 59, 0.2);
-    --icon-fill: #1e293b;
     --header-bg: rgba(255, 255, 255, 0.3);
 }
 
@@ -49,9 +49,11 @@ header {
     justify-content: space-between;
     background: var(--header-bg);
     backdrop-filter: blur(10px);
-    /* UPDATED: Add transition for the push effect */
     transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    pointer-events: none;
 }
+header > * { pointer-events: auto; }
+
 
 .logo { display: flex; align-items: center; gap: 12px; }
 .logo svg { fill: var(--accent-color); }
@@ -61,9 +63,8 @@ header {
 #sidebar {
     position: absolute; top: 0; left: 0; height: 100%;
     width: 320px; transform: translateX(-320px);
-    transition: transform 0.3s ease-in-out; z-index: 1; /* Lowered z-index */
+    transition: transform 0.3s ease-in-out; z-index: 1;
 }
-/* UPDATED: Use a class on <body> to control the sidebar */
 body.sidebar-active #sidebar {
     transform: translateX(0);
 }
@@ -78,11 +79,9 @@ body.sidebar-active #sidebar {
     width: 40px; height: 48px; border-radius: 0 8px 8px 0;
     display: flex; align-items: center; justify-content: center;
 }
-/* UPDATED: Rotate based on body class */
 body.sidebar-active #sidebar-toggle {
     transform: translateY(-50%) rotate(180deg);
 }
-#sidebar-toggle svg { fill: var(--icon-fill); }
 
 #sidebar-content {
     width: 100%; height: 100%; padding: 20px;
@@ -107,7 +106,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 #data-type-selector label { color: var(--text-primary); margin-right: 15px; cursor: pointer; }
 
-/* --- LEGEND & BUTTONS --- */
+/* --- LEGEND & TOOLBAR --- */
 .legend {
     position: absolute; bottom: 30px; right: 20px;
     background: var(--panel-bg); backdrop-filter: blur(10px);
@@ -120,29 +119,56 @@ input[type="range"]::-webkit-slider-thumb {
     margin-right: 8px; vertical-align: middle; border-radius: 3px;
 }
 
+#map-controls-toolbar {
+    position: absolute;
+    top: 80px;
+    right: 30px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    /* The transition property is no longer needed here */
+}
+
+/* Main button styling */
 .map-control-button {
-    background: var(--panel-bg); backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color); border-radius: 50%;
-    cursor: pointer; display: flex; justify-content: center; align-items: center;
-    transition: background-color 0.2s, transform 0.3s ease-in-out; /* Add transform to transition */
-    width: 40px; height: 40px; z-index: 2; /* Ensure buttons are above sidebar */
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+    width: 40px;
+    height: 40px;
 }
-.map-control-button.header-button { position: relative; }
+.map-control-button:hover { background-color: rgba(34, 211, 238, 0.2); }
 
-#recenter-button { position: absolute; bottom: 30px; left: 20px; }
-
-/* --- NEW: Push-aside rules --- */
-body.sidebar-active header {
-    transform: translateX(320px);
-    width: calc(100% - 320px);
+/* UPDATED: General rule for all control button icons */
+.map-control-button svg, #sidebar-toggle svg {
+    fill: var(--icon-fill-dark);
 }
-body.sidebar-active #recenter-button {
-    transform: translateX(320px);
+body.light-theme .map-control-button svg, body.light-theme #sidebar-toggle svg {
+    fill: var(--icon-fill-light);
 }
 
 /* --- THEME TOGGLE ICONS --- */
 #theme-toggle .icon-moon, .light-theme #theme-toggle .icon-sun { display: none; }
 .light-theme #theme-toggle .icon-moon { display: block; }
+
+
+/* --- Push-aside rules (Updated) --- */
+body.sidebar-active header {
+    transform: translateX(320px);
+    width: calc(100% - 320px);
+}
+/* REMOVED: The rule that pushed the toolbar is now gone. */
 
 /* --- MAPBOX OVERRIDES --- */
 .mapboxgl-popup-content {

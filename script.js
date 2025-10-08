@@ -68,19 +68,19 @@ function setupPopupListeners() {
 
 // --- UI EVENT LISTENERS (SETUP ONCE) ---
 document.addEventListener('DOMContentLoaded', () => {
-    // UPDATED: Set sidebar to be active by default
     document.body.classList.add('sidebar-active');
 
     const sidebarToggle = document.getElementById('sidebar-toggle');
+    // Renamed elements as they are now children of the toolbar
     const recenterButton = document.getElementById('recenter-button');
     const themeToggle = document.getElementById('theme-toggle');
+
     const dataTypeRadios = document.querySelectorAll('input[name="datatype"]');
     const monthSlider = document.getElementById('month-slider');
     const monthLabel = document.getElementById('month-label');
     const yearSlider = document.getElementById('year-slider');
     const yearLabel = document.getElementById('year-label');
 
-    // UPDATED: Sidebar logic now toggles a class on the body
     sidebarToggle.addEventListener('click', () => {
         document.body.classList.toggle('sidebar-active');
     });
