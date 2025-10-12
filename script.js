@@ -5,24 +5,25 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWJhaXpoYWt5cCIsImEiOiJjbWdndndyMzkwbmFqMmtxN
 const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 const years = [2020, 2021, 2022, 2023, 2024, 2025];
 const INITIAL_VIEW_STATE = { center: [-86.9, 32.8], zoom: 6.5 };
-const SVI_THEME_TITLES = { 'RPL_THEMES': 'Overall SVI', 'RPL_THEME1': 'Socioeconomic Vulnerability', 'RPL_THEME2': 'Household Comp. Vulnerability', 'RPL_THEME3': 'Minority Status Vulnerability', 'RPL_THEME4': 'Housing/Transport Vulnerability' };
-
-// --- THEME MANAGEMENT ---
-let currentTheme = localStorage.getItem('theme') || 'dark';
-document.body.classList.toggle('light-theme', currentTheme === 'light');
+const SVI_THEME_TITLES = { 'RPL_THEMES': 'Overall SVI', 'RPL_THEME1': 'Socioeconomic', 'RPL_THEME2': 'Household Comp.', 'RPL_THEME3': 'Minority Status', 'RPL_THEME4': 'Housing/Transport' };
+const MAP_BG_COLOR = '#e2e8f0';
 
 // --- MAP INITIALIZATION ---
 const map = new mapboxgl.Map({
     container: 'map',
-    style: `mapbox://styles/mapbox/${currentTheme}-v11`,
+    style: 'mapbox://styles/mapbox/light-v11',
     center: INITIAL_VIEW_STATE.center,
     zoom: INITIAL_VIEW_STATE.zoom
 });
 
-const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
-
 // --- MAP LAYERS & SOURCES FUNCTION ---
 function addSourcesAndLayers() {
+    if (!map.getLayer('background-tint')) {
+        map.addLayer({
+            id: 'background-tint', type: 'background',
+            paint: { 'background-color': MAP_BG_COLOR, 'background-opacity': 0.7 }
+        }, 'land-structure-line');
+    }
     if (!map.getSource('precipitation-data')) map.addSource('precipitation-data', { type: 'geojson', data: `precipitation-data/${months[0]}.geojson` });
     if (!map.getSource('flood-data')) map.addSource('flood-data', { type: 'geojson', data: `flood-data/Flood_Events_${years[0]}.geojson` });
     if (!map.getSource('svi-data')) map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_2022.geojson' });
@@ -30,71 +31,109 @@ function addSourcesAndLayers() {
     if (!map.getLayer('precipitation-fill-layer')) {
         map.addLayer({
             id: 'precipitation-fill-layer', type: 'fill', source: 'precipitation-data',
-            paint: {
-                // UPDATED: Changed from 'step' to 'interpolate' for a continuous gradient
-                'fill-color': [
-                    'interpolate', ['linear'],
-                    ['coalesce', ['get', 'total_precipitation_inches'], 0], // Use coalesce for safety
-                    0, '#ffffcc',    // Light yellow for 0 inches
-                    10, '#a1dab4',   // Light green/teal
-                    25, '#41b6c4',   // Medium blue
-                    50, '#2c7fb8',   // Dark blue
-                    100, '#253494'   // Deep purple for 100+ inches
-                ],
-                'fill-opacity': 0.7, 'fill-outline-color': currentTheme === 'dark' ? '#0f172a' : '#f1f5f9'
-            }
+            paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR }
         });
     }
     if (!map.getLayer('flood-points-layer')) {
         map.addLayer({
             id: 'flood-points-layer', type: 'circle', source: 'flood-data',
-            paint: { 'circle-radius': 6, 'circle-color': '#22d3ee', 'circle-stroke-color': currentTheme === 'dark' ? '#0f172a' : '#f1f5f9', 'circle-stroke-width': 2 }
+            paint: { 'circle-radius': 6, 'circle-color': '#319795', 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }
         });
     }
     if (!map.getLayer('svi-layer')) {
         map.addLayer({
             id: 'svi-layer', type: 'fill', source: 'svi-data',
-            paint: {
-                'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'],
-                'fill-opacity': 0.75, 'fill-outline-color': currentTheme === 'dark' ? '#0f172a' : '#f1f5f9'
-            }
+            paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR }
         });
     }
-    
     updateMapState();
 }
 
-function setupPopupListeners() {
-    map.off('mousemove', 'precipitation-fill-layer'); map.off('mouseleave', 'precipitation-fill-layer');
-    map.off('mousemove', 'flood-points-layer'); map.off('mouseleave', 'flood-points-layer');
-    map.off('mousemove', 'svi-layer'); map.off('mouseleave', 'svi-layer');
+// --- NEW: Helper function to create the visualizer HTML ---
+function createVisualizerHTML(value, type) {
+    let percentage = 0;
+    let gradientClass = '';
+    let labels = ['', ''];
 
-    map.on('mousemove', 'precipitation-fill-layer', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
-        const props = e.features[0].properties;
-        const precipValue = props.total_precipitation_inches === null || typeof props.total_precipitation_inches === 'undefined' ? 'No data' : `${props.total_precipitation_inches.toFixed(2)} in`;
-        const content = `<h4>${props.name}</h4><p>Precipitation: <strong>${precipValue}</strong></p>`;
-        popup.setLngLat(e.lngLat).setHTML(content).addTo(map);
+    if (type === 'svi') {
+        percentage = (value || 0) * 100;
+        gradientClass = 'svi-gradient';
+        labels = ['Least Vuln.', 'Most Vuln.'];
+    } else if (type === 'precip') {
+        // Cap the visual scale at 100 inches for clarity
+        percentage = Math.min((value || 0) / 100, 1) * 100;
+        gradientClass = 'precip-gradient';
+        labels = ['0 in', '100+ in'];
+    }
+
+    return `
+        <div class="modal-visualizer">
+            <div class="modal-gradient-bar">
+                <div class="gradient-marker" style="left: ${percentage}%;"></div>
+                <div class="${gradientClass}"></div>
+            </div>
+            <div class="modal-labels">
+                <span>${labels[0]}</span>
+                <span>${labels[1]}</span>
+            </div>
+        </div>`;
+}
+
+// --- Interaction Listeners for Clickable Layers ---
+function setupInteractionListeners() {
+    const clickableLayers = ['precipitation-fill-layer', 'flood-points-layer', 'svi-layer'];
+    
+    clickableLayers.forEach(layerId => {
+        map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
     });
-    map.on('mouseleave', 'precipitation-fill-layer', () => { map.getCanvas().style.cursor = ''; popup.remove(); });
-    map.on('mousemove', 'flood-points-layer', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
-        const props = e.features[0].properties;
-        const date = new Date(props.BEGIN_DATE).toLocaleDateString();
-        const content = `<h4>Flood Event</h4><p>${props.CZ_NAME_STR}</p><p>Date: <strong>${date}</strong></p>`;
-        popup.setLngLat(e.features[0].geometry.coordinates.slice()).setHTML(content).addTo(map);
+
+    map.on('click', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: clickableLayers });
+        if (!features.length) return;
+        
+        const feature = features[0];
+        let content = '';
+
+        switch (feature.layer.id) {
+            case 'precipitation-fill-layer':
+                content = `<h3>${feature.properties.name}</h3>
+                           <p>Total Precipitation: <strong>${feature.properties.total_precipitation_inches.toFixed(2)} in</strong></p>
+                           ${createVisualizerHTML(feature.properties.total_precipitation_inches, 'precip')}`;
+                break;
+            case 'flood-points-layer':
+                const date = new Date(feature.properties.BEGIN_DATE).toLocaleDateString();
+                content = `<h3>Flood Event</h3>
+                           <p>County: <strong>${feature.properties.CZ_NAME_STR}</strong></p>
+                           <p>Date: <strong>${date}</strong></p>`;
+                break;
+            case 'svi-layer':
+                content = `<h3>${feature.properties.COUNTY}</h3>
+                           <p>Overall Vulnerability: <strong>${(feature.properties.RPL_THEMES * 100).toFixed(1)}th percentile</strong></p>
+                           ${createVisualizerHTML(feature.properties.RPL_THEMES, 'svi')}
+                           <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                           <p>Socioeconomic: <strong>${(feature.properties.RPL_THEME1 * 100).toFixed(1)}th percentile</strong></p>
+                           <p>Household Composition: <strong>${(feature.properties.RPL_THEME2 * 100).toFixed(1)}th percentile</strong></p>
+                           <p>Minority Status: <strong>${(feature.properties.RPL_THEME3 * 100).toFixed(1)}th percentile</strong></p>
+                           <p>Housing & Transport: <strong>${(feature.properties.RPL_THEME4 * 100).toFixed(1)}th percentile</strong></p>`;
+                break;
+        }
+        openModal(content);
     });
-    map.on('mouseleave', 'flood-points-layer', () => { map.getCanvas().style.cursor = ''; popup.remove(); });
-    map.on('mousemove', 'svi-layer', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
-        const props = e.features[0].properties;
-        const currentSviProperty = document.querySelector('input[name="svi_theme"]:checked').value;
-        const sviValue = props[currentSviProperty];
-        const percentileText = sviValue === null || typeof sviValue === 'undefined' ? 'No data' : `${(sviValue * 100).toFixed(1)}th percentile`;
-        const content = `<h4>${props.COUNTY}</h4><p>${SVI_THEME_TITLES[currentSviProperty]}: <strong>${percentileText}</strong></p>`;
-        popup.setLngLat(e.lngLat).setHTML(content).addTo(map);
-    });
-    map.on('mouseleave', 'svi-layer', () => { map.getCanvas().style.cursor = ''; popup.remove(); });
+}
+
+// --- Modal Control Functions ---
+const modal = document.getElementById('modal');
+const modalContent = document.getElementById('modal-content');
+const modalCloseBtn = document.getElementById('modal-close-btn');
+
+function openModal(content) {
+    modalContent.innerHTML = content;
+    modal.classList.remove('hidden');
+}
+function closeModal() {
+    modal.classList.add('hidden');
+    modalContent.innerHTML = '';
 }
 
 // --- UI EVENT LISTENERS (SETUP ONCE) ---
@@ -102,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('sidebar-active');
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const recenterButton = document.getElementById('recenter-button');
-    const themeToggle = document.getElementById('theme-toggle');
     const categoryRadios = document.querySelectorAll('input[name="category"]');
     const climateTypeRadios = document.querySelectorAll('input[name="datatype"]');
     const monthSlider = document.getElementById('month-slider');
@@ -114,13 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-active'));
     recenterButton.addEventListener('click', () => map.flyTo(INITIAL_VIEW_STATE));
-    themeToggle.addEventListener('click', () => {
-        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('theme', currentTheme);
-        document.body.classList.toggle('light-theme', currentTheme === 'light');
-        map.setStyle(`mapbox://styles/mapbox/${currentTheme}-v11`);
-    });
-
+    modalCloseBtn.addEventListener('click', closeModal);
+    
     categoryRadios.forEach(radio => radio.addEventListener('change', updateMapState));
     climateTypeRadios.forEach(radio => radio.addEventListener('change', updateMapState));
     sviThemeRadios.forEach(radio => {
@@ -144,8 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- MAP EVENTS ---
-map.on('load', () => { addSourcesAndLayers(); setupPopupListeners(); });
-map.on('style.load', () => { addSourcesAndLayers(); setupPopupListeners(); });
+map.on('load', () => { addSourcesAndLayers(); setupInteractionListeners(); });
+map.on('style.load', () => { addSourcesAndLayers(); setupInteractionListeners(); });
 
 // --- MASTER STATE MANAGEMENT FUNCTION ---
 function updateMapState() {

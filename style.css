@@ -1,29 +1,18 @@
 /* --- THEME & COLOR VARIABLES --- */
 :root {
-    --bg-color: #0f172a;
-    --panel-bg: rgba(15, 23, 42, 0.6);
-    --accent-color: #22d3ee;
-    --text-primary: #e2e8f0;
-    --text-secondary: #94a3b8;
-    --border-color: rgba(148, 163, 184, 0.2);
-    --icon-fill-dark: #e2e8f0;
-    --icon-fill-light: #1e293b;
-    --header-bg: rgba(15, 23, 42, 0.3);
-}
-
-body.light-theme {
-    --bg-color: #f1f5f9;
-    --panel-bg: rgba(255, 255, 255, 0.6);
-    --accent-color: #0891b2;
-    --text-primary: #1e293b;
-    --text-secondary: #475569;
-    --border-color: rgba(30, 41, 59, 0.2);
-    --header-bg: rgba(255, 255, 255, 0.3);
+    --bg-color: #e2e8f0; 
+    --panel-bg: rgba(237, 242, 247, 0.7); 
+    --accent-color: #319795;
+    --text-primary: #2d3748;
+    --text-secondary: #718096;
+    --border-color: rgba(45, 55, 72, 0.2);
+    --icon-fill: #2d3748;
+    --header-bg: rgba(237, 242, 247, 0.4);
 }
 
 /* --- GLOBAL & TYPOGRAPHY --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-primary); overflow: hidden; transition: background-color 0.3s ease; }
+body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-primary); overflow: hidden; }
 h1, h2, h4, strong { font-weight: 600; }
 
 /* --- LAYOUT & MAP --- */
@@ -43,7 +32,7 @@ header > * { pointer-events: auto; }
 #sidebar {
     position: absolute; top: 0; left: 0; height: 100%;
     width: 320px; transform: translateX(-320px);
-    transition: transform 0.3s ease-in-out; z-index: 1;
+    transition: transform 0.3s ease-in-out; z-index: 3;
 }
 body.sidebar-active #sidebar { transform: translateX(0); }
 #sidebar-toggle {
@@ -73,7 +62,7 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
     width: 18px; height: 18px; background: var(--accent-color);
-    cursor: pointer; border-radius: 50%; border: 3px solid var(--bg-color);
+    cursor: pointer; border-radius: 50%; border: 3px solid #edf2f7; 
 }
 #category-selector label, #data-type-selector label { color: var(--text-primary); margin-right: 15px; cursor: pointer; }
 #svi-theme-selector label { color: var(--text-primary); cursor: pointer; line-height: 1.8; }
@@ -84,26 +73,18 @@ input[type="range"]::-webkit-slider-thumb {
     position: absolute; bottom: 30px; right: 20px;
     background: var(--panel-bg); backdrop-filter: blur(10px);
     padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); z-index: 1;
-    min-width: 200px; /* Give legends a consistent width */
+    min-width: 200px;
 }
 .legend h4 { margin-bottom: 10px; }
-#flood-legend .legend-key { display: inline-block; width: 15px; height: 15px; margin-right: 8px; vertical-align: middle; border-radius: 3px; }
+#flood-legend .legend-key { display: inline-block; width: 15px; height: 15px; margin-right: 8px; vertical-align: middle; border-radius: 3px; background-color: #0891b2; }
 
-/* UPDATED: Precipitation & SVI Legend Styles */
 .svi-gradient, .precip-gradient {
-    height: 15px;
-    width: 100%;
-    border-radius: 3px;
-    margin-bottom: 5px;
+    height: 15px; width: 100%; border-radius: 3px; margin-bottom: 5px;
 }
 .svi-gradient { background: linear-gradient(to right, #4d9221, #f1b621, #c51b7d); }
 .precip-gradient { background: linear-gradient(to right, #ffffcc, #a1dab4, #41b6c4, #2c7fb8, #253494); }
-
 .svi-labels, .precip-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8em;
-    color: var(--text-secondary);
+    display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-secondary);
 }
 
 #map-controls-toolbar {
@@ -117,19 +98,38 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer; display: flex; justify-content: center; align-items: center;
     transition: background-color 0.2s; width: 40px; height: 40px;
 }
-.map-control-button:hover { background-color: rgba(34, 211, 238, 0.2); }
-.map-control-button svg, #sidebar-toggle svg { fill: var(--icon-fill-dark); }
-body.light-theme .map-control-button svg, body.light-theme #sidebar-toggle svg { fill: var(--icon-fill-light); }
-#theme-toggle .icon-moon, .light-theme #theme-toggle .icon-sun { display: none; }
-.light-theme #theme-toggle .icon-moon { display: block; }
+.map-control-button:hover { background-color: rgba(49, 151, 149, 0.1); }
+.map-control-button svg, #sidebar-toggle svg { fill: var(--icon-fill); }
 
 /* --- Push-aside rules --- */
 body.sidebar-active header { transform: translateX(320px); width: calc(100% - 320px); }
 
 /* --- MAPBOX OVERRIDES --- */
-.mapboxgl-popup-content { background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; padding: 10px 15px; }
-.mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: var(--border-color); }
-.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: var(--border-color); }
-.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: var(--border-color); }
-.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: var(--border-color); }
-.mapboxgl-popup-close-button { color: var(--text-primary); }
+.mapboxgl-popup-content { display: none; }
+
+/* --- MODAL / INFO PANEL --- */
+.hidden { display: none; }
+#modal {
+    position: fixed; top: 210px; right: 30px; width: 350px;
+    z-index: 2; background: var(--panel-bg); backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color); border-radius: 12px;
+    padding: 25px 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+#modal-close-btn {
+    position: absolute; top: 10px; right: 15px; background: transparent;
+    border: none; font-size: 1.8rem; color: var(--text-secondary); cursor: pointer;
+}
+#modal-content h3 { color: var(--text-primary); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+#modal-content p { margin-bottom: 2px; color: var(--text-secondary); font-size: 0.9em; }
+#modal-content strong { color: var(--text-primary); }
+
+/* NEW: Modal Visualizer Styles */
+.modal-visualizer { margin-bottom: 15px; margin-top: 5px; }
+.modal-gradient-bar { position: relative; width: 100%; height: 8px; border-radius: 4px; }
+.gradient-marker {
+    position: absolute; top: -4px; width: 16px; height: 16px;
+    background-color: white; border: 2px solid var(--accent-color);
+    border-radius: 50%; transform: translateX(-50%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.modal-labels { font-size: 0.75em; display: flex; justify-content: space-between; color: var(--text-secondary); margin-top: 4px; }
