@@ -6,8 +6,8 @@
     --text-primary: #e2e8f0;
     --text-secondary: #94a3b8;
     --border-color: rgba(148, 163, 184, 0.2);
-    --icon-fill-dark: #e2e8f0; /* Bright icon for dark theme */
-    --icon-fill-light: #1e293b; /* Dark icon for light theme */
+    --icon-fill-dark: #e2e8f0;
+    --icon-fill-light: #1e293b;
     --header-bg: rgba(15, 23, 42, 0.3);
 }
 
@@ -23,38 +23,18 @@ body.light-theme {
 
 /* --- GLOBAL & TYPOGRAPHY --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    overflow: hidden;
-    transition: background-color 0.3s ease;
-}
-
+body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-primary); overflow: hidden; transition: background-color 0.3s ease; }
 h1, h2, h4, strong { font-weight: 600; }
 
 /* --- LAYOUT & MAP --- */
 #map { position: absolute; top: 0; bottom: 0; width: 100%; }
-
 header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 15px 30px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--header-bg);
-    backdrop-filter: blur(10px);
-    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
-    pointer-events: none;
+    position: absolute; top: 0; left: 0; width: 100%; padding: 15px 30px;
+    z-index: 2; display: flex; align-items: center; justify-content: space-between;
+    background: var(--header-bg); backdrop-filter: blur(10px);
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out; pointer-events: none;
 }
 header > * { pointer-events: auto; }
-
-
 .logo { display: flex; align-items: center; gap: 12px; }
 .logo svg { fill: var(--accent-color); }
 .logo h1 { font-size: 1.5rem; color: var(--text-primary); }
@@ -65,24 +45,16 @@ header > * { pointer-events: auto; }
     width: 320px; transform: translateX(-320px);
     transition: transform 0.3s ease-in-out; z-index: 1;
 }
-body.sidebar-active #sidebar {
-    transform: translateX(0);
-}
-
+body.sidebar-active #sidebar { transform: translateX(0); }
 #sidebar-toggle {
     position: absolute; top: 50%; left: 320px;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease-in-out;
+    transform: translateY(-50%); transition: transform 0.3s ease-in-out;
     background: var(--panel-bg); backdrop-filter: blur(10px);
     border: 1px solid var(--border-color); border-left: none;
-    color: var(--text-primary); cursor: pointer;
-    width: 40px; height: 48px; border-radius: 0 8px 8px 0;
+    cursor: pointer; width: 40px; height: 48px; border-radius: 0 8px 8px 0;
     display: flex; align-items: center; justify-content: center;
 }
-body.sidebar-active #sidebar-toggle {
-    transform: translateY(-50%) rotate(180deg);
-}
-
+body.sidebar-active #sidebar-toggle { transform: translateY(-50%) rotate(180deg); }
 #sidebar-content {
     width: 100%; height: 100%; padding: 20px;
     background: var(--panel-bg); backdrop-filter: blur(10px);
@@ -93,7 +65,6 @@ body.sidebar-active #sidebar-toggle {
 /* --- CONTROLS --- */
 .control-group { margin-bottom: 25px; font-weight: 300; }
 .control-group label { color: var(--text-secondary); }
-
 input[type="range"] {
     -webkit-appearance: none; appearance: none; width: 100%;
     height: 4px; background: var(--text-secondary); border-radius: 5px;
@@ -104,78 +75,59 @@ input[type="range"]::-webkit-slider-thumb {
     width: 18px; height: 18px; background: var(--accent-color);
     cursor: pointer; border-radius: 50%; border: 3px solid var(--bg-color);
 }
-#data-type-selector label { color: var(--text-primary); margin-right: 15px; cursor: pointer; }
+#category-selector label, #data-type-selector label { color: var(--text-primary); margin-right: 15px; cursor: pointer; }
 
-/* --- LEGEND & TOOLBAR --- */
+/* NEW: SVI Theme Selector Styles */
+#svi-theme-selector label { color: var(--text-primary); cursor: pointer; line-height: 1.8; }
+#svi-theme-selector input { margin-right: 8px; }
+
+
+/* --- LEGENDS & TOOLBAR --- */
 .legend {
     position: absolute; bottom: 30px; right: 20px;
     background: var(--panel-bg); backdrop-filter: blur(10px);
-    padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);
-    z-index: 1;
+    padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); z-index: 1;
 }
 .legend h4 { margin-bottom: 10px; }
-.legend-key {
-    display: inline-block; width: 15px; height: 15px;
-    margin-right: 8px; vertical-align: middle; border-radius: 3px;
+.legend-key { display: inline-block; width: 15px; height: 15px; margin-right: 8px; vertical-align: middle; border-radius: 3px; }
+
+/* NEW: SVI Legend Styles */
+.svi-gradient {
+    height: 15px;
+    width: 100%;
+    background: linear-gradient(to right, #4d9221, #f1b621, #c51b7d);
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+.svi-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: var(--text-secondary);
 }
 
 #map-controls-toolbar {
-    position: absolute;
-    top: 80px;
-    right: 30px;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background: var(--panel-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px;
-    /* The transition property is no longer needed here */
+    position: absolute; top: 80px; right: 30px; z-index: 2;
+    display: flex; flex-direction: column; gap: 15px;
+    background: var(--panel-bg); backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color); border-radius: 8px; padding: 10px;
 }
-
-/* Main button styling */
 .map-control-button {
-    background: transparent;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s;
-    width: 40px;
-    height: 40px;
+    background: transparent; border: none; border-radius: 50%;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    transition: background-color 0.2s; width: 40px; height: 40px;
 }
 .map-control-button:hover { background-color: rgba(34, 211, 238, 0.2); }
-
-/* UPDATED: General rule for all control button icons */
-.map-control-button svg, #sidebar-toggle svg {
-    fill: var(--icon-fill-dark);
-}
-body.light-theme .map-control-button svg, body.light-theme #sidebar-toggle svg {
-    fill: var(--icon-fill-light);
-}
-
-/* --- THEME TOGGLE ICONS --- */
+.map-control-button svg, #sidebar-toggle svg { fill: var(--icon-fill-dark); }
+body.light-theme .map-control-button svg, body.light-theme #sidebar-toggle svg { fill: var(--icon-fill-light); }
 #theme-toggle .icon-moon, .light-theme #theme-toggle .icon-sun { display: none; }
 .light-theme #theme-toggle .icon-moon { display: block; }
 
-
-/* --- Push-aside rules (Updated) --- */
-body.sidebar-active header {
-    transform: translateX(320px);
-    width: calc(100% - 320px);
-}
-/* REMOVED: The rule that pushed the toolbar is now gone. */
+/* --- Push-aside rules --- */
+body.sidebar-active header { transform: translateX(320px); width: calc(100% - 320px); }
 
 /* --- MAPBOX OVERRIDES --- */
-.mapboxgl-popup-content {
-    background: var(--panel-bg); backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color); color: var(--text-primary);
-    border-radius: 8px; padding: 10px 15px;
-}
+.mapboxgl-popup-content { background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; padding: 10px 15px; }
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: var(--border-color); }
 .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: var(--border-color); }
 .mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: var(--border-color); }
