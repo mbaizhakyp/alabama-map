@@ -76,30 +76,30 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer; border-radius: 50%; border: 3px solid var(--bg-color);
 }
 #category-selector label, #data-type-selector label { color: var(--text-primary); margin-right: 15px; cursor: pointer; }
-
-/* NEW: SVI Theme Selector Styles */
 #svi-theme-selector label { color: var(--text-primary); cursor: pointer; line-height: 1.8; }
 #svi-theme-selector input { margin-right: 8px; }
-
 
 /* --- LEGENDS & TOOLBAR --- */
 .legend {
     position: absolute; bottom: 30px; right: 20px;
     background: var(--panel-bg); backdrop-filter: blur(10px);
     padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); z-index: 1;
+    min-width: 200px; /* Give legends a consistent width */
 }
 .legend h4 { margin-bottom: 10px; }
-.legend-key { display: inline-block; width: 15px; height: 15px; margin-right: 8px; vertical-align: middle; border-radius: 3px; }
+#flood-legend .legend-key { display: inline-block; width: 15px; height: 15px; margin-right: 8px; vertical-align: middle; border-radius: 3px; }
 
-/* NEW: SVI Legend Styles */
-.svi-gradient {
+/* UPDATED: Precipitation & SVI Legend Styles */
+.svi-gradient, .precip-gradient {
     height: 15px;
     width: 100%;
-    background: linear-gradient(to right, #4d9221, #f1b621, #c51b7d);
     border-radius: 3px;
     margin-bottom: 5px;
 }
-.svi-labels {
+.svi-gradient { background: linear-gradient(to right, #4d9221, #f1b621, #c51b7d); }
+.precip-gradient { background: linear-gradient(to right, #ffffcc, #a1dab4, #41b6c4, #2c7fb8, #253494); }
+
+.svi-labels, .precip-labels {
     display: flex;
     justify-content: space-between;
     font-size: 0.8em;
