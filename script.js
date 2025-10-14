@@ -5,8 +5,46 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWJhaXpoYWt5cCIsImEiOiJjbWdndndyMzkwbmFqMmtxN
 const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 const years = [2020, 2021, 2022, 2023, 2024, 2025];
 const INITIAL_VIEW_STATE = { center: [-86.9, 32.8], zoom: 6.5 };
-const SVI_THEME_TITLES = { 'RPL_THEMES': 'Overall SVI', 'RPL_THEME1': 'Socioeconomic', 'RPL_THEME2': 'Household Comp.', 'RPL_THEME3': 'Minority Status', 'RPL_THEME4': 'Housing/Transport' };
 const MAP_BG_COLOR = '#e2e8f0';
+
+// Hierarchical SVI data structure for UI generation
+const SVI_DATA = {
+    'RPL_THEMES_state': { title: 'Overall SVI' },
+    'RPL_THEME1_state': {
+        title: 'Socioeconomic',
+        factors: {
+            'EPL_POV150_state': 'Poverty',
+            'EPL_UNEMP_state': 'Unemployment',
+            'EPL_HBURD_state': 'Housing Cost Burden',
+            'EPL_NOHSDP_state': 'No High School Diploma',
+            'EPL_UNINSUR_state': 'No Health Insurance'
+        }
+    },
+    'RPL_THEME2_state': {
+        title: 'Household Composition',
+        factors: {
+            'EPL_AGE65_state': 'Aged 65 or Older',
+            'EPL_AGE17_state': 'Aged 17 or Younger',
+            'EPL_DISABL_state': 'Disability',
+            'EPL_SNGPNT_state': 'Single-Parent Households',
+            'EPL_LIMENG_state': 'Limited English'
+        }
+    },
+    'RPL_THEME3_state': {
+        title: 'Minority Status',
+        factors: { 'EPL_MINRTY_state': 'Racial & Ethnic Minorities' }
+    },
+    'RPL_THEME4_state': {
+        title: 'Housing & Transportation',
+        factors: {
+            'EPL_MUNIT_state': 'Multi-Unit Structures',
+            'EPL_MOBILE_state': 'Mobile Homes',
+            'EPL_CROWD_state': 'Crowding',
+            'EPL_NOVEH_state': 'No Vehicle',
+            'EPL_GROUPQ_state': 'Group Quarters'
+        }
+    }
+};
 
 // --- MAP INITIALIZATION ---
 const map = new mapboxgl.Map({
@@ -20,13 +58,15 @@ const map = new mapboxgl.Map({
 function addSourcesAndLayers() {
     if (!map.getLayer('background-tint')) {
         map.addLayer({
-            id: 'background-tint', type: 'background',
+            id: 'background-tint',
+            type: 'background',
             paint: { 'background-color': MAP_BG_COLOR, 'background-opacity': 0.7 }
         }, 'land-structure-line');
     }
+
     if (!map.getSource('precipitation-data')) map.addSource('precipitation-data', { type: 'geojson', data: `precipitation-data/${months[0]}.geojson` });
     if (!map.getSource('flood-data')) map.addSource('flood-data', { type: 'geojson', data: `flood-data/Flood_Events_${years[0]}.geojson` });
-    if (!map.getSource('svi-data')) map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_2022.geojson' });
+    if (!map.getSource('svi-data')) map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_tracts_master.geojson' });
 
     if (!map.getLayer('precipitation-fill-layer')) {
         map.addLayer({
@@ -43,13 +83,17 @@ function addSourcesAndLayers() {
     if (!map.getLayer('svi-layer')) {
         map.addLayer({
             id: 'svi-layer', type: 'fill', source: 'svi-data',
-            paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR }
+            paint: {
+                'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'],
+                'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR
+            }
         });
     }
+    
     updateMapState();
 }
 
-// --- NEW: Helper function to create the visualizer HTML ---
+// --- Helper function for the modal visualizer ---
 function createVisualizerHTML(value, type) {
     let percentage = 0;
     let gradientClass = '';
@@ -60,23 +104,12 @@ function createVisualizerHTML(value, type) {
         gradientClass = 'svi-gradient';
         labels = ['Least Vuln.', 'Most Vuln.'];
     } else if (type === 'precip') {
-        // Cap the visual scale at 100 inches for clarity
         percentage = Math.min((value || 0) / 100, 1) * 100;
         gradientClass = 'precip-gradient';
         labels = ['0 in', '100+ in'];
     }
 
-    return `
-        <div class="modal-visualizer">
-            <div class="modal-gradient-bar">
-                <div class="gradient-marker" style="left: ${percentage}%;"></div>
-                <div class="${gradientClass}"></div>
-            </div>
-            <div class="modal-labels">
-                <span>${labels[0]}</span>
-                <span>${labels[1]}</span>
-            </div>
-        </div>`;
+    return `<div class="modal-visualizer"><div class="modal-gradient-bar"><div class="gradient-marker" style="left: ${percentage}%;"></div><div class="${gradientClass}"></div></div><div class="modal-labels"><span>${labels[0]}</span><span>${labels[1]}</span></div></div>`;
 }
 
 // --- Interaction Listeners for Clickable Layers ---
@@ -109,13 +142,14 @@ function setupInteractionListeners() {
                 break;
             case 'svi-layer':
                 content = `<h3>${feature.properties.COUNTY}</h3>
-                           <p>Overall Vulnerability: <strong>${(feature.properties.RPL_THEMES * 100).toFixed(1)}th percentile</strong></p>
-                           ${createVisualizerHTML(feature.properties.RPL_THEMES, 'svi')}
-                           <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
-                           <p>Socioeconomic: <strong>${(feature.properties.RPL_THEME1 * 100).toFixed(1)}th percentile</strong></p>
-                           <p>Household Composition: <strong>${(feature.properties.RPL_THEME2 * 100).toFixed(1)}th percentile</strong></p>
-                           <p>Minority Status: <strong>${(feature.properties.RPL_THEME3 * 100).toFixed(1)}th percentile</strong></p>
-                           <p>Housing & Transport: <strong>${(feature.properties.RPL_THEME4 * 100).toFixed(1)}th percentile</strong></p>`;
+                           <p class="location">${feature.properties.LOCATION}</p>
+                           <p>Overall Vulnerability: <strong>${(feature.properties.RPL_THEMES_state * 100).toFixed(1)}th percentile</strong></p>
+                           ${createVisualizerHTML(feature.properties.RPL_THEMES_state, 'svi')}
+                           <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`;
+                Object.keys(SVI_DATA).forEach(themeKey => {
+                    if (themeKey === 'RPL_THEMES_state' || !SVI_DATA[themeKey].factors) return;
+                    content += `<p>${SVI_DATA[themeKey].title}: <strong>${(feature.properties[themeKey] * 100).toFixed(1)}th percentile</strong></p>`;
+                });
                 break;
         }
         openModal(content);
@@ -123,15 +157,18 @@ function setupInteractionListeners() {
 }
 
 // --- Modal Control Functions ---
+const modalOverlay = document.getElementById('modal-overlay');
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modal-content');
 const modalCloseBtn = document.getElementById('modal-close-btn');
 
 function openModal(content) {
     modalContent.innerHTML = content;
+    modalOverlay.classList.remove('hidden');
     modal.classList.remove('hidden');
 }
 function closeModal() {
+    modalOverlay.classList.add('hidden');
     modal.classList.add('hidden');
     modalContent.innerHTML = '';
 }
@@ -139,6 +176,7 @@ function closeModal() {
 // --- UI EVENT LISTENERS (SETUP ONCE) ---
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('sidebar-active');
+
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const recenterButton = document.getElementById('recenter-button');
     const categoryRadios = document.querySelectorAll('input[name="category"]');
@@ -147,22 +185,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const monthLabel = document.getElementById('month-label');
     const yearSlider = document.getElementById('year-slider');
     const yearLabel = document.getElementById('year-label');
-    const sviThemeRadios = document.querySelectorAll('input[name="svi_theme"]');
-    const sviLegendTitle = document.getElementById('svi-legend-title');
+    const sviThemeSelect = document.getElementById('svi-theme-select');
+    const sviFactorGroup = document.getElementById('svi-factor-group');
+    const sviFactorSelect = document.getElementById('svi-factor-select');
 
+    // --- Populate SVI Dropdowns ---
+    for (const key in SVI_DATA) {
+        const option = new Option(SVI_DATA[key].title, key);
+        sviThemeSelect.add(option);
+    }
+    sviThemeSelect.dispatchEvent(new Event('change')); // Trigger initial population of factor dropdown
+
+    // --- Event Listeners ---
     sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-active'));
     recenterButton.addEventListener('click', () => map.flyTo(INITIAL_VIEW_STATE));
     modalCloseBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', closeModal);
     
     categoryRadios.forEach(radio => radio.addEventListener('change', updateMapState));
     climateTypeRadios.forEach(radio => radio.addEventListener('change', updateMapState));
-    sviThemeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const selectedSviProperty = e.target.value;
-            map.setPaintProperty('svi-layer', 'fill-color', ['interpolate', ['linear'], ['coalesce', ['get', selectedSviProperty], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d']);
-            sviLegendTitle.textContent = SVI_THEME_TITLES[selectedSviProperty];
-        });
+
+    sviThemeSelect.addEventListener('change', (e) => {
+        const selectedThemeKey = e.target.value;
+        const themeData = SVI_DATA[selectedThemeKey];
+        sviFactorSelect.innerHTML = '';
+        if (themeData.factors) {
+            sviFactorGroup.style.display = 'block';
+            sviFactorSelect.add(new Option(`Theme: ${themeData.title}`, selectedThemeKey));
+            for (const factorKey in themeData.factors) {
+                sviFactorSelect.add(new Option(themeData.factors[factorKey], factorKey));
+            }
+        } else {
+            sviFactorGroup.style.display = 'none';
+        }
+        updateSviLayer();
     });
+    sviFactorSelect.addEventListener('change', updateSviLayer);
 
     monthSlider.addEventListener('input', (e) => {
         const monthName = months[parseInt(e.target.value, 10)];
@@ -180,7 +238,26 @@ document.addEventListener('DOMContentLoaded', () => {
 map.on('load', () => { addSourcesAndLayers(); setupInteractionListeners(); });
 map.on('style.load', () => { addSourcesAndLayers(); setupInteractionListeners(); });
 
-// --- MASTER STATE MANAGEMENT FUNCTION ---
+// --- HELPER FUNCTIONS ---
+function updateSviLayer() {
+    const themeSelect = document.getElementById('svi-theme-select');
+    const factorSelect = document.getElementById('svi-factor-select');
+    const legendTitle = document.getElementById('svi-legend-title');
+    
+    let propertyToDisplay = themeSelect.value;
+    let title = SVI_DATA[propertyToDisplay].title;
+
+    if (SVI_DATA[propertyToDisplay].factors && factorSelect.value !== propertyToDisplay) {
+        propertyToDisplay = factorSelect.value;
+        title = SVI_DATA[themeSelect.value].factors[propertyToDisplay];
+    }
+    
+    if (map.isStyleLoaded()) {
+        map.setPaintProperty('svi-layer', 'fill-color', ['interpolate', ['linear'], ['coalesce', ['get', propertyToDisplay], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d']);
+    }
+    legendTitle.textContent = title;
+}
+
 function updateMapState() {
     if (!map.isStyleLoaded()) return;
     const selectedCategory = document.querySelector('input[name="category"]:checked').value;

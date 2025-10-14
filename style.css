@@ -1,14 +1,46 @@
 /* --- THEME & COLOR VARIABLES --- */
 :root {
-    --bg-color: #e2e8f0; 
-    --panel-bg: rgba(237, 242, 247, 0.7); 
-    --accent-color: #319795;
-    --text-primary: #2d3748;
-    --text-secondary: #718096;
-    --border-color: rgba(45, 55, 72, 0.2);
-    --icon-fill: #2d3748;
-    --header-bg: rgba(237, 242, 247, 0.4);
+    --bg-color: #e2e8f0; --panel-bg: rgba(237, 242, 247, 0.7); --accent-color: #319795;
+    --text-primary: #2d3748; --text-secondary: #718096; --border-color: rgba(45, 55, 72, 0.2);
+    --icon-fill: #2d3748; --header-bg: rgba(237, 242, 247, 0.4);
 }
+/* ... (rest of CSS is the same until the end of .control-group) ... */
+
+/* --- CONTROLS --- */
+.control-group { margin-bottom: 25px; font-weight: 300; }
+.control-group label { color: var(--text-secondary); }
+input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%;
+    height: 4px; background: var(--text-secondary); border-radius: 5px;
+    outline: none; margin-top: 10px;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px; background: var(--accent-color);
+    cursor: pointer; border-radius: 50%; border: 3px solid #edf2f7; 
+}
+#category-selector label, #data-type-selector label { color: var(--text-primary); margin-right: 15px; cursor: pointer; }
+
+/* NEW: Styles for Select Dropdowns */
+select {
+    width: 100%;
+    padding: 8px 12px;
+    margin-top: 5px;
+    background-color: rgba(255,255,255,0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(49, 151, 149, 0.2);
+}
+
+/* ... (rest of CSS is the same) ... */
 
 /* --- GLOBAL & TYPOGRAPHY --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -107,23 +139,40 @@ body.sidebar-active header { transform: translateX(320px); width: calc(100% - 32
 /* --- MAPBOX OVERRIDES --- */
 .mapboxgl-popup-content { display: none; }
 
-/* --- MODAL / INFO PANEL --- */
+/* --- Modal Styles (Reverted to centered dialog) --- */
 .hidden { display: none; }
+
+#modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
+
 #modal {
-    position: fixed; top: 210px; right: 30px; width: 350px;
-    z-index: 2; background: var(--panel-bg); backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color); border-radius: 12px;
-    padding: 25px 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px 30px;
+    z-index: 1001;
+    min-width: 450px; /* Wider for more data */
+    max-width: 550px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
+
 #modal-close-btn {
-    position: absolute; top: 10px; right: 15px; background: transparent;
-    border: none; font-size: 1.8rem; color: var(--text-secondary); cursor: pointer;
+    position: absolute; top: 10px; right: 15px;
+    background: transparent; border: none;
+    font-size: 1.8rem; color: var(--text-secondary);
+    cursor: pointer;
 }
-#modal-content h3 { color: var(--text-primary); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-#modal-content p { margin-bottom: 2px; color: var(--text-secondary); font-size: 0.9em; }
+#modal-content h3 { color: var(--text-primary); margin-bottom: 5px; }
+#modal-content .location { color: var(--text-secondary); font-size: 0.9em; margin-bottom: 15px; }
+#modal-content p { margin-bottom: 10px; color: var(--text-secondary); }
 #modal-content strong { color: var(--text-primary); }
 
-/* NEW: Modal Visualizer Styles */
 .modal-visualizer { margin-bottom: 15px; margin-top: 5px; }
 .modal-gradient-bar { position: relative; width: 100%; height: 8px; border-radius: 4px; }
 .gradient-marker {
