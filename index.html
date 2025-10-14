@@ -29,44 +29,33 @@
         </button>
         <div id="sidebar-content">
             <h2>Controls</h2>
-            <div class="control-group">
-                <label>Data Category</label>
-                <div id="category-selector">
-                    <input type="radio" id="climate" name="category" value="climate" checked>
-                    <label for="climate">Climate Events</label>
-                    <input type="radio" id="svi" name="category" value="svi">
-                    <label for="svi">Social Vulnerability</label>
-                </div>
-            </div>
-            <div id="climate-controls-container">
-                <div class="control-group">
-                    <label>Data Type</label>
-                    <div id="data-type-selector">
-                        <input type="radio" id="precipitation" name="datatype" value="precipitation" checked>
-                        <label for="precipitation">Precipitation</label>
-                        <input type="radio" id="floods" name="datatype" value="floods">
-                        <label for="floods">Floods</label>
-                    </div>
-                </div>
-                <div id="time-selectors">
-                    <div id="precipitation-selector-container" class="control-group">
+            <div id="accordion-container">
+                <button class="accordion-header" data-category="precipitation">Precipitation</button>
+                <div class="accordion-panel">
+                    <div class="control-group">
                         <label for="month-slider">Month: <strong id="month-label">January</strong></label>
                         <input id="month-slider" type="range" min="0" max="11" step="1" value="0">
                     </div>
-                    <div id="flood-selector-container" class="control-group" style="display: none;">
+                </div>
+
+                <button class="accordion-header" data-category="floods">Floods</button>
+                <div class="accordion-panel">
+                    <div class="control-group">
                         <label for="year-slider">Year: <strong id="year-label">2020</strong></label>
                         <input id="year-slider" type="range" min="0" max="5" step="1" value="0">
                     </div>
                 </div>
-            </div>
-            <div id="svi-controls-container" style="display: none;">
-                <div class="control-group">
-                    <label for="svi-theme-select">Vulnerability Theme</label>
-                    <select id="svi-theme-select"></select>
-                </div>
-                <div class="control-group" id="svi-factor-group" style="display: none;">
-                    <label for="svi-factor-select">Specific Factor</label>
-                    <select id="svi-factor-select"></select>
+
+                <button class="accordion-header" data-category="svi">Social Vulnerability</button>
+                <div class="accordion-panel">
+                    <div class="control-group">
+                        <label for="svi-theme-select">Vulnerability Theme</label>
+                        <select id="svi-theme-select"></select>
+                    </div>
+                    <div class="control-group" id="svi-factor-group" style="display: none;">
+                        <label for="svi-factor-select">Specific Factor</label>
+                        <select id="svi-factor-select"></select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,13 +67,9 @@
         </button>
     </div>
     
-    <div id="climate-legends">
-        <div id="precipitation-legend" class="legend"><h4 >Precipitation (in)</h4><div class="precip-gradient"></div><div class="precip-labels"><span>0</span><span>100+</span></div></div>
-        <div id="flood-legend" class="legend" style="display: none;"><h4>Legend</h4><div><span class="legend-key"></span><span>Flood Event</span></div></div>
-    </div>
-    <div id="svi-legend-container" style="display: none;">
-        <div id="svi-legend" class="legend"><h4 id="svi-legend-title">Overall SVI</h4><div class="svi-gradient"></div><div class="svi-labels"><span>Least Vulnerable</span><span>Most Vulnerable</span></div></div>
-    </div>
+    <div id="precipitation-legend" class="legend"><h4 >Precipitation (in)</h4><div class="precip-gradient"></div><div class="precip-labels"><span>0</span><span>100+</span></div></div>
+    <div id="flood-legend" class="legend" style="display: none;"><h4>Legend</h4><div><span class="legend-key"></span><span>Flood Event</span></div></div>
+    <div id="svi-legend" class="legend" style="display: none;"><h4 id="svi-legend-title">Overall SVI</h4><div class="svi-gradient"></div><div class="svi-labels"><span>Least Vulnerable</span><span>Most Vulnerable</span></div></div>
 
     <div id="modal-overlay" class="hidden"></div>
     <div id="modal" class="hidden"><button id="modal-close-btn">&times;</button><div id="modal-content"></div></div>
