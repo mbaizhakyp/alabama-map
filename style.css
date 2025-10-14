@@ -79,6 +79,36 @@ select:focus {
     box-shadow: 0 0 0 2px rgba(49, 151, 149, 0.2);
 }
 
+.checkbox-group { margin-top: 10px; }
+.checkbox-label {
+    display: flex; align-items: center; cursor: pointer;
+    padding: 5px 0;
+}
+.checkbox-label input { display: none; }
+.checkbox-custom {
+    width: 18px; height: 18px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 4px; margin-right: 10px;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.checkbox-custom::after {
+    content: '✔';
+    color: white;
+    font-size: 12px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s;
+}
+.checkbox-label input:checked + .checkbox-custom {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+.checkbox-label input:checked + .checkbox-custom::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
 /* Accordion Styles */
 .accordion-header {
     background-color: transparent; border: none; border-top: 1px solid var(--border-color);
@@ -108,7 +138,11 @@ select:focus {
     min-width: 200px;
 }
 .legend h4 { margin-bottom: 10px; }
-#flood-legend .legend-key { display: inline-block; width: 15px; height: 15px; margin-right: 8px; vertical-align: middle; border-radius: 3px; background-color: #0891b2; }
+.legend-key { 
+    display: inline-block; width: 12px; height: 12px; margin-right: 8px; 
+    vertical-align: middle; border-radius: 50%;
+}
+#flood-legend div:not(:last-child) { margin-bottom: 5px; }
 
 .svi-gradient, .precip-gradient {
     height: 15px; width: 100%; border-radius: 3px; margin-bottom: 5px;
