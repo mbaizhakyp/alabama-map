@@ -41,19 +41,43 @@ function addSourcesAndLayers() {
     
     // Precipitation
     map.addSource('precipitation-data', { type: 'geojson', data: `precipitation-data/${months[0]}.geojson` });
-    map.addLayer({ id: 'precipitation-layer', type: 'fill', source: 'precipitation-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR } });
+    map.addLayer({ 
+        id: 'precipitation-layer', 
+        type: 'fill', 
+        source: 'precipitation-data', 
+        paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR },
+        layout: { 'visibility': 'visible' } // Set initial visibility to none
+    });
     
     // SVI
     map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_tracts_master.geojson' });
-    map.addLayer({ id: 'svi-layer', type: 'fill', source: 'svi-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR } });
+    map.addLayer({ 
+        id: 'svi-layer', 
+        type: 'fill', 
+        source: 'svi-data', 
+        paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR },
+        layout: { 'visibility': 'none' } // Set initial visibility to none
+    });
 
     // River Floods
     map.addSource('river-flood-data', { type: 'geojson', data: `flood-data/Flood_Events_${years[0]}.geojson` });
-    map.addLayer({ id: 'river-flood-layer', type: 'circle', source: 'river-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 } });
+    map.addLayer({ 
+        id: 'river-flood-layer', 
+        type: 'circle', 
+        source: 'river-flood-data', 
+        paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 },
+        layout: { 'visibility': 'none' } // Set initial visibility to none
+    });
     
     // Flash Floods
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
-    map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 } });
+    map.addLayer({ 
+        id: 'flash-flood-layer', 
+        type: 'circle', 
+        source: 'flash-flood-data', 
+        paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 },
+        layout: { 'visibility': 'none' } // Set initial visibility to none
+    });
     
     updateMapState();
 }
@@ -169,8 +193,13 @@ function updateFloodDataSources() {
 
 function updateFloodLayersVisibility() {
     if (!map.getLayer('river-flood-layer')) return;
-    map.setLayoutProperty('river-flood-layer', 'visibility', document.getElementById('river-flood-checkbox').checked ? 'visible' : 'none');
-    map.setLayoutProperty('flash-flood-layer', 'visibility', document.getElementById('flash-flood-checkbox').checked ? 'visible' : 'none');
+    const isFloodsActive = document.querySelector('.accordion-header[data-category="floods"]').classList.contains('active');
+    
+    const riverVisible = document.getElementById('river-flood-checkbox').checked && isFloodsActive;
+    const flashVisible = document.getElementById('flash-flood-checkbox').checked && isFloodsActive;
+
+    map.setLayoutProperty('river-flood-layer', 'visibility', riverVisible ? 'visible' : 'none');
+    map.setLayoutProperty('flash-flood-layer', 'visibility', flashVisible ? 'visible' : 'none');
 }
 
 function updateSviLayer() {
