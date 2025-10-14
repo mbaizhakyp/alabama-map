@@ -41,43 +41,19 @@ function addSourcesAndLayers() {
     
     // Precipitation
     map.addSource('precipitation-data', { type: 'geojson', data: `precipitation-data/${months[0]}.geojson` });
-    map.addLayer({ 
-        id: 'precipitation-layer', 
-        type: 'fill', 
-        source: 'precipitation-data', 
-        paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR },
-        layout: { 'visibility': 'visible' } // Set initial visibility to none
-    });
+    map.addLayer({ id: 'precipitation-layer', type: 'fill', source: 'precipitation-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR }, layout: { 'visibility': 'visible' } });
     
     // SVI
     map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_tracts_master.geojson' });
-    map.addLayer({ 
-        id: 'svi-layer', 
-        type: 'fill', 
-        source: 'svi-data', 
-        paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR },
-        layout: { 'visibility': 'none' } // Set initial visibility to none
-    });
+    map.addLayer({ id: 'svi-layer', type: 'fill', source: 'svi-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR }, layout: { 'visibility': 'none' } });
 
     // River Floods
     map.addSource('river-flood-data', { type: 'geojson', data: `flood-data/Flood_Events_${years[0]}.geojson` });
-    map.addLayer({ 
-        id: 'river-flood-layer', 
-        type: 'circle', 
-        source: 'river-flood-data', 
-        paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 },
-        layout: { 'visibility': 'none' } // Set initial visibility to none
-    });
+    map.addLayer({ id: 'river-flood-layer', type: 'circle', source: 'river-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { 'visibility': 'none' } });
     
     // Flash Floods
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
-    map.addLayer({ 
-        id: 'flash-flood-layer', 
-        type: 'circle', 
-        source: 'flash-flood-data', 
-        paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 },
-        layout: { 'visibility': 'none' } // Set initial visibility to none
-    });
+    map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { 'visibility': 'none' } });
     
     updateMapState();
 }
@@ -87,14 +63,70 @@ function createVisualizerHTML(value, type) { let percentage = 0; let gradientCla
 
 // --- Interaction Listeners for Clickable Layers ---
 function setupInteractionListeners() { 
-    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer']; 
-    clickableLayers.forEach(layerId => { 
-        map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; }); 
-        map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; }); 
-    }); 
+    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer'];
+    
+    // Create a single popup instance to reuse for hovers
+    const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    // --- MOUSE HOVER EVENTS ---
+
+    // Precipitation Layer Hover
+    map.on('mousemove', 'precipitation-layer', (e) => {
+        if (e.features.length > 0) {
+            map.getCanvas().style.cursor = 'pointer';
+            const countyName = e.features[0].properties.name;
+            popup.setLngLat(e.lngLat).setHTML(`<strong>${countyName} County</strong>`).addTo(map);
+        }
+    });
+
+    map.on('mouseleave', 'precipitation-layer', () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
+
+    // SVI Layer Hover
+    map.on('mousemove', 'svi-layer', (e) => {
+        if (e.features.length > 0) {
+            map.getCanvas().style.cursor = 'pointer';
+            const props = e.features[0].properties;
+
+            const themeSelect = document.getElementById('svi-theme-select');
+            const factorSelect = document.getElementById('svi-factor-select');
+            let propertyToDisplay = themeSelect.value;
+            let title = SVI_DATA[propertyToDisplay].title;
+
+            if (SVI_DATA[propertyToDisplay].factors && factorSelect.value !== propertyToDisplay) {
+                propertyToDisplay = factorSelect.value;
+                title = SVI_DATA[themeSelect.value].factors[propertyToDisplay];
+            }
+            const value = props[propertyToDisplay] !== null ? (props[propertyToDisplay] * 100).toFixed(1) + 'th percentile' : 'No data';
+            
+            const popupHTML = `<h3>${props.COUNTY}</h3><p>${title}: <strong>${value}</strong></p>`;
+            popup.setLngLat(e.lngLat).setHTML(popupHTML).addTo(map);
+        }
+    });
+
+    map.on('mouseleave', 'svi-layer', () => {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
+
+    // Flood Layers Hover (cursor change only, no popup)
+    ['river-flood-layer', 'flash-flood-layer'].forEach(layerId => {
+        map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
+    });
+
+    // --- CLICK EVENTS (FOR MODAL) ---
     map.on('click', (e) => { 
         const features = map.queryRenderedFeatures(e.point, { layers: clickableLayers }); 
         if (!features.length) return; 
+        
+        popup.remove(); // Hide popup when clicking to show modal
+        
         const feature = features[0]; 
         let content = ''; 
         switch (feature.layer.id) { 
@@ -240,7 +272,6 @@ function updateMapState() {
                 let visibility = 'none';
                 if (isSelected) {
                     if (category === 'floods') {
-                        // For floods, visibility depends on the checkboxes
                         const checkboxId = layerId.replace('-layer', '-checkbox');
                         visibility = document.getElementById(checkboxId)?.checked ? 'visible' : 'none';
                     } else {

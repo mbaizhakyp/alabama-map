@@ -171,7 +171,34 @@ select:focus {
 body.sidebar-active header { transform: translateX(320px); width: calc(100% - 320px); }
 
 /* --- MAPBOX OVERRIDES --- */
-.mapboxgl-popup-content { display: none; }
+.mapboxgl-popup {
+    max-width: 240px;
+    font-family: 'Poppins', sans-serif;
+}
+.mapboxgl-popup-content {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+.mapboxgl-popup-content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+.mapboxgl-popup-content p {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin: 0;
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip { border-top-color: var(--border-color); }
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip { border-bottom-color: var(--border-color); }
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: var(--border-color); }
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: var(--border-color); }
+
 
 /* --- UPDATED: Info Panel Styles --- */
 .hidden { display: none; }
