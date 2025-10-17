@@ -144,11 +144,14 @@ select:focus {
 }
 #flood-legend div:not(:last-child) { margin-bottom: 5px; }
 
-.svi-gradient, .precip-gradient {
+.svi-gradient, .precip-gradient, .forecast-gradient {
     height: 15px; width: 100%; border-radius: 3px; margin-bottom: 5px;
 }
 .svi-gradient { background: linear-gradient(to right, #4d9221, #f1b621, #c51b7d); }
 .precip-gradient { background: linear-gradient(to right, #ffffcc, #a1dab4, #41b6c4, #2c7fb8, #253494); }
+/* --- UPDATED ---: A more natural blue gradient for the forecast. */
+.forecast-gradient { background: linear-gradient(to right, #edf8fb, #74a9cf, #023858); }
+
 .svi-labels, .precip-labels {
     display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-secondary);
 }
@@ -174,6 +177,7 @@ body.sidebar-active header { transform: translateX(320px); width: calc(100% - 32
 .mapboxgl-popup {
     max-width: 240px;
     font-family: 'Poppins', sans-serif;
+    z-index: 10;
 }
 .mapboxgl-popup-content {
     background: var(--panel-bg);
@@ -199,14 +203,12 @@ body.sidebar-active header { transform: translateX(320px); width: calc(100% - 32
 .mapboxgl-popup-anchor-left .mapboxgl-popup-tip { border-right-color: var(--border-color); }
 .mapboxgl-popup-anchor-right .mapboxgl-popup-tip { border-left-color: var(--border-color); }
 
-
-/* --- UPDATED: Info Panel Styles --- */
-.hidden { display: none; }
-#modal-overlay { display: none; }
+/* --- MODAL STYLES --- */
+.hidden { display: none !important; }
 
 #modal {
     position: fixed;
-    top: 155px; /* Position below the map controls toolbar */
+    top: 155px;
     right: 30px;
     width: 350px;
     z-index: 2;

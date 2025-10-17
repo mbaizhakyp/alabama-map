@@ -2,6 +2,7 @@
   "name": "alabama-map",
   "version": "1.0.0",
   "main": "merge_data.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,6 +19,11 @@
   "homepage": "https://github.com/mbaizhakyp/alabama-map#readme",
   "description": "",
   "dependencies": {
-    "d3-dsv": "^3.0.1"
+    "cors": "^2.8.5",
+    "d3-dsv": "^3.0.1",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "node-fetch": "^3.3.2"
   }
 }

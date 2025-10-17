@@ -4,8 +4,9 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWJhaXpoYWt5cCIsImEiOiJjbWdndndyMzkwbmFqMmtxN
 // --- CONFIGURATION ---
 const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 const years = [2020, 2021, 2022, 2023, 2024, 2025];
+const dayLabels = ['Today', 'Tomorrow', '+2 Days'];
 const INITIAL_VIEW_STATE = { center: [-86.9, 32.8], zoom: 6.5 };
-const MAP_BG_COLOR = '#e2e8f0'; 
+const MAP_BG_COLOR = '#e2e8f0';
 const FLOOD_COLORS = { river: '#319795', flash: '#dd6b20' };
 const SVI_DATA = {
     'RPL_THEMES_state': { title: 'Overall SVI' },
@@ -26,6 +27,7 @@ const SVI_DATA = {
         factors: { 'EPL_MUNIT_state': 'Multi-Unit Structures', 'EPL_MOBILE_state': 'Mobile Homes', 'EPL_CROWD_state': 'Crowding', 'EPL_NOVEH_state': 'No Vehicle', 'EPL_GROUPQ_state': 'Group Quarters' }
     }
 };
+let forecastData = [];
 
 // --- MAP INITIALIZATION ---
 const map = new mapboxgl.Map({
@@ -33,131 +35,196 @@ const map = new mapboxgl.Map({
     center: INITIAL_VIEW_STATE.center, zoom: INITIAL_VIEW_STATE.zoom
 });
 
-// --- MAP LAYERS & SOURCES FUNCTION ---
+// --- DATA FETCHING ---
+async function fetchForecastData() {
+    try {
+        const response = await fetch('http://localhost:3001/api/forecast');
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+        
+        forecastData = await response.json();
+
+        if (map.isStyleLoaded() && !map.getSource('forecast-data')) {
+            map.addSource('forecast-data', { type: 'geojson', data: forecastData[0] });
+            map.addLayer({
+                id: 'forecast-layer',
+                type: 'fill',
+                source: 'forecast-data',
+                paint: {
+                    'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'predicted_precipitation_inches'], 0],
+                        0.5, '#edf8fb',
+                        0.65, '#74a9cf',
+                        0.8, '#023858'
+                    ],
+                    'fill-opacity': 0.75,
+                    'fill-outline-color': MAP_BG_COLOR
+                },
+                layout: { 'visibility': 'none' }
+            }, 'river-flood-layer');
+            
+            // Set up listeners again to include the new forecast layer
+            setupInteractionListeners();
+        }
+    } catch (error) {
+        console.error("Failed to fetch forecast data:", error);
+        alert("Could not load forecast data. Is the local server running?");
+    }
+}
+
+// --- MAP LAYERS & SOURCES ---
 function addSourcesAndLayers() {
-    if (map.getLayer('background-tint')) return; // Avoid re-adding if style reloads
+    if (map.getLayer('background-tint')) return;
 
     map.addLayer({ id: 'background-tint', type: 'background', paint: { 'background-color': MAP_BG_COLOR, 'background-opacity': 0.7 } }, 'land-structure-line');
     
-    // Precipitation
     map.addSource('precipitation-data', { type: 'geojson', data: `precipitation-data/${months[0]}.geojson` });
-    map.addLayer({ id: 'precipitation-layer', type: 'fill', source: 'precipitation-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR }, layout: { 'visibility': 'visible' } });
+    map.addLayer({ id: 'precipitation-layer', type: 'fill', source: 'precipitation-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR }, layout: { visibility: 'none' } });
     
-    // SVI
     map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_tracts_master.geojson' });
-    map.addLayer({ id: 'svi-layer', type: 'fill', source: 'svi-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR }, layout: { 'visibility': 'none' } });
+    map.addLayer({ id: 'svi-layer', type: 'fill', source: 'svi-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR }, layout: { visibility: 'none' } });
 
-    // River Floods
     map.addSource('river-flood-data', { type: 'geojson', data: `flood-data/Flood_Events_${years[0]}.geojson` });
-    map.addLayer({ id: 'river-flood-layer', type: 'circle', source: 'river-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { 'visibility': 'none' } });
+    map.addLayer({ id: 'river-flood-layer', type: 'circle', source: 'river-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
     
-    // Flash Floods
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
-    map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { 'visibility': 'none' } });
-    
-    updateMapState();
+    map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
 }
 
-// --- Helper function for the modal visualizer ---
-function createVisualizerHTML(value, type) { let percentage = 0; let gradientClass = ''; let labels = ['', '']; if (type === 'svi') { percentage = (value || 0) * 100; gradientClass = 'svi-gradient'; labels = ['Least Vuln.', 'Most Vuln.']; } else if (type === 'precip') { percentage = Math.min((value || 0) / 100, 1) * 100; gradientClass = 'precip-gradient'; labels = ['0 in', '100+ in']; } return `<div class="modal-visualizer"><div class="modal-gradient-bar"><div class="gradient-marker" style="left: ${percentage}%;"></div><div class="${gradientClass}"></div></div><div class="modal-labels"><span>${labels[0]}</span><span>${labels[1]}</span></div></div>`; }
+// --- Interaction Listeners ---
+function setupInteractionListeners() {
+    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer'];
+    const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
-// --- Interaction Listeners for Clickable Layers ---
-function setupInteractionListeners() { 
-    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer'];
-    
-    // Create a single popup instance to reuse for hovers
-    const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false
-    });
-
-    // --- MOUSE HOVER EVENTS ---
-
-    // Precipitation Layer Hover
-    map.on('mousemove', 'precipitation-layer', (e) => {
-        if (e.features.length > 0) {
-            map.getCanvas().style.cursor = 'pointer';
-            const countyName = e.features[0].properties.name;
-            popup.setLngLat(e.lngLat).setHTML(`<strong>${countyName} County</strong>`).addTo(map);
-        }
-    });
-
-    map.on('mouseleave', 'precipitation-layer', () => {
-        map.getCanvas().style.cursor = '';
-        popup.remove();
-    });
-
-    // SVI Layer Hover
-    map.on('mousemove', 'svi-layer', (e) => {
-        if (e.features.length > 0) {
-            map.getCanvas().style.cursor = 'pointer';
+    const hoverLayers = {
+        'precipitation-layer': (e) => `<strong>${e.features[0].properties.name} County</strong>`,
+        'svi-layer': (e) => {
             const props = e.features[0].properties;
-
             const themeSelect = document.getElementById('svi-theme-select');
             const factorSelect = document.getElementById('svi-factor-select');
             let propertyToDisplay = themeSelect.value;
             let title = SVI_DATA[propertyToDisplay].title;
-
             if (SVI_DATA[propertyToDisplay].factors && factorSelect.value !== propertyToDisplay) {
                 propertyToDisplay = factorSelect.value;
                 title = SVI_DATA[themeSelect.value].factors[propertyToDisplay];
             }
-            const value = props[propertyToDisplay] !== null ? (props[propertyToDisplay] * 100).toFixed(1) + 'th percentile' : 'No data';
-            
-            const popupHTML = `<h3>${props.COUNTY}</h3><p>${title}: <strong>${value}</strong></p>`;
-            popup.setLngLat(e.lngLat).setHTML(popupHTML).addTo(map);
+            const value = props[propertyToDisplay] !== null ? props[propertyToDisplay].toFixed(3) : 'No data';
+            return `<h3>${props.COUNTY}</h3><p>${title}: <strong>${value}</strong></p>`;
+        },
+        'forecast-layer': (e) => {
+            const props = e.features[0].properties;
+            const value = props.predicted_precipitation_inches.toFixed(2);
+            return `<h3>${props.name} County</h3><p>Forecast Value: <strong>${value}</strong></p>`;
         }
+    };
+
+    Object.keys(hoverLayers).forEach(layerId => {
+        map.off('mousemove', layerId);
+        map.off('mouseleave', layerId);
+        if (!map.getLayer(layerId)) return;
+        map.on('mousemove', layerId, (e) => {
+            if (e.features.length > 0) {
+                map.getCanvas().style.cursor = 'pointer';
+                const popupHTML = hoverLayers[layerId](e);
+                popup.setLngLat(e.lngLat).setHTML(popupHTML).addTo(map);
+            }
+        });
+        map.on('mouseleave', layerId, () => {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+        });
     });
 
-    map.on('mouseleave', 'svi-layer', () => {
-        map.getCanvas().style.cursor = '';
-        popup.remove();
-    });
-
-    // Flood Layers Hover (cursor change only, no popup)
     ['river-flood-layer', 'flash-flood-layer'].forEach(layerId => {
+        map.off('mouseenter', layerId);
+        map.off('mouseleave', layerId);
+        if (!map.getLayer(layerId)) return;
         map.on('mouseenter', layerId, () => { map.getCanvas().style.cursor = 'pointer'; });
         map.on('mouseleave', layerId, () => { map.getCanvas().style.cursor = ''; });
     });
 
-    // --- CLICK EVENTS (FOR MODAL) ---
-    map.on('click', (e) => { 
-        const features = map.queryRenderedFeatures(e.point, { layers: clickableLayers }); 
-        if (!features.length) return; 
-        
-        popup.remove(); // Hide popup when clicking to show modal
-        
-        const feature = features[0]; 
-        let content = ''; 
-        switch (feature.layer.id) { 
-            case 'precipitation-layer': 
-                content = `<h3>${feature.properties.name}</h3><p>Total Precipitation: <strong>${feature.properties.total_precipitation_inches.toFixed(2)} in</strong></p>${createVisualizerHTML(feature.properties.total_precipitation_inches, 'precip')}`; 
-                break; 
+    map.off('click');
+    map.on('click', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: clickableLayers });
+        if (!features.length) return;
+        popup.remove();
+        const feature = features[0];
+        let content = '';
+        switch (feature.layer.id) {
+            case 'forecast-layer':
+                const forecastValue = feature.properties.predicted_precipitation_inches;
+                content = `<h3>${feature.properties.name}</h3><p>Forecast Value: <strong>${forecastValue.toFixed(2)} in</strong></p>${createVisualizerHTML(forecastValue, "forecast")}`;
+                break;
+            case 'precipitation-layer':
+                const precipValue = feature.properties.total_precipitation_inches;
+                content = `<h3>${feature.properties.name}</h3><p>Total Precipitation: <strong>${precipValue.toFixed(2)} in</strong></p>${createVisualizerHTML(precipValue, "precipitation")}`;
+                break;
             case 'river-flood-layer':
             case 'flash-flood-layer':
-                const date = new Date(feature.properties.BEGIN_DATE).toLocaleDateString(); 
+                const date = new Date(feature.properties.BEGIN_DATE).toLocaleDateString();
                 const floodTitle = feature.layer.id === 'river-flood-layer' ? 'River Flood' : 'Flash Flood';
-                content = `<h3>${floodTitle} Event</h3><p>County: <strong>${feature.properties.CZ_NAME_STR}</strong></p><p>Date: <strong>${date}</strong></p>`; 
-                break; 
-            case 'svi-layer': 
-                const props = feature.properties; const selectedThemeKey = document.getElementById('svi-theme-select').value; const selectedFactorKey = document.getElementById('svi-factor-select').value; content = `<h3>${props.COUNTY}</h3><p class="location">${props.LOCATION}</p>`; if (selectedThemeKey === 'RPL_THEMES_state') { content += `<p>Overall Vulnerability: <strong>${(props.RPL_THEMES_state * 100).toFixed(1)}th percentile</strong></p>${createVisualizerHTML(props.RPL_THEMES_state, 'svi')}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`; Object.keys(SVI_DATA).forEach(themeKey => { if (themeKey !== 'RPL_THEMES_state') content += `<p>${SVI_DATA[themeKey].title}: <strong>${(props[themeKey] * 100).toFixed(1)}th percentile</strong></p>`; }); } else { const currentFactorIsTheme = selectedFactorKey === selectedThemeKey; const factorToVisualize = currentFactorIsTheme ? selectedThemeKey : selectedFactorKey; const factorTitle = currentFactorIsTheme ? `Theme: ${SVI_DATA[selectedThemeKey].title}` : SVI_DATA[selectedThemeKey].factors[selectedFactorKey]; content += `<p>${factorTitle}: <strong>${(props[factorToVisualize] * 100).toFixed(1)}th percentile</strong></p>${createVisualizerHTML(props[factorToVisualize], 'svi')}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`; for (const factorKey in SVI_DATA[selectedThemeKey].factors) { content += `<p>${SVI_DATA[selectedThemeKey].factors[factorKey]}: <strong>${(props[factorKey] * 100).toFixed(1)}th percentile</strong></p>`; } } break; 
-        } 
-        openModal(content); 
-    }); 
+                content = `<h3>${floodTitle} Event</h3><p>County: <strong>${feature.properties.CZ_NAME_STR}</strong></p><p>Date: <strong>${date}</strong></p>`;
+                break;
+            case 'svi-layer':
+                const props = feature.properties; 
+                const selectedThemeKey = document.getElementById('svi-theme-select').value; 
+                const selectedFactorKey = document.getElementById('svi-factor-select').value; 
+                content = `<h3>${props.COUNTY}</h3><p class="location">${props.LOCATION}</p>`; 
+                if (selectedThemeKey === 'RPL_THEMES_state') { 
+                    content += `<p>Overall Vulnerability Index: <strong>${props.RPL_THEMES_state.toFixed(3)}</strong></p>${createVisualizerHTML(props.RPL_THEMES_state, "svi")}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`; 
+                    Object.keys(SVI_DATA).forEach(themeKey => { 
+                        if (themeKey !== 'RPL_THEMES_state') {
+                            content += `<p>${SVI_DATA[themeKey].title} Index: <strong>${props[themeKey].toFixed(3)}</strong></p>`; 
+                        }
+                    }); 
+                } else { 
+                    const currentFactorIsTheme = selectedFactorKey === selectedThemeKey; 
+                    const factorToVisualize = currentFactorIsTheme ? selectedThemeKey : selectedFactorKey; 
+                    const factorTitle = currentFactorIsTheme ? `Theme: ${SVI_DATA[selectedThemeKey].title}` : SVI_DATA[selectedThemeKey].factors[selectedFactorKey]; 
+                    content += `<p>${factorTitle} Index: <strong>${props[factorToVisualize].toFixed(3)}</strong></p>${createVisualizerHTML(props[factorToVisualize], "svi")}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`; 
+                    for (const factorKey in SVI_DATA[selectedThemeKey].factors) { 
+                        content += `<p>${SVI_DATA[selectedThemeKey].factors[factorKey]} Index: <strong>${props[factorKey].toFixed(3)}</strong></p>`; 
+                    } 
+                } 
+                break;
+        }
+        openModal(content);
+    });
 }
 
-// --- Modal Control Functions (Simplified) ---
+function createVisualizerHTML(value, type) {
+    let percentage = 0;
+    let gradientClass = '';
+    let labels = ['', ''];
+    value = value || 0;
+    if (type === 'svi') {
+        percentage = value * 100;
+        gradientClass = 'svi-gradient';
+        labels = ['Least Vuln.', 'Most Vuln.'];
+    } else if (type === 'precipitation') {
+        percentage = Math.min(value / 100, 1) * 100;
+        gradientClass = 'precip-gradient';
+        labels = ['0 in', '100+ in'];
+    } else if (type === 'forecast') {
+        const min = 0.5, max = 0.8;
+        percentage = Math.max(0, Math.min(((value - min) / (max - min)), 1)) * 100;
+        gradientClass = 'forecast-gradient';
+        labels = ['~0.5', '~0.8+'];
+    }
+    return `<div class="modal-visualizer"><div class="modal-gradient-bar"><div class="gradient-marker" style="left: ${percentage}%;"></div><div class="${gradientClass}"></div></div><div class="modal-labels"><span>${labels[0]}</span><span>${labels[1]}</span></div></div>`;
+}
+
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modal-content');
 const modalCloseBtn = document.getElementById('modal-close-btn');
 function openModal(content) { modalContent.innerHTML = content; modal.classList.remove('hidden'); }
 function closeModal() { modal.classList.add('hidden'); modalContent.innerHTML = ''; }
 
-// --- UI EVENT LISTENERS (SETUP ONCE) ---
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('sidebar-active');
+
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const recenterButton = document.getElementById('recenter-button');
+    const daySlider = document.getElementById('day-slider');
+    const dayLabel = document.getElementById('day-label');
     const monthSlider = document.getElementById('month-slider');
     const monthLabel = document.getElementById('month-label');
     const yearSlider = document.getElementById('year-slider');
@@ -181,15 +248,25 @@ document.addEventListener('DOMContentLoaded', () => {
             updateMapState();
         });
     });
-    document.querySelector('.accordion-header').click();
-
+    
+    // --- MODIFIED ---: This line was removed to prevent a default selection.
+    // document.querySelector('.accordion-header[data-category="precipitation"]').click();
+    
     for (const key in SVI_DATA) { sviThemeSelect.add(new Option(SVI_DATA[key].title, key)); }
     sviThemeSelect.dispatchEvent(new Event('change'));
 
     sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-active'));
     recenterButton.addEventListener('click', () => map.flyTo(INITIAL_VIEW_STATE));
     modalCloseBtn.addEventListener('click', closeModal);
-    
+
+    daySlider.addEventListener('input', (e) => {
+        const dayIndex = parseInt(e.target.value, 10);
+        dayLabel.textContent = dayLabels[dayIndex];
+        if (map.getSource('forecast-data') && forecastData.length > 0) {
+            map.getSource('forecast-data').setData(forecastData[dayIndex]);
+        }
+    });
+
     sviThemeSelect.addEventListener('change', (e) => {
         const selectedThemeKey = e.target.value; const themeData = SVI_DATA[selectedThemeKey]; sviFactorSelect.innerHTML = ''; if (themeData.factors) { sviFactorGroup.style.display = 'block'; sviFactorSelect.add(new Option(`Theme: ${themeData.title}`, selectedThemeKey)); for (const factorKey in themeData.factors) { sviFactorSelect.add(new Option(themeData.factors[factorKey], factorKey)); } } else { sviFactorGroup.style.display = 'none'; } updateSviLayer();
     });
@@ -206,16 +283,18 @@ document.addEventListener('DOMContentLoaded', () => {
         yearLabel.textContent = year;
         updateFloodDataSources();
     });
-    
+
     riverFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
     flashFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
 });
 
-// --- MAP EVENTS ---
-map.on('load', () => { addSourcesAndLayers(); setupInteractionListeners(); });
-map.on('style.load', () => { addSourcesAndLayers(); });
+map.on('load', () => {
+    addSourcesAndLayers();
+    updateMapState();
+    setupInteractionListeners();
+    fetchForecastData();
+});
 
-// --- HELPER FUNCTIONS ---
 function updateFloodDataSources() {
     if (!map.getSource('river-flood-data')) return;
     const year = years[parseInt(document.getElementById('year-slider').value, 10)];
@@ -226,10 +305,8 @@ function updateFloodDataSources() {
 function updateFloodLayersVisibility() {
     if (!map.getLayer('river-flood-layer')) return;
     const isFloodsActive = document.querySelector('.accordion-header[data-category="floods"]').classList.contains('active');
-    
     const riverVisible = document.getElementById('river-flood-checkbox').checked && isFloodsActive;
     const flashVisible = document.getElementById('flash-flood-checkbox').checked && isFloodsActive;
-
     map.setLayoutProperty('river-flood-layer', 'visibility', riverVisible ? 'visible' : 'none');
     map.setLayoutProperty('flash-flood-layer', 'visibility', flashVisible ? 'visible' : 'none');
 }
@@ -256,17 +333,18 @@ function updateMapState() {
     const activeHeader = document.querySelector('.accordion-header.active');
     const selectedCategory = activeHeader ? activeHeader.dataset.category : null;
 
-    const legends = { precipitation: document.getElementById('precipitation-legend'), floods: document.getElementById('flood-legend'), svi: document.getElementById('svi-legend') };
-    const layers = { 
-        precipitation: ['precipitation-layer'], 
-        floods: ['river-flood-layer', 'flash-flood-layer'], 
-        svi: ['svi-layer'] 
+    const legends = { forecast: document.getElementById('forecast-legend'), precipitation: document.getElementById('precipitation-legend'), floods: document.getElementById('flood-legend'), svi: document.getElementById('svi-legend') };
+    const layers = {
+        forecast: ['forecast-layer'],
+        precipitation: ['precipitation-layer'],
+        floods: ['river-flood-layer', 'flash-flood-layer'],
+        svi: ['svi-layer']
     };
 
     for (const category in layers) {
         const isSelected = category === selectedCategory;
         if (legends[category]) legends[category].style.display = isSelected ? 'block' : 'none';
-        
+
         layers[category].forEach(layerId => {
             if (map.getLayer(layerId)) {
                 let visibility = 'none';

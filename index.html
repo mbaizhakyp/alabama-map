@@ -38,6 +38,14 @@
                     </div>
                 </div>
 
+                <button class="accordion-header" data-category="forecast">Forecast</button>
+                <div class="accordion-panel">
+                    <div class="control-group">
+                        <label for="day-slider">Day: <strong id="day-label">Today</strong></label>
+                        <input id="day-slider" type="range" min="0" max="2" step="1" value="0">
+                    </div>
+                </div>
+
                 <button class="accordion-header" data-category="floods">Floods</button>
                 <div class="accordion-panel">
                     <div class="control-group">
@@ -82,15 +90,15 @@
         </button>
     </div>
     
-    <div id="precipitation-legend" class="legend"><h4 >Precipitation (in)</h4><div class="precip-gradient"></div><div class="precip-labels"><span>0</span><span>100+</span></div></div>
-    <div id="flood-legend" class="legend" style="display: none;">
-        <h4>Flood Events</h4>
-        <div><span class="legend-key" style="background-color: #319795;"></span><span>River Flood</span></div>
-        <div><span class="legend-key" style="background-color: #dd6b20;"></span><span>Flash Flood</span></div>
+    <div id="forecast-legend" class="legend" style="display: none;">
+        <h4>Forecast Value (in)</h4>
+        <div class="forecast-gradient"></div>
+        <div class="precip-labels"><span>~0.5</span><span>~0.8+</span></div>
     </div>
-    <div id="svi-legend" class="legend" style="display: none;"><h4 id="svi-legend-title">Overall SVI</h4><div class="svi-gradient"></div><div class="svi-labels"><span>Least Vulnerable</span><span>Most Vulnerable</span></div></div>
+    <div id="precipitation-legend" class="legend" style="display: none;"><h4 >Precipitation (in)</h4><div class="precip-gradient"></div><div class="precip-labels"><span>0</span><span>100+</span></div></div>
+    <div id="flood-legend" class="legend" style="display: none;"><h4>Flood Events</h4><div><span class="legend-key" style="background-color: #319795;"></span><span>River Flood</span></div><div><span class="legend-key" style="background-color: #dd6b20;"></span><span>Flash Flood</span></div></div>
+    <div id="svi-legend" class="legend" style="display: none;"><h4 id="svi-legend-title">Overall SVI</h4><div class="svi-gradient"></div><div class="svi-labels"><span>0</span><span>1</span></div></div>
 
-    <div id="modal-overlay" class="hidden"></div>
     <div id="modal" class="hidden"><button id="modal-close-btn">&times;</button><div id="modal-content"></div></div>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
