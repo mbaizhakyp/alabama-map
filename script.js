@@ -82,7 +82,7 @@ function addSourcesAndLayers() {
     map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_tracts_master.geojson' });
     map.addLayer({ id: 'svi-layer', type: 'fill', source: 'svi-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR }, layout: { visibility: 'none' } });
 
-    map.addSource('river-flood-data', { type: 'geojson', data: `flood-data/Flood_Events_${years[0]}.geojson` });
+    map.addSource('river-flood-data', { type: 'geojson', data: `flood-data/river-flood-events/Flood_Events_${years[0]}.geojson` });
     map.addLayer({ id: 'river-flood-layer', type: 'circle', source: 'river-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
     
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
