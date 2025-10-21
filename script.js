@@ -221,6 +221,7 @@ function closeModal() { modal.classList.add('hidden'); modalContent.innerHTML = 
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('sidebar-active');
 
+    const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const recenterButton = document.getElementById('recenter-button');
     const daySlider = document.getElementById('day-slider');
@@ -255,7 +256,15 @@ document.addEventListener('DOMContentLoaded', () => {
     for (const key in SVI_DATA) { sviThemeSelect.add(new Option(SVI_DATA[key].title, key)); }
     sviThemeSelect.dispatchEvent(new Event('change'));
 
-    sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-active'));
+    sidebarToggle.addEventListener('click', () => {
+        document.body.classList.toggle('sidebar-active');
+    });
+
+    sidebar.addEventListener('transitionend', () => {
+        map.resize();
+        map.flyTo(INITIAL_VIEW_STATE);
+    });
+
     recenterButton.addEventListener('click', () => map.flyTo(INITIAL_VIEW_STATE));
     modalCloseBtn.addEventListener('click', closeModal);
 

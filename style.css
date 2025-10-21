@@ -16,7 +16,8 @@ body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); co
 h1, h2, h4, strong { font-weight: 600; }
 
 /* --- LAYOUT & MAP --- */
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; left: 0; transition: width 0.3s ease-in-out, left 0.3s ease-in-out; }
+body.sidebar-active #map { width: calc(100% - 320px); left: 320px; }
 header {
     position: absolute; top: 0; left: 0; width: 100%; padding: 15px 30px;
     z-index: 2; display: flex; align-items: center; justify-content: space-between;
