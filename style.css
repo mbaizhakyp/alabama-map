@@ -1,3 +1,13 @@
+/* --- CHAT --- */
+#chat-root {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 500px;
+    z-index: 1000;
+}
+
 /* --- THEME & COLOR VARIABLES --- */
 :root {
     --bg-color: #e2e8f0; 
@@ -133,9 +143,9 @@ select:focus {
 
 /* --- LEGENDS & TOOLBAR --- */
 .legend {
-    position: absolute; bottom: 30px; right: 20px;
+    position: absolute; bottom: 30px; left: 20px;
     background: var(--panel-bg); backdrop-filter: blur(10px);
-    padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); z-index: 1;
+    padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); z-index: 1001;
     min-width: 200px;
 }
 .legend h4 { margin-bottom: 10px; }

@@ -12,6 +12,22 @@
     
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                600: 'rgba(150, 181, 212, 0.7)',
+                700: 'rgba(150, 181, 212, 0.8)',
+              }
+            }
+          }
+        }
+      }
+    </script>
 </head>
 <body>
     <div id="map"></div>
@@ -100,8 +116,10 @@
     <div id="svi-legend" class="legend" style="display: none;"><h4 id="svi-legend-title">Overall SVI</h4><div class="svi-gradient"></div><div class="svi-labels"><span>0</span><span>1</span></div></div>
 
     <div id="modal" class="hidden"><button id="modal-close-btn">&times;</button><div id="modal-content"></div></div>
+    <div id="chat-root"></div>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
     <script src="script.js"></script>
+    <script src="dist/chat-bundle.js"></script>
 </body>
 </html>

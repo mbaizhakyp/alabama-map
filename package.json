@@ -4,7 +4,8 @@
   "main": "merge_data.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:chat": "esbuild chat/index.tsx --bundle --outfile=dist/chat-bundle.js --loader:.tsx=tsx"
   },
   "repository": {
     "type": "git",
@@ -19,11 +20,24 @@
   "homepage": "https://github.com/mbaizhakyp/alabama-map#readme",
   "description": "",
   "dependencies": {
+    "@tailwindcss/postcss": "^4.0.0-alpha.15",
     "cors": "^2.8.5",
     "d3-dsv": "^3.0.1",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
+    "lucide-react": "^0.395.0",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "esbuild": "^0.21.5",
+    "postcss": "^8.4.38",
+    "postcss-cli": "^11.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.4"
   }
 }
