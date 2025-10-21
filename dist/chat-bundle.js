@@ -23678,7 +23678,7 @@
           {
             className: `font-semibold ${isDarkMode ? "text-white" : "text-gray-900"}`
           },
-          "CIROH AI"
+          "FLAI Bot"
         ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center space-x-1.5" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "h-2 w-2 bg-green-500 rounded-full" }), /* @__PURE__ */ import_react3.default.createElement(
           "p",
           {
@@ -23927,7 +23927,7 @@
       {
         className: `text-sm text-center mb-4 ${isDarkMode ? "text-gray-300" : "text-gray-600"}`
       },
-      "Hi! I'm CIROH AI. How can I help you today?"
+      "Hi! I'm FLAI Bot. How can I help you today?"
     ), questions.map((category, index) => /* @__PURE__ */ import_react6.default.createElement("div", { key: index, className: "space-y-1 mb-1" }, /* @__PURE__ */ import_react6.default.createElement(
       "button",
       {

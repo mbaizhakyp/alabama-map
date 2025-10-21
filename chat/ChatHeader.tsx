@@ -46,7 +46,7 @@ export function ChatHeader({
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}
           >
-            CIROH AI
+            FLAI Bot
           </h3>
           <div className="flex items-center space-x-1.5">
             <div className="h-2 w-2 bg-green-500 rounded-full" />

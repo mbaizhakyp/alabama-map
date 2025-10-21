@@ -19,7 +19,7 @@ export function ExampleQuestions({
           isDarkMode ? 'text-gray-300' : 'text-gray-600'
         }`}
       >
-        Hi! I'm CIROH AI. How can I help you today?
+        Hi! I'm FLAI Bot. How can I help you today?
       </p>
       {questions.map((category, index) => (
         <div key={index} className="space-y-1 mb-1">
