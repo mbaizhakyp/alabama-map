@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:chat": "esbuild chat/index.tsx --bundle --outfile=dist/chat-bundle.js --loader:.tsx=tsx"
+    "build:chat": "esbuild chat/index.tsx --bundle --outfile=dist/chat-bundle.js --loader:.tsx=tsx",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,7 @@
     "url": "https://github.com/mbaizhakyp/alabama-map/issues"
   },
   "homepage": "https://github.com/mbaizhakyp/alabama-map#readme",
-  "description": "",
+  "description": "This project is an interactive map designed to visualize complex weather data in a simple and user-friendly way. It uses AI assistance to process and display real-time, forecast, and historical weather information from official government sources.",
   "dependencies": {
     "@tailwindcss/postcss": "^4.0.0-alpha.15",
     "cors": "^2.8.5",
