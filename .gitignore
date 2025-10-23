@@ -1,2 +1,3 @@
 node_modules/
 .env
+AI_assistance_map/.env
