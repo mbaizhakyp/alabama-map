@@ -62,6 +62,7 @@ def analyze_query_intent(query: str, openai_api_key: str) -> Dict[str, Any]:
         Return JSON: {{"needs_precipitation_forecast": boolean, "needs_precipitation_history": boolean, "needs_flood_history": boolean, "needs_svi_data": boolean, "needs_county_info": boolean, "flood_event_filters": {{"max_events": integer_or_null, "max_distance_miles": float_or_null, "recent_only": boolean}}, "svi_relevance_threshold": float}}
 
         Guidelines: Need SVI for "why"/"vulnerability"/"demographics". Need forecast for future rain. Need history for past floods. Use stricter filters for specific questions.
+
         """
 
         response = client.chat.completions.create(

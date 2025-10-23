@@ -13,6 +13,7 @@ import requests
 import sys
 import traceback
 
+
 # Attempt to import the context selection function
 try:
     from select_function import select_relevant_context
@@ -81,6 +82,7 @@ def _call_openai_chat(api_key, system_msg, user_prompt, model="gpt-4o", is_json=
             ],
             response_format=response_format,
             timeout=timeout
+
         )
         content = response.choices[0].message.content
         return json.loads(content) if is_json else content

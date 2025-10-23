@@ -5,5 +5,4 @@ AI_assistance_map/.venv/
 __pycache__/
 *.pyc
 
-# Mac OS
-.DS_Store
+**/.DS_Store
