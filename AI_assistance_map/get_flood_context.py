@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 """
 Flood Information Retrieval and Question Answering System
-
-This script provides an end-to-end pipeline for flood-related queries:
-1. Extract locations from user query
-2. Retrieve flood contextual data from database
-3. Intelligently filter relevant information
-4. Generate natural language answers using LLM
+(Reads query from stdin, outputs JSON to stdout)
 """
 
 from dotenv import load_dotenv
@@ -16,741 +11,373 @@ import psycopg2
 import openai
 import requests
 import sys
-from select_function import select_relevant_context
+import traceback
 
+# Attempt to import the context selection function
+try:
+    from select_function import select_relevant_context
+except ImportError:
+    print("Warning: 'select_function.py' not found. Context filtering will be skipped.", file=sys.stderr)
+    def select_relevant_context(retrieval_results, user_query, openai_api_key):
+        print("Warning: Using pass-through context selector.", file=sys.stderr)
+        all_data = [item for item in retrieval_results if 'status' not in item]
+        return {"filtered_data": all_data}
 
+# --- GoogleMapsClient (Simplified Error Logging) ---
 class GoogleMapsClient:
-    """
-    A client to interact with various Google Maps Platform APIs.
-    """
     GEOCODE_API_URL = "https://maps.googleapis.com/maps/api/geocode/json"
-    ELEVATION_API_URL = "https://maps.googleapis.com/maps/api/elevation/json"
-    TIMEZONE_API_URL = "https://maps.googleapis.com/maps/api/timezone/json"
     WEATHER_API_URL = "https://weather.googleapis.com/v1"
 
     def __init__(self, api_key):
-        """
-        Initializes the client with a Google Maps API Key.
-        """
-        if not api_key:
-            raise ValueError("Google Maps API Key not found. Ensure your .env file is set up correctly.")
+        if not api_key: raise ValueError("Google Maps API Key missing.")
         self.api_key = api_key
 
     def _make_request(self, url, params):
-        """
-        Internal method to perform API requests, handle errors, and return JSON.
-        """
         params['key'] = self.api_key
+        response = None
         try:
-            response = requests.get(url, params=params)
+            response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
             data = response.json()
-            if 'error' in data:
-                print(f"API Error: {data['error']['message']}")
-                return None
-            if 'status' in data and data['status'] != 'OK':
-                print(f"API Error: {data['status']} - {data.get('error_message', '')}")
-                return None
+            if data.get('error') or (data.get('status') and data['status'] not in ('OK', 'ZERO_RESULTS')):
+                print(f"Google API Error: {data.get('status', 'N/A')} - {data.get('error_message', data.get('error', {}).get('message', 'Unknown'))}", file=sys.stderr)
+                return None if data.get('status') != 'ZERO_RESULTS' else data
             return data
-        except requests.exceptions.RequestException as e:
-            print(f"Connection Error: {e}")
+        except requests.exceptions.Timeout:
+            print(f"Timeout Error making Google API request to {url}", file=sys.stderr)
             return None
-        except ValueError:
-            print("Error: A valid JSON response was not received. Response received:")
-            print(response.text)
+        except requests.exceptions.RequestException as e:
+            print(f"Google API Connection Error: {e}", file=sys.stderr)
+            return None
+        except json.JSONDecodeError:
+            print(f"Google API Invalid JSON response. URL: {url}", file=sys.stderr)
+            if response is not None: print(f"Response Text (first 500 chars): {response.text[:500]}", file=sys.stderr)
             return None
 
     def geocode_by_address(self, address, language='en'):
-        """
-        Gets geolocation data from a text-based address.
-        """
-        params = {'address': address, 'language': language}
-        return self._make_request(self.GEOCODE_API_URL, params)
+        return self._make_request(self.GEOCODE_API_URL, {'address': address, 'language': language})
 
     def reverse_geocode(self, lat, lng, language='en'):
-        """
-        Gets geolocation data (reverse geocoding) from coordinates.
-        """
-        params = {'latlng': f"{lat},{lng}", 'language': language}
-        return self._make_request(self.GEOCODE_API_URL, params)
+        return self._make_request(self.GEOCODE_API_URL, {'latlng': f"{lat},{lng}", 'language': language})
 
     def get_hourly_forecast(self, lat, lng, hours=None):
-        """
-        Gets the hourly weather forecast including precipitation data.
-        Can specify the number of hours (e.g., hours=24).
-        Returns hourly forecast data with precipitation information.
-        """
         url = f"{self.WEATHER_API_URL}/forecast/hours:lookup"
-        params = {
-            'location.latitude': lat,
-            'location.longitude': lng,
-        }
-        if hours is not None:
-            params['hours'] = hours
-
-        # Note: Google Maps Weather API uses different authentication
-        # The _make_request method handles the API key
+        params = {'location.latitude': lat, 'location.longitude': lng}
+        if hours: params['hours'] = hours
         return self._make_request(url, params)
 
-
-def extract_precipitation_time_request(user_input, openai_api_key):
-    """
-    Uses OpenAI to determine if the user is requesting precipitation forecast data
-    and extract the time duration requested.
-    Returns the number of hours requested, or None if no forecast is requested.
-    """
+# --- OpenAI Helper Functions (Simplified Error Handling) ---
+def _call_openai_chat(api_key, system_msg, user_prompt, model="gpt-4o", is_json=True, timeout=20.0):
+    if not api_key: raise ValueError("OpenAI API Key missing.")
+    content = None
     try:
-        client = openai.OpenAI(api_key=openai_api_key)
-        prompt = f"""
-        You are an expert at analyzing user queries to determine if they are requesting
-        precipitation or rainfall forecast/prediction data.
-
-        Analyze the following query and determine:
-        1. Does the user want precipitation forecast/prediction data? (yes/no)
-        2. If yes, how many hours into the future? (extract the number)
-
-        Your answer MUST be a JSON object with these keys:
-        - "requested": boolean (true if precipitation forecast is requested, false otherwise)
-        - "hours": integer or null (number of hours if specified, null if not specified but requested, 0 if not requested)
-
-        Examples:
-        - "What will the rainfall be like in the next 2 hours in Tuscaloosa?"
-          → {{"requested": true, "hours": 2}}
-
-        - "Show me precipitation forecast for the next 24 hours"
-          → {{"requested": true, "hours": 24}}
-
-        - "Will it rain tomorrow in Birmingham?"
-          → {{"requested": true, "hours": 24}}
-
-        - "What is the flood history at this address?"
-          → {{"requested": false, "hours": 0}}
-
-        - "Tell me about flooding in this area"
-          → {{"requested": false, "hours": 0}}
-
-        User query: '{user_input}'
-        """
-
+        client = openai.OpenAI(api_key=api_key)
+        response_format = {"type": "json_object"} if is_json else None
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=model,
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that analyzes weather and precipitation queries."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={"type": "json_object"},
-        )
-
-        content = response.choices[0].message.content
-        result = json.loads(content)
-
-        if result.get('requested', False):
-            hours = result.get('hours')
-            # Default to 24 hours if requested but not specified
-            return hours if hours and hours > 0 else 24
-        return None
-
-    except Exception as e:
-        print(f"Error extracting precipitation time request: {e}")
-        return None
-
-
-def extract_locations(user_input, openai_api_key):
-    """
-    Uses OpenAI to extract and consolidate location names from a user's natural language input.
-    """
-    try:
-        client = openai.OpenAI(api_key=openai_api_key)
-        prompt = f"""
-        You are an expert geographer at identifying and consolidating location information from text.
-        Your task is to extract locations and combine them into the most specific strings possible
-        for geocoding. If a specific place (like a building, park, or address) is mentioned
-        with its city or region, you MUST combine them into a single string. Do not split
-        a single conceptual place into multiple parts.
-
-        Your answer MUST be a JSON object with a single key named "result", which contains an
-        array of the final location strings.
-
-        Example 1:
-        - User query: 'What is the weather forecast for the area around the Northeast Medical Building in Tuscaloosa?'
-        - Correct output: {{"result": ["Northeast Medical Building, Tuscaloosa"]}}
-
-        Example 2:
-        - User query: 'I want to know the elevation of the Eiffel Tower and the weather in Rome.'
-        - Correct output: {{"result": ["Eiffel Tower, Paris", "Rome"]}}
-
-        Now, process the following query:
-        User query: '{user_input}'
-        """
-
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a helpful and precise location extraction assistant that consolidates location information."},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={"type": "json_object"},
-        )
-
-        content = response.choices[0].message.content
-        locations = json.loads(content)
-        return locations
-    except openai.APIError as e:
-        print(f"OpenAI API Error: {e}")
-        return None
-    except json.JSONDecodeError:
-        print(f"Error: OpenAI did not return valid JSON. Response was: {content}")
-        return None
-    except Exception as e:
-        print(f"An unexpected error occurred with OpenAI: {e}")
-        return None
-
-
-def extract_coordinates(user_query, maps_client, openai_api_key):
-    """
-    Extracts locations from a query, geocodes them, and returns a list of
-    dictionaries containing location information.
-    """
-    print(f"Processing user query: '{user_query}'\n")
-
-    geocoded_locations = []
-
-    locations = extract_locations(user_query, openai_api_key)
-    if not locations or 'result' not in locations or not locations['result']:
-        print("No locations were identified in the user query.")
-        return geocoded_locations
-
-    print(f"Locations identified by OpenAI: {locations['result']}\n")
-
-    for location_name in locations['result']:
-        print(f"--- Geocoding: {location_name} ---")
-
-        geo_data = maps_client.geocode_by_address(location_name)
-        if not geo_data or not geo_data.get('results'):
-            print(f"Could not geocode '{location_name}'. Moving to the next location.\n")
-            continue
-
-        first_result = geo_data['results'][0]
-        lat = first_result['geometry']['location']['lat']
-        lng = first_result['geometry']['location']['lng']
-        formatted_address = first_result.get('formatted_address', 'N/A')
-
-        print(f"Coordinates: Lat={lat}, Lng={lng}")
-        print(f"Formatted Address: {formatted_address}\n")
-
-        location_info = {
-            'name': location_name,
-            'formatted_address': formatted_address,
-            'latitude': lat,
-            'longitude': lng
-        }
-
-        geocoded_locations.append(location_info)
-
-    return geocoded_locations
-
-
-def execute_query(conn, query, params=None, fetch=False):
-    """Execute a SQL query with optional parameters."""
-    cur = conn.cursor()
-    try:
-        if params:
-            cur.execute(query, params)
-        else:
-            cur.execute(query)
-        if fetch:
-            result = cur.fetchall()
-            return result
-        else:
-            conn.commit()
-            return cur.rowcount
-    except Exception as e:
-        print(f"Error executing query: {e}")
-        conn.rollback()
-        return None
-    finally:
-        cur.close()
-
-
-def get_county_info(connection, lat, lon):
-    """
-    Finds the county that contains the given coordinates.
-    """
-    query = """
-        SELECT c.fips_county_code, c.County, s.State, c.areaSQMI
-        FROM flai.TCLCounties c
-        JOIN flai.TCLStates s ON c.idState = s.idState
-        WHERE ST_Intersects(c.geometry, ST_Transform(ST_SetSRID(ST_MakePoint(%s, %s), 4326), 5070));
-    """
-    result = execute_query(connection, query, params=(lon, lat), fetch=True)
-
-    if result:
-        row = result[0]
-        return {
-            "fips_code": row[0],
-            "county_name": row[1],
-            "state_name": row[2],
-            "area_sqmi": float(row[3])
-        }
-    return None
-
-
-def get_precipitation_history(connection, fips_code):
-    """
-    Retrieves the monthly precipitation history for a given county.
-    """
-    query = """
-        SELECT year, month, totalPrecipitation_in
-        FROM flai.TBLMonthlyPrecipitation
-        WHERE fips_county_code = %s
-        ORDER BY year, month;
-    """
-    results = execute_query(connection, query, params=(fips_code,), fetch=True)
-    return [
-        {"year": row[0], "month": row[1], "precipitation_in": float(row[2])}
-        for row in results
-    ]
-
-
-def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
-    """
-    Retrieves a detailed list of historical flood events for a given county,
-    calculates the distance from a user-specified point, and sorts the results
-    by proximity (nearest first).
-    """
-    query = """
-        SELECT
-            et.EventType,
-            e.beginDate,
-            e.warning_zone,
-            c.County,
-            ST_Y(e.geometry) AS latitude,
-            ST_X(e.geometry) AS longitude,
-            ST_Distance(
-                e.geometry::geography,
-                ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography
-            ) as distance_meters
-        FROM flai.TBLFloodEvents e
-        JOIN flai.TCLEventTypes et ON e.idEventType = et.idEventType
-        LEFT JOIN flai.TCLCounties c ON e.fips_county_code = c.fips_county_code
-        WHERE e.fips_county_code = %s
-        ORDER BY distance_meters ASC;
-    """
-    params = (user_lon, user_lat, fips_code)
-    results = execute_query(connection, query, params=params, fetch=True)
-
-    event_list = []
-    if not results:
-        return event_list
-
-    print(f"Found {len(results)} historical flood events. Sorting by distance and reverse geocoding...")
-    for row in results:
-        lat = row[4]
-        lon = row[5]
-        distance_meters = row[6]
-
-        # Convert meters to miles
-        distance_miles = distance_meters * 0.000621371
-
-        address = "N/A"
-        if lat and lon:
-            geo_data = maps_client.reverse_geocode(lat, lon)
-            if geo_data and geo_data.get('results'):
-                address = geo_data['results'][0]['formatted_address']
-
-        event_details = {
-            "type": row[0],
-            "date": row[1].isoformat(),
-            "distance_from_query_point_miles": round(distance_miles, 2),
-            "warning_zone": row[2],
-            "county": row[3] if row[3] else "Not Assigned (e.g., Offshore)",
-            "location": {
-                "latitude": lat,
-                "longitude": lon
-            },
-            "nearest_address": address
-        }
-        event_list.append(event_details)
-
-    return event_list
-
-
-def get_svi_data(connection, fips_code, release_year=2022):
-    """
-    Retrieves the Social Vulnerability Index (SVI) data for a given county and year.
-    """
-    query = """
-        SELECT
-            s.overallNational,
-            s.overallState,
-            t.Theme,
-            v.SVIVariable,
-            s.SVIValue
-        FROM flai.TBLSVI s
-        JOIN flai.TCLSVIThemes t ON s.idSVITheme = t.idSVITheme
-        LEFT JOIN flai.TCLSVIVariables v ON s.idSVIVariable = v.idSVIVariable
-        WHERE s.fips_county_code = %s AND s.release_year = %s;
-    """
-    results = execute_query(connection, query, params=(fips_code, release_year), fetch=True)
-
-    if not results:
-        return None
-
-    svi_data = {
-        "release_year": release_year,
-        "overall_ranking": {
-            "national": float(results[0][0]) if results[0][0] is not None else None,
-            "state": float(results[0][1]) if results[0][1] is not None else None
-        },
-        "themes": {},
-        "variables": {}
-    }
-
-    for row in results:
-        theme_name = row[2]
-        variable_name = row[3]
-        svi_value = float(row[4]) if row[4] is not None else None
-
-        if variable_name is None:
-            svi_data["themes"][theme_name] = svi_value
-        else:
-            svi_data["variables"][variable_name] = svi_value
-
-    return svi_data
-
-
-def get_precipitation_forecast(maps_client, lat, lon, hours):
-    """
-    Retrieves hourly precipitation forecast data for a specific location.
-
-    Args:
-        maps_client: GoogleMapsClient instance
-        lat: Latitude
-        lon: Longitude
-        hours: Number of hours to forecast
-
-    Returns:
-        List of hourly precipitation data or empty list if not available
-    """
-    if not hours or hours <= 0:
-        return []
-
-    print(f"Fetching {hours}-hour precipitation forecast...")
-
-    try:
-        # This call is correct and uses your get_hourly_forecast method
-        forecast_data = maps_client.get_hourly_forecast(lat, lon, hours=hours)
-
-        # PROBLEM 1 (FIXED): The correct key is 'forecastHours'
-        if not forecast_data or 'forecastHours' not in forecast_data:
-            print("No precipitation forecast data available from Google Maps API (key 'forecastHours' not found).")
-            return []
-
-        precipitation_forecast = []
-
-        # PROBLEM 2 (FIXED): Loop over 'forecastHours'
-        for hour_data in forecast_data['forecastHours']:
-            
-            # PROBLEM 3 (FIXED): All data extraction keys were incorrect
-            
-            # Get time from the 'interval' object
-            time = hour_data.get('interval', {}).get('startTime', 'N/A')
-            
-            # Get precipitation data from the 'precipitation' object
-            precip_data = hour_data.get('precipitation', {})
-            
-            # Get precipitation data from the 'precipitation' object
-            # Check if 'probability' is a dict (e.g., {"value": 0.25}) or a number (e.g., 0.25)
-            precip_prob_obj = precip_data.get('probability', {})
-            if isinstance(precip_prob_obj, dict):
-                precip_prob_decimal = precip_prob_obj.get('value', 0)
-            elif isinstance(precip_prob_obj, (int, float)):
-                precip_prob_decimal = precip_prob_obj
-            else:
-                precip_prob_decimal = 0
-
-            # Parse Amount
-            # Do the same check for 'amount'
-            precip_amount_obj = precip_data.get('amount', {})
-            if isinstance(precip_amount_obj, dict):
-                precip_amount_mm = precip_amount_obj.get('value', 0)
-            elif isinstance(precip_amount_obj, (int, float)):
-                precip_amount_mm = precip_amount_obj
-            else:
-                precip_amount_mm = 0
-            
-            # Get weather condition from the 'weather' object
-            weather_data = hour_data.get('weather', {})
-            condition = weather_data.get('condition', 'N/A')
-
-            precip_info = {
-                "time": time,
-                "precipitation_probability": round(precip_prob_decimal * 100, 1), # Convert 0.25 to 25.0
-                "precipitation_amount_mm": precip_amount_mm,
-                "precipitation_amount_in": round(precip_amount_mm / 25.4, 2),
-                "weather_condition": condition
-            }
-            precipitation_forecast.append(precip_info)
-
-        print(f"Successfully retrieved {len(precipitation_forecast)} hours of precipitation forecast.")
-        return precipitation_forecast
-
-    except Exception as e:
-        print(f"Error processing precipitation forecast data: {e}")
-        return []
-
-
-def get_contextual_data_for_locations(geocoded_locations, connection, maps_client, forecast_hours=None):
-    """
-    Main orchestrator function. Takes a list of geocoded locations and
-    enriches each with data from the local database.
-    """
-    enriched_data = []
-
-    for location in geocoded_locations:
-        lat = location['latitude']
-        lon = location['longitude']
-        print(f"--- Fetching contextual data for: {location['name']} ({lat}, {lon}) ---")
-
-        county_info = get_county_info(connection, lat, lon)
-
-        if not county_info:
-            print(f"Location '{location['name']}' is not within a known county. Skipping.\n")
-            enriched_data.append({
-                "input_location": location,
-                "status": "No county found"
-            })
-            continue
-
-        fips_code = county_info['fips_code']
-        print(f"Found County: {county_info['county_name']} ({fips_code})")
-
-        # Get precipitation forecast if requested
-        precipitation_forecast = []
-        if forecast_hours:
-            precipitation_forecast = get_precipitation_forecast(maps_client, lat, lon, forecast_hours)
-
-        location_context = {
-            "input_location": location,
-            "county_data": county_info,
-            "precipitation_history": get_precipitation_history(connection, fips_code),
-            "precipitation_forecast": precipitation_forecast,
-            "flood_event_history": get_flood_history(connection, fips_code, maps_client, lat, lon),
-            "social_vulnerability_index": get_svi_data(connection, fips_code, release_year=2022)
-        }
-
-        enriched_data.append(location_context)
-        print("Successfully fetched all data.\n")
-
-    return enriched_data
-
-
-def generate_llm_answer(user_query, filtered_context, openai_api_key):
-    """
-    Generates a natural language answer using GPT-4o based on the filtered context.
-
-    Args:
-        user_query: The user's original question
-        filtered_context: The filtered contextual data from select_relevant_context()
-        openai_api_key: OpenAI API key
-
-    Returns:
-        String containing the LLM's answer
-    """
-    try:
-        client = openai.OpenAI(api_key=openai_api_key)
-
-        # Prepare the context as a formatted string
-        context_str = json.dumps(filtered_context['filtered_data'], indent=2)
-
-        system_prompt = """You are an expert flood information assistant. You have access to flood-related data including:
-- Precipitation forecasts and historical data
-- Historical flood events with locations and dates
-- Social Vulnerability Index (SVI) data indicating community risk factors
-- County-level geographic information
-
-Your task is to provide clear, accurate, and helpful answers based on the provided data.
-If the data doesn't contain enough information to fully answer the question, acknowledge what you can answer and what information is missing.
-Always cite specific data points when making claims."""
-
-        user_prompt = f"""User Question: {user_query}
-
-Available Data:
-{context_str}
-
-Please provide a comprehensive answer to the user's question based on the available data above.
-Structure your response clearly and include specific numbers, dates, and locations when relevant."""
-
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": system_msg},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.7,
+            response_format=response_format,
+            timeout=timeout
         )
-
-        return response.choices[0].message.content
-
+        content = response.choices[0].message.content
+        return json.loads(content) if is_json else content
+    except openai.APIError as e: print(f"OpenAI API Error: {e}", file=sys.stderr)
+    except openai.APITimeoutError: print("OpenAI API request timed out.", file=sys.stderr)
+    except json.JSONDecodeError as e: print(f"OpenAI Invalid JSON response: {e}. Content: {content}", file=sys.stderr)
     except Exception as e:
-        print(f"Error generating LLM answer: {e}")
-        return None
+        print(f"OpenAI unexpected error: {e}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+    return None
+
+def extract_precipitation_time_request(user_input, api_key):
+    system_msg = "Analyze query for precipitation forecast request. JSON: {\"requested\": boolean, \"hours\": integer_or_null}"
+    prompt = f"Analyze: '{user_input}'. Is precip forecast requested? Hours (default 24)? Examples:\n'Rain next 2h?' -> {{\"requested\": true, \"hours\": 2}}\n'Flood history?' -> {{\"requested\": false, \"hours\": 0}}"
+    result = _call_openai_chat(api_key, system_msg, prompt)
+    if result and result.get('requested'):
+        hours = result.get('hours')
+        return hours if hours and hours > 0 else 24
+    return None
+
+def extract_locations(user_input, api_key):
+    system_msg = "Extract specific locations (cities, counties, landmarks, addresses). Combine place+region. JSON: {\"result\": [\"location1\"]}"
+    prompt = f"Extract locations from: '{user_input}'. Examples:\n'Weather near Main St Library, Anytown?' -> {{\"result\": [\"Main St Library, Anytown\"]}}\n'Risk for Dade County?' -> {{\"result\": [\"Dade County\"]}}"
+    result = _call_openai_chat(api_key, system_msg, prompt)
+    return result if isinstance(result, dict) and isinstance(result.get('result'), list) else {"result": []}
+
+def generate_llm_answer(user_query, filtered_context, api_key):
+    system_msg = "You are a flood info assistant. Answer ONLY from provided JSON data. State if data is insufficient. Cite specifics. Be concise."
+    context_str = json.dumps(filtered_context.get('filtered_data', []), indent=2, default=str)
+    if not filtered_context or not filtered_context.get('filtered_data') or context_str == '[]':
+        print("No relevant context found after filtering for LLM.", file=sys.stderr)
+        return f"I looked for information related to '{user_query}', but couldn't find specific data in my available sources to answer based on the locations identified."
+
+    user_prompt = f"User Question: {user_query}\n\nAvailable Data:\n```json\n{context_str}\n```\n\nAnswer the question using ONLY the data above."
+    return _call_openai_chat(api_key, system_msg, user_prompt, is_json=False, timeout=45.0) or "Sorry, I encountered an issue generating a response."
 
 
-def main(user_query):
+# --- ADDED BACK extract_coordinates ---
+def extract_coordinates(user_query, maps_client, openai_api_key):
     """
-    Main end-to-end pipeline function.
-
-    Pipeline stages:
-    1. Retrieve full flood context data from database
-    2. Intelligently filter relevant information
-    3. Generate natural language answer using LLM
+    Extracts locations from query using OpenAI, geocodes them using Google Maps.
+    Returns a list of dicts [{'name': str, 'formatted_address': str, 'latitude': float, 'longitude': float}]
+    Returns empty list [] if no locations found or geocoded.
     """
-    # Load environment variables
-    load_dotenv()
+    print(f"Extracting locations for query: '{user_query}'", file=sys.stderr)
+    geocoded_locations = []
+    locations_data = extract_locations(user_query, openai_api_key) # Handles its own errors
 
-    PG_HOST = os.getenv("POSTGRES_HOST")
-    PG_DB = os.getenv("POSTGRES_DB")
-    PG_USER = os.getenv("POSTGRES_USER")
-    PG_PASS = os.getenv("POSTGRES_PASSWORD")
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+    if not locations_data or not locations_data.get('result'):
+        print("No locations identified by OpenAI.", file=sys.stderr)
+        return geocoded_locations
 
-    # Initialize clients
+    location_names = locations_data['result']
+    print(f"OpenAI identified locations: {location_names}", file=sys.stderr)
+
+    for name in location_names:
+        print(f"--- Geocoding: {name} ---", file=sys.stderr)
+        geo_data = maps_client.geocode_by_address(name)
+
+        if not geo_data or not geo_data.get('results'):
+            status = geo_data.get('status', 'No response') if geo_data else 'No response'
+            print(f"Could not geocode '{name}'. Status: {status}. Skipping.\n", file=sys.stderr)
+            continue
+
+        try:
+            first_result = geo_data['results'][0]
+            lat = first_result['geometry']['location']['lat']
+            lng = first_result['geometry']['location']['lng']
+            addr = first_result.get('formatted_address', 'N/A')
+            print(f"Coordinates: Lat={lat}, Lng={lng}. Address: {addr}\n", file=sys.stderr)
+            geocoded_locations.append({'name': name, 'formatted_address': addr, 'latitude': lat, 'longitude': lng})
+        except (KeyError, IndexError, TypeError) as e:
+            print(f"Error parsing geocode result for '{name}': {e}. Skipping.\n", file=sys.stderr)
+            print(f"Received data: {geo_data.get('results', 'N/A')}", file=sys.stderr)
+            continue
+
+    return geocoded_locations
+# --- END extract_coordinates ---
+
+
+# --- Database Helper Functions (Simplified Error Handling) ---
+def execute_query(conn, query, params=None, fetch=False):
+    cur = None
     try:
-        maps_client = GoogleMapsClient(api_key=GOOGLE_MAPS_API_KEY)
-    except ValueError as e:
-        print(f"Error: {e}")
-        return None
-
-    # Connect to database
-    try:
-        conn = psycopg2.connect(
-            host=PG_HOST,
-            database=PG_DB,
-            user=PG_USER,
-            password=PG_PASS
-        )
-    except Exception as e:
-        print(f"Database connection error: {e}")
-        return None
-
-    try:
-        print("="*70)
-        print("STAGE 1: RETRIEVING FLOOD CONTEXT DATA")
-        print("="*70)
-
-        # Step 1: Check if user is requesting precipitation forecast
-        print("\n[1.1] Analyzing query for precipitation forecast request...")
-        forecast_hours = extract_precipitation_time_request(user_query, OPENAI_API_KEY)
-
-        if forecast_hours:
-            print(f"✓ User requested {forecast_hours}-hour precipitation forecast.\n")
-        else:
-            print("✓ No precipitation forecast requested.\n")
-
-        # Step 2: Extract coordinates from user query
-        print("[1.2] Extracting locations from query...")
-        geocoded_results = extract_coordinates(user_query, maps_client, OPENAI_API_KEY)
-
-        if not geocoded_results:
-            print("✗ Could not extract locations from query.")
-            return None
-
-        # Step 3: Get contextual data from database
-        print("\n[1.3] Retrieving contextual data from database...")
-        retrieval_results = get_contextual_data_for_locations(
-            geocoded_results,
-            conn,
-            maps_client,
-            forecast_hours=forecast_hours
-        )
-
-        if not retrieval_results:
-            print("✗ No contextual data retrieved.")
-            return None
-
-        print(f"\n✓ Successfully retrieved data for {len(retrieval_results)} location(s)")
-
-        # Step 4: Intelligently filter relevant information
-        print("\n" + "="*70)
-        print("STAGE 2: FILTERING RELEVANT INFORMATION")
-        print("="*70)
-
-        filtered_context = select_relevant_context(
-            retrieval_results,
-            user_query,
-            OPENAI_API_KEY
-        )
-
-        # Step 5: Generate final answer using LLM
-        print("\n" + "="*70)
-        print("STAGE 3: GENERATING ANSWER")
-        print("="*70)
-        print("\n[3.1] Generating natural language answer using GPT-4o...")
-
-        final_answer = generate_llm_answer(user_query, filtered_context, OPENAI_API_KEY)
-
-        if not final_answer:
-            print("✗ Failed to generate answer.")
-            return None
-
-        print("✓ Answer generated successfully.\n")
-
-        return {
-            "query": user_query,
-            "answer": final_answer,
-            "filtered_context": filtered_context,
-            "full_retrieval_data": retrieval_results
-        }
-
+        if conn is None or conn.closed: raise ConnectionError("Database connection closed.")
+        cur = conn.cursor()
+        cur.execute(query, params)
+        if fetch: return cur.fetchall()
+        conn.commit()
+        return cur.rowcount
+    except (psycopg2.Error, ConnectionError) as e:
+        print(f"DB Error: {e}", file=sys.stderr)
+        if cur and cur.query:
+             try: print(f"Failed Query: {cur.mogrify(query, params).decode('utf-8', errors='replace')}", file=sys.stderr)
+             except Exception: print(f"Failed Query (raw): {query}", file=sys.stderr)
+        if conn and not conn.closed: conn.rollback()
+        return None # Indicate error
     finally:
-        # Close database connection
-        if conn:
-            conn.close()
-            print("\n" + "="*70)
-            print("Database connection closed.")
-            print("="*70)
+        if cur: cur.close()
 
+def get_county_info(conn, lat, lon):
+    query = """SELECT c.fips_county_code, c.County, s.State, c.areaSQMI FROM flai.TCLCounties c JOIN flai.TCLStates s ON c.idState = s.idState WHERE ST_Intersects(c.geometry, ST_Transform(ST_SetSRID(ST_MakePoint(%s, %s), 4326), 5070));"""
+    result = execute_query(conn, query, params=(lon, lat), fetch=True)
+    if result and result[0] and result[0][0]:
+        r = result[0]
+        try: return {"fips_code": str(r[0]), "county_name": str(r[1]), "state_name": str(r[2]), "area_sqmi": float(r[3])}
+        except Exception as e: print(f"Error processing county result {r}: {e}", file=sys.stderr)
+    print(f"No county found for ({lat}, {lon})", file=sys.stderr)
+    return None
 
+def get_precipitation_history(conn, fips):
+    if not fips: return []
+    query = "SELECT year, month, totalPrecipitation_in FROM flai.TBLMonthlyPrecipitation WHERE fips_county_code = %s ORDER BY year, month;"
+    results = execute_query(conn, query, params=(fips,), fetch=True)
+    return [{"year": r[0], "month": r[1], "precipitation_in": float(r[2] or 0.0)} for r in results or []]
+
+def get_flood_history(conn, fips, maps_client, lat, lon):
+    if not fips: return []
+    query = """SELECT et.EventType, e.beginDate, e.warning_zone, c.County, ST_Y(e.geometry), ST_X(e.geometry), ST_Distance(e.geometry::geography, ST_SetSRID(ST_MakePoint(%s, %s), 4326)::geography) FROM flai.TBLFloodEvents e JOIN flai.TCLEventTypes et ON e.idEventType = et.idEventType LEFT JOIN flai.TCLCounties c ON e.fips_county_code = c.fips_county_code WHERE e.fips_county_code = %s ORDER BY 7 ASC;"""
+    results = execute_query(conn, query, params=(lon, lat, fips), fetch=True)
+    events = []
+    if results:
+        # print(f"Processing {len(results)} flood events for FIPS {fips}...", file=sys.stderr) # Can be noisy
+        for r in results:
+            try:
+                event_lat, event_lon, dist_m = r[4], r[5], r[6]
+                dist_miles = (dist_m * 0.000621371) if dist_m is not None else None
+                address = "N/A" # Reduced reverse geocoding for brevity/speed, can be added back if needed
+                # if event_lat and event_lon:
+                #     geo = maps_client.reverse_geocode(event_lat, event_lon)
+                #     if geo and geo.get('results'): address = geo['results'][0].get('formatted_address', "N/A")
+                events.append({
+                    "type": str(r[0]), "date": r[1].isoformat() if r[1] else None,
+                    "distance_from_query_point_miles": round(dist_miles, 2) if dist_miles is not None else None,
+                    "warning_zone": str(r[2] or 'N/A'), "county": str(r[3] or 'N/A'),
+                    "location": {"latitude": event_lat, "longitude": event_lon},
+                    # "nearest_address": address # Temporarily removed
+                })
+            except Exception as e: print(f"Error processing flood event row {r}: {e}", file=sys.stderr)
+    return events
+
+def get_svi_data(conn, fips, year=2022):
+    if not fips: return None
+    query = """SELECT s.overallNational, s.overallState, t.Theme, v.SVIVariable, s.SVIValue FROM flai.TBLSVI s JOIN flai.TCLSVIThemes t ON s.idSVITheme = t.idSVITheme LEFT JOIN flai.TCLSVIVariables v ON s.idSVIVariable = v.idSVIVariable WHERE s.fips_county_code = %s AND s.release_year = %s;"""
+    results = execute_query(conn, query, params=(fips, year), fetch=True)
+    if not results: return None
+    svi = {"release_year": year, "overall_ranking": {}, "themes": {}, "variables": {}}
+    try:
+        svi["overall_ranking"]["national"] = float(results[0][0]) if results[0][0] is not None else None
+        svi["overall_ranking"]["state"] = float(results[0][1]) if results[0][1] is not None else None
+        for r in results:
+            theme, variable, value = r[2], r[3], float(r[4]) if r[4] is not None else None
+            if variable is None: svi["themes"][theme] = value
+            else:
+                if theme not in svi["variables"]: svi["variables"][theme] = {}
+                svi["variables"][theme][variable] = value
+        return svi
+    except Exception as e: print(f"Error processing SVI data for FIPS {fips}: {e}", file=sys.stderr)
+    return None
+
+def get_precipitation_forecast(maps_client, lat, lon, hours):
+    if not hours or not isinstance(hours, int) or hours <= 0: return []
+    # print(f"Fetching {hours}-hour precip forecast for ({lat}, {lon})...", file=sys.stderr) # Can be noisy
+    try:
+        data = maps_client.get_hourly_forecast(lat, lon, hours=hours)
+        if not data or not isinstance(data.get('forecastHours'), list): return []
+        forecast = []
+        for hour_data in data['forecastHours']:
+            if not isinstance(hour_data, dict): continue
+            precip = hour_data.get('precipitation', {})
+            prob_obj = precip.get('probability', 0); amt_obj = precip.get('amount', 0)
+            prob = float(prob_obj.get('value', 0.0)) if isinstance(prob_obj, dict) else float(prob_obj)
+            amt_mm = float(amt_obj.get('value', 0.0)) if isinstance(amt_obj, dict) else float(amt_obj)
+            weather = hour_data.get('weather', {}); condition = str(weather.get('condition', 'N/A')) if isinstance(weather, dict) else 'N/A'
+            forecast.append({
+                "time": hour_data.get('interval', {}).get('startTime', 'N/A'),
+                "precipitation_probability": round(prob * 100, 1),
+                "precipitation_amount_mm": amt_mm,
+                "precipitation_amount_in": round(amt_mm / 25.4, 2),
+                "weather_condition": condition
+            })
+        return forecast
+    except Exception as e: print(f"Error processing forecast for ({lat}, {lon}): {e}", file=sys.stderr)
+    return []
+
+# --- Main Logic (Simplified get_contextual_data) ---
+def get_contextual_data(geocoded_locations, conn, maps_client, forecast_hours=None):
+    """Fetches all context data for a list of geocoded locations."""
+    all_context = []
+    if not geocoded_locations: return all_context
+    for loc in geocoded_locations:
+        lat, lon, name = loc.get('latitude'), loc.get('longitude'), loc.get('name', 'N/A')
+        if lat is None or lon is None:
+            all_context.append({"input_location": loc, "status": "Missing coordinates"})
+            continue
+
+        print(f"--- Fetching context for: {name} ({lat}, {lon}) ---", file=sys.stderr)
+        county = get_county_info(conn, lat, lon)
+        forecast = get_precipitation_forecast(maps_client, lat, lon, forecast_hours) if forecast_hours else []
+
+        if not county or not county.get('fips_code'):
+            print(f"No valid county/FIPS for '{name}'. Limited data.\n", file=sys.stderr)
+            all_context.append({"input_location": loc, "county_data": county, "status": "No county found" if not county else "Missing FIPS code", "precipitation_forecast": forecast})
+            continue
+
+        fips = county['fips_code']
+        print(f"County: {county.get('county_name')} ({fips})", file=sys.stderr)
+        all_context.append({
+            "input_location": loc, "county_data": county,
+            "precipitation_history": get_precipitation_history(conn, fips),
+            "precipitation_forecast": forecast,
+            "flood_event_history": get_flood_history(conn, fips, maps_client, lat, lon),
+            "social_vulnerability_index": get_svi_data(conn, fips)
+        })
+        print(f"Fetched context for {name}.\n", file=sys.stderr)
+    return all_context
+
+def main_script_logic(user_query):
+    """Main pipeline: query -> locations -> context -> filter -> answer."""
+    maps_client, conn = None, None
+    retrieval_results, filtered_context = [], {"filtered_data": []}
+    try:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.dirname(script_dir)
+        dotenv_path = os.path.join(project_root, '.env')
+        loaded = load_dotenv(dotenv_path=dotenv_path, override=True)
+        if loaded: print(f"Loaded .env: {dotenv_path}", file=sys.stderr)
+        else: print(f"Warning: .env not found at {dotenv_path}. Using system env.", file=sys.stderr)
+
+        PG_HOST, PG_DB, PG_USER, PG_PASS = os.getenv("POSTGRES_HOST"), os.getenv("POSTGRES_DB"), os.getenv("POSTGRES_USER"), os.getenv("POSTGRES_PASSWORD")
+        OPENAI_API_KEY, GOOGLE_MAPS_API_KEY = os.getenv("OPENAI_API_KEY"), os.getenv("GOOGLE_MAPS_API_KEY")
+        missing = [k for k,v in locals().items() if v is None and (k.isupper() and k.endswith('_KEY') or k.startswith('PG_'))]
+        if missing: raise ValueError(f"Missing env vars: {', '.join(missing)}")
+
+        maps_client = GoogleMapsClient(api_key=GOOGLE_MAPS_API_KEY)
+        conn = psycopg2.connect(host=PG_HOST, database=PG_DB, user=PG_USER, password=PG_PASS)
+        print("DB connection ok.", file=sys.stderr)
+
+        forecast_hours = extract_precipitation_time_request(user_query, OPENAI_API_KEY)
+        print(f"Precip forecast check done (hours: {forecast_hours}).", file=sys.stderr)
+
+        geocoded_locations = extract_coordinates(user_query, maps_client, OPENAI_API_KEY)
+
+        if not geocoded_locations:
+            print("No locations geocoded.", file=sys.stderr)
+        else:
+            print(f"Geocoded {len(geocoded_locations)} location(s). Retrieving context...", file=sys.stderr)
+            retrieval_results = get_contextual_data(geocoded_locations, conn, maps_client, forecast_hours)
+            valid_results = [r for r in retrieval_results if 'status' not in r]
+            if not valid_results and retrieval_results:
+                print("No specific DB context found.", file=sys.stderr)
+                filtered_context = {"filtered_data": retrieval_results} # Pass status info
+            elif valid_results:
+                 print(f"Retrieved data for {len(valid_results)} location(s). Filtering...", file=sys.stderr)
+                 try:
+                     filtered_context = select_relevant_context(retrieval_results, user_query, OPENAI_API_KEY)
+                     if not isinstance(filtered_context, dict) or 'filtered_data' not in filtered_context:
+                          print("Warning: Filter func bad structure. Using unfiltered.", file=sys.stderr)
+                          filtered_context = {"filtered_data": valid_results}
+                 except Exception as filter_err:
+                     print(f"Error filtering: {filter_err}. Using unfiltered.", file=sys.stderr)
+                     filtered_context = {"filtered_data": valid_results}
+            else: # retrieval_results itself was empty
+                 print("Context retrieval empty.", file=sys.stderr)
+                 filtered_context = {"filtered_data": []}
+
+        print("Generating answer...", file=sys.stderr)
+        final_answer = generate_llm_answer(user_query, filtered_context, OPENAI_API_KEY)
+        print("Answer generated.", file=sys.stderr)
+        return {"query": user_query, "answer": final_answer}
+
+    except Exception as e: # Catch any exception from main logic
+        print(f"Error in main_script_logic: {e}", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        # Re-raise to be caught by the __main__ block for JSON error output
+        raise
+    finally:
+        if conn and not conn.closed:
+            try: conn.close(); print("DB connection closed.", file=sys.stderr)
+            except Exception as e: print(f"Error closing DB: {e}", file=sys.stderr)
+
+# --- Script Entry Point ---
 if __name__ == "__main__":
-    print("="*70)
-    print("  FLOOD INFORMATION RETRIEVAL & QUESTION ANSWERING SYSTEM")
-    print("="*70)
-    print("\nThis system will:")
-    print("  1. Retrieve flood-related data from our database")
-    print("  2. Intelligently filter relevant information")
-    print("  3. Generate a comprehensive answer to your question")
-    print("\nExample queries:")
-    print("  - 'What is the flood history in Tuscaloosa, Alabama?'")
-    print("  - 'What is the precipitation forecast for next 2 hours in Birmingham?'")
-    print("  - 'Why is Mobile, AL vulnerable to flooding?'")
-    print("="*70 + "\n")
+    user_query = ""
+    try:
+        user_query = sys.stdin.read().strip()
+        if not user_query:
+            print(json.dumps({"error": "Query cannot be empty."}), file=sys.stdout)
+            sys.exit(1)
 
-    user_query = input("Enter your query: ").strip()
+        result = main_script_logic(user_query)
+        print(json.dumps(result, ensure_ascii=False), file=sys.stdout) # Output final JSON
 
-    if not user_query:
-        print("Error: Query cannot be empty.")
+    except Exception as e:
+        error_message = f"Failed to process query '{user_query}': {type(e).__name__} - {str(e)}"
+        print(json.dumps({"error": error_message}), file=sys.stdout) # Output error JSON
+        print(f"\n--- Traceback for Error ({type(e).__name__}) ---", file=sys.stderr) # Log traceback to stderr
+        traceback.print_exc(file=sys.stderr)
+        print(f"--- End Traceback ---", file=sys.stderr)
         sys.exit(1)
-
-    print("\n")
-
-    result = main(user_query)
-
-    if result:
-        print("\n" + "="*70)
-        print("FINAL ANSWER")
-        print("="*70)
-        print(f"\nQuestion: {result['query']}\n")
-        print(result['answer'])
-        print("\n" + "="*70)
-
-        # Optionally save full results to file
-        save_choice = input("\nSave detailed results to file? (y/n): ").strip().lower()
-        if save_choice == 'y':
-            output_file = "flood_query_results.json"
-            with open(output_file, 'w') as f:
-                json.dump(result, f, indent=2)
-            print(f"✓ Detailed results saved to {output_file}")
-    else:
-        print("\n✗ Failed to process query. Please check the errors above.")
