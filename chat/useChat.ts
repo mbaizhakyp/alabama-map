@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Message } from './types';
-import { chatAPI } from '../services/api.js';
+// Remove or comment out the api.js import if it's no longer needed elsewhere
+// import { chatAPI } from '../services/api.js';
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -15,33 +16,30 @@ export function useChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastBotMessageRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to the start of the last bot message when it arrives
+  // Auto-scroll effect (keep as is)
   useEffect(() => {
     const scrollToLastBotMessage = () => {
       if (lastBotMessageRef.current) {
-        lastBotMessageRef.current.scrollIntoView({ 
+        lastBotMessageRef.current.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
         });
       } else if (messagesEndRef.current) {
-        // Fallback to bottom if no bot message ref
         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
       }
     };
-    
-    // Small delay to ensure DOM is updated
     const timeoutId = setTimeout(scrollToLastBotMessage, 100);
-    
     return () => clearTimeout(timeoutId);
   }, [messages, isBotResponding]);
 
-  // Hide examples when user starts chatting
+  // Hide examples effect (keep as is)
   useEffect(() => {
     if (messages.length > 0) {
       setShowExamples(false);
     }
   }, [messages.length]);
 
+  // --- MODIFIED handleSendMessage ---
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
 
@@ -58,41 +56,59 @@ export function useChat() {
     setLastError(null);
 
     try {
-      // Send question to API
-      const response = await chatAPI.sendQuestion({ text: text.trim() });
-      
+      // --- Use fetch to call the new backend endpoint ---
+      const response = await fetch('http://localhost:3001/api/chat', { // Adjust URL if needed
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: text.trim() }),
+      });
+
+      if (!response.ok) {
+        // Handle HTTP errors (e.g., 500 Internal Server Error)
+        const errorData = await response.json().catch(() => ({})); // Try to get error details
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+         // Handle errors reported by the backend/python script
+        throw new Error(data.error);
+      }
+
+      // --- Use the answer from the backend response ---
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response.answer,
+        text: data.answer || "Sorry, I couldn't get a proper answer.", // Use received answer
         isBot: true,
         timestamp: new Date(),
-        sources: response.sources,
-        links: response.links,
+        // sources and links are NOT returned by the current backend, set to null
+        sources: null,
+        links: null,
       };
       setMessages(prev => [...prev, botMessage]);
-      
-      // Clear any previous errors on successful response
-      if (response.success) {
-        setLastError(null);
-      } else {
-        setLastError(response.error || 'Unknown error occurred');
-      }
+      setLastError(null); // Clear error on success
+
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage = 'Sorry, I encountered an error while processing your question. Please try again later.';
+      const errorMessageText = 'Sorry, I encountered an error. Please try again later.';
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
-        text: errorMessage,
+        text: errorMessageText,
         isBot: true,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMsg]);
-      setLastError(error instanceof Error ? error.message : 'Unknown error');
+      setLastError(error instanceof Error ? error.message : 'Unknown error occurred');
     } finally {
       setIsBotResponding(false);
     }
   };
+  // --- END MODIFIED handleSendMessage ---
 
+  // Other handlers (keep as is)
   const handleClearChat = () => {
     setMessages([]);
     setShowExamples(true);
@@ -100,13 +116,16 @@ export function useChat() {
   };
 
   const handleRetryLastMessage = () => {
-    if (messages.length > 0) {
+     if (lastError && messages.length > 0) { // Only retry if there was an error
       const lastUserMessage = [...messages].reverse().find(msg => !msg.isBot);
       if (lastUserMessage) {
+        // Remove the last error message before retrying
+        setMessages(prev => prev.slice(0, -1));
         handleSendMessage(lastUserMessage.text);
       }
     }
   };
+
 
   const handleToggleCategory = (index: number) => {
     const newExpanded = new Set(expandedCategories);

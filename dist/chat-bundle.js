@@ -23966,20 +23966,6 @@
 
   // chat/useChat.ts
   var import_react7 = __toESM(require_react(), 1);
-
-  // services/api.js
-  var chatAPI = {
-    async sendQuestion(question) {
-      return {
-        answer: "This is a dummy answer.",
-        sources: ["dummy source 1", "dummy source 2"],
-        links: ["dummy link 1", "dummy link 2"],
-        success: true
-      };
-    }
-  };
-
-  // chat/useChat.ts
   function useChat() {
     const [messages, setMessages] = (0, import_react7.useState)([]);
     const [inputValue, setInputValue] = (0, import_react7.useState)("");
@@ -24023,32 +24009,45 @@
       setIsBotResponding(true);
       setLastError(null);
       try {
-        const response = await chatAPI.sendQuestion({ text: text.trim() });
+        const response = await fetch("http://localhost:3001/api/chat", {
+          // Adjust URL if needed
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ query: text.trim() })
+        });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.error) {
+          throw new Error(data.error);
+        }
         const botMessage = {
           id: (Date.now() + 1).toString(),
-          text: response.answer,
+          text: data.answer || "Sorry, I couldn't get a proper answer.",
+          // Use received answer
           isBot: true,
           timestamp: /* @__PURE__ */ new Date(),
-          sources: response.sources,
-          links: response.links
+          // sources and links are NOT returned by the current backend, set to null
+          sources: null,
+          links: null
         };
         setMessages((prev) => [...prev, botMessage]);
-        if (response.success) {
-          setLastError(null);
-        } else {
-          setLastError(response.error || "Unknown error occurred");
-        }
+        setLastError(null);
       } catch (error) {
         console.error("Error sending message:", error);
-        const errorMessage = "Sorry, I encountered an error while processing your question. Please try again later.";
+        const errorMessageText = "Sorry, I encountered an error. Please try again later.";
         const errorMsg = {
           id: (Date.now() + 1).toString(),
-          text: errorMessage,
+          text: errorMessageText,
           isBot: true,
           timestamp: /* @__PURE__ */ new Date()
         };
         setMessages((prev) => [...prev, errorMsg]);
-        setLastError(error instanceof Error ? error.message : "Unknown error");
+        setLastError(error instanceof Error ? error.message : "Unknown error occurred");
       } finally {
         setIsBotResponding(false);
       }
@@ -24059,9 +24058,10 @@
       setLastError(null);
     };
     const handleRetryLastMessage = () => {
-      if (messages.length > 0) {
+      if (lastError && messages.length > 0) {
         const lastUserMessage = [...messages].reverse().find((msg) => !msg.isBot);
         if (lastUserMessage) {
+          setMessages((prev) => prev.slice(0, -1));
           handleSendMessage(lastUserMessage.text);
         }
       }
@@ -24428,7 +24428,7 @@
           isDarkMode
         }
       ),
-      /* @__PURE__ */ import_react12.default.createElement("div", { onMouseDown: handleResizeMouseDown, style: { cursor: "nwse-resize", position: "absolute", width: "10px", height: "10px", right: 0, bottom: 0, zIndex: 10 } })
+      /* @__PURE__ */ import_react12.default.createElement("div", { onMouseDown: handleResizeMouseDown, style: { cursor: "nwse-resize", position: "absolute", width: "10px", height: "10px", left: 0, top: 0, zIndex: 10, backgroundColor: "rgba(128, 128, 128, 0.5)" } })
     );
   };
   var ChatPanel_default = ChatPanel;

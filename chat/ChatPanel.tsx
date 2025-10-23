@@ -85,7 +85,7 @@ const ChatPanel: React.FC = () => {
         onSendMessage={handleSendMessage}
         isDarkMode={isDarkMode}
       />
-      <div onMouseDown={handleResizeMouseDown} style={{ cursor: 'nwse-resize', position: 'absolute', width: '10px', height: '10px', right: 0, bottom: 0, zIndex: 10 }}></div>
+      <div onMouseDown={handleResizeMouseDown} style={{ cursor: 'nwse-resize', position: 'absolute', width: '10px', height: '10px', left: 0, top: 0, zIndex: 10, backgroundColor: 'rgba(128, 128, 128, 0.5)' }}></div>
     </div>
   );
 };
