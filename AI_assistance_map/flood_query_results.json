@@ -1,0 +1,527 @@
+{
+  "query": "what is the expected precipitation and flood at University of Alabama in Tuscaloosa for next five hours?",
+  "answer": "For the next five hours at the University of Alabama in Tuscaloosa, the precipitation forecast indicates no expected rainfall. The forecast details are as follows:\n\n- **4:00 AM (UTC)**: 0% chance of precipitation, with no measurable rainfall.\n- **5:00 AM (UTC)**: 0% chance of precipitation, with no measurable rainfall.\n- **6:00 AM (UTC)**: 0% chance of precipitation, with no measurable rainfall.\n- **7:00 AM (UTC)**: 0% chance of precipitation, with no measurable rainfall.\n- **8:00 AM (UTC)**: 0% chance of precipitation, with no measurable rainfall.\n\nGiven these conditions, there is no anticipated flooding at the University of Alabama in Tuscaloosa during this time frame, as there is no precipitation expected. If you need further information or forecasts beyond this period, please let me know!",
+  "filtered_context": {
+    "query": "what is the expected precipitation and flood at University of Alabama in Tuscaloosa for next five hours?",
+    "intent_analysis": {
+      "needs_precipitation_forecast": true,
+      "needs_precipitation_history": false,
+      "needs_flood_history": false,
+      "needs_svi_data": false,
+      "needs_county_info": false,
+      "flood_event_filters": {
+        "max_events": null,
+        "max_distance_miles": 5.0,
+        "recent_only": false
+      },
+      "svi_relevance_threshold": 0.0
+    },
+    "filtered_data": [
+      {
+        "input_location": {
+          "name": "University of Alabama, Tuscaloosa",
+          "formatted_address": "Tuscaloosa, AL 35487, USA",
+          "latitude": 33.2114385,
+          "longitude": -87.5401002
+        },
+        "precipitation_forecast": [
+          {
+            "time": "2025-10-22T04:00:00Z",
+            "precipitation_probability": 0,
+            "precipitation_amount_mm": 0,
+            "precipitation_amount_in": 0.0,
+            "weather_condition": "N/A"
+          },
+          {
+            "time": "2025-10-22T05:00:00Z",
+            "precipitation_probability": 0,
+            "precipitation_amount_mm": 0,
+            "precipitation_amount_in": 0.0,
+            "weather_condition": "N/A"
+          },
+          {
+            "time": "2025-10-22T06:00:00Z",
+            "precipitation_probability": 0,
+            "precipitation_amount_mm": 0,
+            "precipitation_amount_in": 0.0,
+            "weather_condition": "N/A"
+          },
+          {
+            "time": "2025-10-22T07:00:00Z",
+            "precipitation_probability": 0,
+            "precipitation_amount_mm": 0,
+            "precipitation_amount_in": 0.0,
+            "weather_condition": "N/A"
+          },
+          {
+            "time": "2025-10-22T08:00:00Z",
+            "precipitation_probability": 0,
+            "precipitation_amount_mm": 0,
+            "precipitation_amount_in": 0.0,
+            "weather_condition": "N/A"
+          }
+        ]
+      }
+    ]
+  },
+  "full_retrieval_data": [
+    {
+      "input_location": {
+        "name": "University of Alabama, Tuscaloosa",
+        "formatted_address": "Tuscaloosa, AL 35487, USA",
+        "latitude": 33.2114385,
+        "longitude": -87.5401002
+      },
+      "county_data": {
+        "fips_code": "01125",
+        "county_name": "Tuscaloosa",
+        "state_name": "Alabama",
+        "area_sqmi": 1370.95730821369
+      },
+      "precipitation_history": [
+        {
+          "year": 2024,
+          "month": 1,
+          "precipitation_in": 83.76771653543307
+        },
+        {
+          "year": 2024,
+          "month": 2,
+          "precipitation_in": 63.71653543307087
+        },
+        {
+          "year": 2024,
+          "month": 3,
+          "precipitation_in": 62.846456692913385
+        },
+        {
+          "year": 2024,
+          "month": 4,
+          "precipitation_in": 33.09842519685039
+        },
+        {
+          "year": 2024,
+          "month": 5,
+          "precipitation_in": 41.05118110236221
+        },
+        {
+          "year": 2024,
+          "month": 6,
+          "precipitation_in": 40.25984251968504
+        },
+        {
+          "year": 2024,
+          "month": 7,
+          "precipitation_in": 83.24015748031496
+        },
+        {
+          "year": 2024,
+          "month": 8,
+          "precipitation_in": 21.728346456692915
+        },
+        {
+          "year": 2024,
+          "month": 9,
+          "precipitation_in": 57.531496062992126
+        },
+        {
+          "year": 2024,
+          "month": 10,
+          "precipitation_in": 8.259842519685039
+        },
+        {
+          "year": 2024,
+          "month": 11,
+          "precipitation_in": 41.10629921259842
+        },
+        {
+          "year": 2024,
+          "month": 12,
+          "precipitation_in": 50.10236220472441
+        }
+      ],
+      "precipitation_forecast": [
+        {
+          "time": "2025-10-22T04:00:00Z",
+          "precipitation_probability": 0,
+          "precipitation_amount_mm": 0,
+          "precipitation_amount_in": 0.0,
+          "weather_condition": "N/A"
+        },
+        {
+          "time": "2025-10-22T05:00:00Z",
+          "precipitation_probability": 0,
+          "precipitation_amount_mm": 0,
+          "precipitation_amount_in": 0.0,
+          "weather_condition": "N/A"
+        },
+        {
+          "time": "2025-10-22T06:00:00Z",
+          "precipitation_probability": 0,
+          "precipitation_amount_mm": 0,
+          "precipitation_amount_in": 0.0,
+          "weather_condition": "N/A"
+        },
+        {
+          "time": "2025-10-22T07:00:00Z",
+          "precipitation_probability": 0,
+          "precipitation_amount_mm": 0,
+          "precipitation_amount_in": 0.0,
+          "weather_condition": "N/A"
+        },
+        {
+          "time": "2025-10-22T08:00:00Z",
+          "precipitation_probability": 0,
+          "precipitation_amount_mm": 0,
+          "precipitation_amount_in": 0.0,
+          "weather_condition": "N/A"
+        }
+      ],
+      "flood_event_history": [
+        {
+          "type": "Flash Flood",
+          "date": "2021-07-24",
+          "distance_from_query_point_miles": 0.58,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2074,
+            "longitude": -87.5313
+          },
+          "nearest_address": "850 5th E Ave, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2021-07-24",
+          "distance_from_query_point_miles": 0.58,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2074,
+            "longitude": -87.5313
+          },
+          "nearest_address": "850 5th E Ave, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flood",
+          "date": "2020-02-06",
+          "distance_from_query_point_miles": 0.87,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2138,
+            "longitude": -87.5548
+          },
+          "nearest_address": "303 Reed St, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flood",
+          "date": "2020-02-06",
+          "distance_from_query_point_miles": 0.87,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2138,
+            "longitude": -87.5548
+          },
+          "nearest_address": "303 Reed St, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2021-07-23",
+          "distance_from_query_point_miles": 1.38,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2079,
+            "longitude": -87.5635
+          },
+          "nearest_address": "800 Almon Ave, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2021-07-23",
+          "distance_from_query_point_miles": 1.38,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2079,
+            "longitude": -87.5635
+          },
+          "nearest_address": "800 Almon Ave, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2023-05-09",
+          "distance_from_query_point_miles": 1.9,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2,
+            "longitude": -87.57
+          },
+          "nearest_address": "2718 16th St, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2023-05-09",
+          "distance_from_query_point_miles": 1.9,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2,
+            "longitude": -87.57
+          },
+          "nearest_address": "2718 16th St, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2020-04-12",
+          "distance_from_query_point_miles": 4.07,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2243,
+            "longitude": -87.6086
+          },
+          "nearest_address": "Tuscaloosa Airport Control Tower, 7601 Robert Cardinal Airport Rd, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2020-04-12",
+          "distance_from_query_point_miles": 4.07,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2243,
+            "longitude": -87.6086
+          },
+          "nearest_address": "Tuscaloosa Airport Control Tower, 7601 Robert Cardinal Airport Rd, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2020-07-07",
+          "distance_from_query_point_miles": 4.67,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.22,
+            "longitude": -87.62
+          },
+          "nearest_address": "1301 Industrial Park Dr, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2020-07-07",
+          "distance_from_query_point_miles": 4.67,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.22,
+            "longitude": -87.62
+          },
+          "nearest_address": "1301 Industrial Park Dr, Tuscaloosa, AL 35401, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2021-09-18",
+          "distance_from_query_point_miles": 4.76,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.165,
+            "longitude": -87.601
+          },
+          "nearest_address": "597X+XH Tuscaloosa, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2021-09-18",
+          "distance_from_query_point_miles": 4.76,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.165,
+            "longitude": -87.601
+          },
+          "nearest_address": "597X+XH Tuscaloosa, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2025-04-06",
+          "distance_from_query_point_miles": 4.79,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2061,
+            "longitude": -87.4576
+          },
+          "nearest_address": "1-7 Old Birmingham Hwy, Tuscaloosa, AL 35404, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2025-04-06",
+          "distance_from_query_point_miles": 4.79,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2061,
+            "longitude": -87.4576
+          },
+          "nearest_address": "1-7 Old Birmingham Hwy, Tuscaloosa, AL 35404, USA"
+        },
+        {
+          "type": "Flood",
+          "date": "2025-05-10",
+          "distance_from_query_point_miles": 7.45,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2521,
+            "longitude": -87.6593
+          },
+          "nearest_address": "782R+R7 Northport, AL, USA"
+        },
+        {
+          "type": "Flood",
+          "date": "2025-05-10",
+          "distance_from_query_point_miles": 7.45,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.2521,
+            "longitude": -87.6593
+          },
+          "nearest_address": "782R+R7 Northport, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2021-06-19",
+          "distance_from_query_point_miles": 8.86,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.241,
+            "longitude": -87.689
+          },
+          "nearest_address": "68R6+9C Coker, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2021-06-19",
+          "distance_from_query_point_miles": 8.86,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.241,
+            "longitude": -87.689
+          },
+          "nearest_address": "68R6+9C Coker, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2022-03-22",
+          "distance_from_query_point_miles": 8.9,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.218,
+            "longitude": -87.6936
+          },
+          "nearest_address": "6894+5H Tuscaloosa, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2022-03-22",
+          "distance_from_query_point_miles": 8.9,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.218,
+            "longitude": -87.6936
+          },
+          "nearest_address": "6894+5H Tuscaloosa, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2020-02-10",
+          "distance_from_query_point_miles": 16.84,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.23,
+            "longitude": -87.83
+          },
+          "nearest_address": "65HC+X2 Buhl, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2020-02-10",
+          "distance_from_query_point_miles": 16.84,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.23,
+            "longitude": -87.83
+          },
+          "nearest_address": "65HC+X2 Buhl, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2022-02-17",
+          "distance_from_query_point_miles": 18.83,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.097,
+            "longitude": -87.835
+          },
+          "nearest_address": "35W8+R2 Jena, AL, USA"
+        },
+        {
+          "type": "Flash Flood",
+          "date": "2022-02-17",
+          "distance_from_query_point_miles": 18.83,
+          "warning_zone": "TUSCALOOSA CO.",
+          "county": "Tuscaloosa",
+          "location": {
+            "latitude": 33.097,
+            "longitude": -87.835
+          },
+          "nearest_address": "35W8+R2 Jena, AL, USA"
+        }
+      ],
+      "social_vulnerability_index": {
+        "release_year": 2022,
+        "overall_ranking": {
+          "national": 0.651,
+          "state": 0.2879
+        },
+        "themes": {
+          "Socioeconomic Status": 0.2576,
+          "Household Characteristics": 0.0152,
+          "Racial & Ethnic Minority Status": 0.6364,
+          "Housing Type & Transportation": 0.7879
+        },
+        "variables": {
+          "No Health Insurance": 0.0455,
+          "No High School Diploma": 0.0758,
+          "Housing Cost Burden": 0.8636,
+          "Unemployed": 0.5455,
+          "Below 150% Poverty": 0.2424,
+          "English Language Proficiency (limited)": 0.5606,
+          "Single-Parent Households": 0.6667,
+          "Civilian with a Disability": 0.0303,
+          "Aged 17 & Younger": 0.1364,
+          "Aged 65 & Older": 0.0152,
+          "Minority (all except white, non-Hispanic)": 0.6364,
+          "Group Quarters": 0.8636,
+          "No Vehicle": 0.4394,
+          "Crowding (>1 person/room)": 0.6061,
+          "Mobile Homes": 0.1061,
+          "Multi-Unit Structures (10+)": 1.0
+        }
+      }
+    }
+  ]
+}
