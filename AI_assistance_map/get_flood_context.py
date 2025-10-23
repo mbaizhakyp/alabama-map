@@ -319,11 +319,9 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
     Retrieves a detailed list of historical flood events for a given county,
     calculates the distance from a user-specified point, and sorts the results
     by proximity (nearest first).
-
-    Note: Deduplicates events based on date, type, and location coordinates.
     """
     query = """
-        SELECT DISTINCT ON (et.EventType, e.beginDate, ST_Y(e.geometry), ST_X(e.geometry))
+        SELECT
             et.EventType,
             e.beginDate,
             e.warning_zone,
@@ -338,7 +336,7 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
         JOIN flai.TCLEventTypes et ON e.idEventType = et.idEventType
         LEFT JOIN flai.TCLCounties c ON e.fips_county_code = c.fips_county_code
         WHERE e.fips_county_code = %s
-        ORDER BY et.EventType, e.beginDate, ST_Y(e.geometry), ST_X(e.geometry), distance_meters ASC;
+        ORDER BY distance_meters ASC;
     """
     params = (user_lon, user_lat, fips_code)
     results = execute_query(connection, query, params=params, fetch=True)
@@ -347,10 +345,7 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
     if not results:
         return event_list
 
-    print(f"Found {len(results)} unique historical flood events. Sorting by distance and reverse geocoding...")
-
-    # Build event list with distance info, then sort by distance
-    events_with_distance = []
+    print(f"Found {len(results)} historical flood events. Sorting by distance and reverse geocoding...")
     for row in results:
         lat = row[4]
         lon = row[5]
@@ -377,10 +372,7 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
             },
             "nearest_address": address
         }
-        events_with_distance.append(event_details)
-
-    # Sort by distance (nearest first)
-    event_list = sorted(events_with_distance, key=lambda x: x['distance_from_query_point_miles'])
+        event_list.append(event_details)
 
     return event_list
 
@@ -597,7 +589,7 @@ Structure your response clearly and include specific numbers, dates, and locatio
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.2,
+            temperature=0.1,
         )
 
         return response.choices[0].message.content
