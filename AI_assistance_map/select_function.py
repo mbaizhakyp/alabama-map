@@ -74,7 +74,7 @@ def analyze_query_intent(query: str, openai_api_key: str) -> Dict[str, Any]:
 
         Guidelines:
         - If query asks about "why" or "vulnerability", set needs_svi_data to true
-        - If query is about future weather/rain, needs_precipitation_forecast is true
+        - If query is about future weather/rain/flood, needs_precipitation_forecast is true
         - If query is about past flooding, needs_flood_history is true
         - If query mentions demographics, poverty, housing, etc., needs_svi_data is true
         - For specific questions, use stricter filters; for exploratory questions, be more inclusive

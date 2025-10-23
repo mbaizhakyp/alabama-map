@@ -17,6 +17,8 @@ import openai
 import requests
 import sys
 from select_function import select_relevant_context
+from generate_pdf_report import generate_pdf_from_dict
+from generate_markdown_report import generate_markdown_from_dict
 
 
 class GoogleMapsClient:
@@ -317,9 +319,11 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
     Retrieves a detailed list of historical flood events for a given county,
     calculates the distance from a user-specified point, and sorts the results
     by proximity (nearest first).
+
+    Note: Deduplicates events based on date, type, and location coordinates.
     """
     query = """
-        SELECT
+        SELECT DISTINCT ON (et.EventType, e.beginDate, ST_Y(e.geometry), ST_X(e.geometry))
             et.EventType,
             e.beginDate,
             e.warning_zone,
@@ -334,7 +338,7 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
         JOIN flai.TCLEventTypes et ON e.idEventType = et.idEventType
         LEFT JOIN flai.TCLCounties c ON e.fips_county_code = c.fips_county_code
         WHERE e.fips_county_code = %s
-        ORDER BY distance_meters ASC;
+        ORDER BY et.EventType, e.beginDate, ST_Y(e.geometry), ST_X(e.geometry), distance_meters ASC;
     """
     params = (user_lon, user_lat, fips_code)
     results = execute_query(connection, query, params=params, fetch=True)
@@ -343,7 +347,10 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
     if not results:
         return event_list
 
-    print(f"Found {len(results)} historical flood events. Sorting by distance and reverse geocoding...")
+    print(f"Found {len(results)} unique historical flood events. Sorting by distance and reverse geocoding...")
+
+    # Build event list with distance info, then sort by distance
+    events_with_distance = []
     for row in results:
         lat = row[4]
         lon = row[5]
@@ -370,7 +377,10 @@ def get_flood_history(connection, fips_code, maps_client, user_lat, user_lon):
             },
             "nearest_address": address
         }
-        event_list.append(event_details)
+        events_with_distance.append(event_details)
+
+    # Sort by distance (nearest first)
+    event_list = sorted(events_with_distance, key=lambda x: x['distance_from_query_point_miles'])
 
     return event_list
 
@@ -587,7 +597,7 @@ Structure your response clearly and include specific numbers, dates, and locatio
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=0.7,
+            temperature=0.2,
         )
 
         return response.choices[0].message.content
@@ -745,12 +755,41 @@ if __name__ == "__main__":
         print(result['answer'])
         print("\n" + "="*70)
 
-        # Optionally save full results to file
-        save_choice = input("\nSave detailed results to file? (y/n): ").strip().lower()
-        if save_choice == 'y':
-            output_file = "flood_query_results.json"
-            with open(output_file, 'w') as f:
+        # Optionally save results
+        print("\n" + "="*70)
+        save_choice = input("Save detailed results? (json/pdf/md/all/no): ").strip().lower()
+
+        # Create results directory if needed
+        if save_choice != 'no':
+            os.makedirs('results', exist_ok=True)
+            from datetime import datetime
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Save JSON
+        if save_choice in ['json', 'all']:
+            json_file = f"results/flood_query_results_{timestamp}.json"
+            with open(json_file, 'w') as f:
                 json.dump(result, f, indent=2)
-            print(f"✓ Detailed results saved to {output_file}")
+            print(f"✓ JSON results saved to {json_file}")
+
+        # Generate PDF
+        if save_choice in ['pdf', 'all']:
+            print("\n📄 Generating PDF report...")
+            try:
+                pdf_filename = f"flood_report_{timestamp}.pdf"
+                pdf_path = generate_pdf_from_dict(result, pdf_filename)
+                print(f"✓ PDF report generated: {pdf_path}")
+            except Exception as e:
+                print(f"✗ Error generating PDF: {e}")
+
+        # Generate Markdown
+        if save_choice in ['md', 'all']:
+            print("\n📝 Generating Markdown report...")
+            try:
+                md_filename = f"flood_report_{timestamp}.md"
+                md_path = generate_markdown_from_dict(result, md_filename)
+                print(f"✓ Markdown report generated: {md_path}")
+            except Exception as e:
+                print(f"✗ Error generating Markdown: {e}")
     else:
         print("\n✗ Failed to process query. Please check the errors above.")
