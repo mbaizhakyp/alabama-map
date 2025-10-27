@@ -196,7 +196,7 @@ app.post('/api/chat', (req, res) => {
              console.log("--- Complete Python stderr END ---");
         }
 
-        // --- *** MODIFIED ERROR CHECK *** ---
+        // --- ERROR CHECK 1: Script Exit Code ---
         // Only treat non-zero exit code as a fatal script error
         if (code !== 0) {
             console.error(`Python script failed with exit code ${code}.`);
@@ -206,42 +206,45 @@ app.post('/api/chat', (req, res) => {
                  details: scriptError ? scriptError.trim() : `Script exited with code ${code}`
                 });
         }
-        // --- *** END MODIFIED ERROR CHECK *** ---
 
         // Proceed if code is 0
         try {
             const trimmedOutput = scriptOutput.trim();
+            // --- ERROR CHECK 2: Empty Output ---
             if (!trimmedOutput) {
                 console.error("Python script output (stdout) was empty despite exit code 0.");
                 return res.status(500).json({ error: 'Processing script returned no output.' });
             }
 
-            // Log raw stdout before parsing for final verification
-            // console.log("--- Raw Python stdout START ---");
-            // console.log(trimmedOutput);
-            // console.log("--- Raw Python stdout END ---");
-
+            // Parse the JSON output from stdout
             const result = JSON.parse(trimmedOutput);
-            // console.log("Parsed Python result:", JSON.stringify(result, null, 2)); // Optional: Log parsed result
+            console.log("--- Sending this full result to frontend: ---");
+            console.log(JSON.stringify(result, null, 2));
+            // --- ERROR CHECK 3: Valid JSON Content ---
+            // Check if the result is valid
+            // It's valid if it's an error object (e.g., {"error": "..."})
+            // OR if it has an answer (e.g., {"answer": "...", ...})
+            if (result && (result.answer || result.error)) {
+                console.log("Successfully parsed full result from Python script.");
+                
+                // --- SUCCESS ---
+                // Send the ENTIRE result object to the frontend
+                // This includes .answer, .county_name, .filtered_context, etc.
+                res.json(result); 
 
-            if (result && result.answer) {
-                console.log("Successfully parsed answer from Python script.");
-                res.json({
-                    answer: result.answer,
-                    county_name: result.county_name || null
-                 });
-            } else if (result && result.error) { // Handle JSON errors reported by Python script
-                console.error("Python script returned a JSON error:", result.error);
-                res.status(500).json({ error: result.error });
             } else {
-                 console.error("Parsed Python output missing 'answer' key or 'error' key:", result);
+                 // Handle cases where Python exited 0 but didn't produce valid JSON
+                 console.error("Parsed Python output missing 'answer' or 'error' key:", result);
                  res.status(500).json({ error: 'Invalid response format from processing script.' });
             }
         } catch (parseError) {
+            // --- ERROR CHECK 4: JSON Parsing Failed ---
+            // Handle cases where stdout was not valid JSON
             console.error('Error parsing Python script output (stdout):', parseError);
             res.status(500).json({
                 error: 'Failed to parse response from processing script.',
-                details: parseError.message
+                details: parseError.message,
+                raw_output: scriptOutput // Include raw output for debugging
             });
         }
     });

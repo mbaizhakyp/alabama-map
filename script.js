@@ -28,7 +28,8 @@ const SVI_DATA = {
     }
 };
 let forecastData = [];
-let allCountyGeometries = []; // <-- ADD THIS
+let allCountyGeometries = [];
+let lastHighlightedData = null;
 
 // --- MAP INITIALIZATION ---
 const map = new mapboxgl.Map({
@@ -121,11 +122,21 @@ function addSourcesAndLayers() {
         // This filter ["==", ["get", "name"], ""] means "show nothing" by default.
         filter: ["==", ["get", "name"], ""]
     }, 'highlight-county-layer-line');
+    map.addLayer({
+        id: 'highlight-county-layer-fill', // <-- NEW CLICK TARGET
+        type: 'fill',
+        source: 'highlight-county-source', // <-- SAME SOURCE as the line
+        paint: {
+            'fill-color': '#000', // Color doesn't matter
+            'fill-opacity': 0.0      // Totally invisible
+        }
+    }, 'county-mask-layer'); // Place it under the mask, but this order doesn't really matter
 }
 
 // --- Interaction Listeners ---
 function setupInteractionListeners() {
-    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer'];
+    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer', 'highlight-county-layer-fill'];
+    console.log('Clickable layers set:', clickableLayers); // <-- LOG
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
     const hoverLayers = {
@@ -177,12 +188,26 @@ function setupInteractionListeners() {
 
     map.off('click');
     map.on('click', (e) => {
+        console.log('Map clicked at', e.lngLat);
         const features = map.queryRenderedFeatures(e.point, { layers: clickableLayers });
         if (!features.length) return;
+        console.log('Clicked on feature(s) from layers:', features.map(f => f.layer.id)); // <-- LOG
         popup.remove();
         const feature = features[0];
         let content = '';
         switch (feature.layer.id) {
+            case 'highlight-county-layer-fill':
+                console.log("CLICKED ON 'highlight-county-layer-line'"); // <-- LOG
+                if (lastHighlightedData) {
+                    // Call a new function to build the visual info HTML
+                    console.log('Data found, building popup HTML...'); // <-- LOG
+                    content = buildPopupHtmlFromData(lastHighlightedData);
+                } else {
+                    console.log('Data is NULL, showing generic popup.'); // <-- LOG
+                    content = "<h3>Highlighted County</h3><p>No detailed data available for this query.</p>";
+                }
+                openModal(content); // Use your existing modal
+                break;
             case 'forecast-layer':
                 const forecastValue = feature.properties.predicted_precipitation_inches;
                 content = `<h3>${feature.properties.name}</h3><p>Forecast Value: <strong>${forecastValue.toFixed(2)} in</strong></p>${createVisualizerHTML(forecastValue, "forecast")}`;
@@ -339,15 +364,18 @@ document.addEventListener('DOMContentLoaded', () => {
     riverFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
     flashFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
 
-    // --- ADD THIS LISTENER ---
-    // Listen for the custom event dispatched from useChat.ts
+   console.log('Map script loaded. Attaching event listeners...');
     window.addEventListener('highlightCounty', (event) => {
         const countyName = event.detail.countyName;
+        console.log('highlightCounty event HEARD! County:', countyName); // <-- LOG
         if (countyName) {
             highlightCountyOnMap(countyName);
         }
     });
-    // --- END ADD ---
+    window.addEventListener('setPopupData', (event) => {
+        console.log('setPopupData event HEARD! Data:', event.detail.data); // <-- LOG
+        lastHighlightedData = event.detail.data;
+    });
 });
 
 map.on('load', () => {
@@ -410,7 +438,7 @@ function updateMapState() {
     if (!map.isStyleLoaded()) return;
 
     clearCountyHighlight(); // Clear any existing highlight/mask
-    
+
     const activeHeader = document.querySelector('.accordion-header.active');
     const selectedCategory = activeHeader ? activeHeader.dataset.category : null;
 
@@ -505,7 +533,7 @@ function highlightCountyOnMap(countyName) {
         // 3. Fly the map (unchanged)
         map.flyTo({
             center: [countyCenter.lng, countyCenter.lat],
-            zoom: 9, 
+            zoom: 7, 
             padding: 40
         });
 
@@ -526,4 +554,106 @@ function highlightCountyOnMap(countyName) {
         map.setFilter('county-mask-layer', ["==", ["get", "name"], ""]);
         // --- END ADD ---
     }
+}
+/**
+ * Main function to build the modal's HTML from the cached data.
+ * This mimics the structure of your Markdown/PDF reports.
+ */
+function buildPopupHtmlFromData(context) {
+    let html = '';
+    // The data is an array of locations, get the first one
+    const locationData = context.filtered_data[0]; 
+
+    if (!locationData) {
+        return "<h3>Error</h3><p>Could not find location data.</p>";
+    }
+    
+    const locName = locationData.input_location?.name || "Selected Area";
+    html += `<h3>${locName}</h3>`;
+
+    // Add sections
+    if (locationData.county_data) {
+        html += buildCountyTable(locationData.county_data);
+    }
+    if (locationData.social_vulnerability_index) {
+        html += buildSviTable(locationData.social_vulnerability_index);
+    }
+    if (locationData.precipitation_forecast?.length > 0) {
+        html += buildForecastTable(locationData.precipitation_forecast);
+    }
+    if (locationData.flood_event_history?.length > 0) {
+        html += buildFloodHistoryTable(locationData.flood_event_history);
+    }
+
+    return html;
+}
+
+/** Helper function to build County Info table */
+function buildCountyTable(data) {
+    return `
+        <h4>County Information</h4>
+        <table class="modal-table">
+            <tr><td>County</td><td>${data.county_name || 'N/A'}</td></tr>
+            <tr><td>State</td><td>${data.state_name || 'N/A'}</td></tr>
+            <tr><td>FIPS Code</td><td>${data.fips_code || 'N/A'}</td></tr>
+            <tr><td>Area (sq mi)</td><td>${data.area_sqmi?.toFixed(2) || 'N/A'}</td></tr>
+        </table>
+    `;
+}
+
+/** Helper function to build SVI table */
+function buildSviTable(data) {
+    let themesHtml = Object.entries(data.themes || {})
+        .map(([key, value]) => `<tr><td>${key}</td><td>${value?.toFixed(2) || 'N/A'}</td></tr>`)
+        .join('');
+    
+    return `
+        <h4>Social Vulnerability Index (SVI)</h4>
+        <table class="modal-table">
+            <tr><td>Overall (National)</td><td><b>${data.overall_ranking?.national?.toFixed(2) || 'N/A'}</b></td></tr>
+            <tr><td>Overall (State)</td><td><b>${data.overall_ranking?.state?.toFixed(2) || 'N/A'}</b></td></tr>
+            ${themesHtml}
+        </table>
+    `;
+}
+
+/** Helper function to build Forecast table */
+function buildForecastTable(data) {
+    let forecastHtml = data.slice(0, 6) // Show first 6 hours
+        .map(hour => `
+            <tr>
+                <td>${hour.time.split(' (')[0]}</td> 
+                <td>${hour.precipitation_probability?.toFixed(0) || 0}%</td>
+                <td>${hour.precipitation_amount_in?.toFixed(2) || 0.00} in</td>
+                <td>${hour.weather_condition || 'N/A'}</td>
+            </tr>
+        `).join('');
+
+    return `
+        <h4>Precipitation Forecast (Next 6 Hours)</h4>
+        <table class="modal-table">
+            <thead><tr><th>Time</th><th>Chance</th><th>Amount</th><th>Condition</th></tr></thead>
+            <tbody>${forecastHtml}</tbody>
+        </table>
+    `;
+}
+
+/** Helper function to build Flood History table */
+function buildFloodHistoryTable(data) {
+    let eventsHtml = data.slice(0, 5) // Show first 5 events
+        .map(event => `
+            <tr>
+                <td>${new Date(event.date).toLocaleDateString()}</td>
+                <td>${event.type || 'N/A'}</td>
+                <td>${event.distance_from_query_point_miles?.toFixed(1) || 'N/A'} mi</td>
+            </tr>
+        `).join('');
+
+    return `
+        <h4>Recent Flood History (Nearest 5)</h4>
+        <table class="modal-table">
+            <thead><tr><th>Date</th><th>Type</th><th>Distance</th></tr></thead>
+            <tbody>${eventsHtml}</tbody>
+        </table>
+    `;
 }

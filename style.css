@@ -217,19 +217,47 @@ body.sidebar-active header { transform: translateX(320px); width: calc(100% - 32
 /* --- MODAL STYLES --- */
 .hidden { display: none !important; }
 
+/* Positions the main modal container in the top-left corner.
+  Adjust top/left/width values as needed.
+*/
 #modal {
-    position: fixed;
-    top: 155px;
-    right: 30px;
-    width: 350px;
-    z-index: 2;
-    background: var(--panel-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 25px 30px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  /* Positioning (existing) */
+  position: absolute;
+  top: 70px;
+  left: 10px;
+  width: 350px;
+  max-width: 90vw;
+  right: auto;
+  bottom: auto;
+  transform: none; 
+  transition: left 0.3s ease-in-out;
+  z-index: 2; 
+
+  /* --- UPDATED STYLES --- */
+  /* Use the same translucent style as your other panels */
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  /* Default text color for light mode */
+  color: var(--text-primary); 
 }
+
+/* --- ADD THIS NEW RULE --- */
+/* This moves the modal to the right when the sidebar is open */
+body.sidebar-active #modal {
+  left: 330px; /* 320px (sidebar width) + 10px (margin) */
+}
+
+/* Makes the modal's *content* area scrollable. (This is unchanged) */
+#modal-content {
+  max-height: 400px; /* Set a max height */
+  overflow-y: auto;   /* Add a scrollbar only when needed */
+  padding: 10px;      /* Add some internal spacing */
+}
+
 #modal-close-btn {
     position: absolute; top: 10px; right: 15px;
     background: transparent; border: none;
@@ -248,3 +276,28 @@ body.sidebar-active header { transform: translateX(320px); width: calc(100% - 32
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .modal-labels { font-size: 0.75em; display: flex; justify-content: space-between; color: var(--text-secondary); margin-top: 4px; }
+
+/* Add this to your main CSS file */
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+.modal-table th,
+.modal-table td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: left;
+}
+
+.modal-table thead tr {
+  background-color: #f4f4f4;
+}
+
+.modal-table td:first-child {
+  font-weight: bold;
+  width: 40%;
+}

@@ -72,20 +72,28 @@ export function useChat() {
       }
 
       const data = await response.json();
-
+      console.log('Chat component received data from server:', data);
       if (data.error) {
          // Handle errors reported by the backend/python script
         throw new Error(data.error);
       }
-      // --- NEW FEATURE: Handle county_name from response ---
-      // If we received a county_name, dispatch a global event for the map
+      
+      // --- Dispatch county highlight event if county_name is provided ---
       if (data.county_name) {
         const highlightEvent = new CustomEvent('highlightCounty', {
           detail: { countyName: data.county_name }
         });
         window.dispatchEvent(highlightEvent);
       }
-      // --- END NEW FEATURE ---
+
+      // --- Dispatch popup data event if filtered_context is provided ---
+      if (data.filtered_context) {
+        console.log('Dispatching setPopupData event with data:', data.filtered_context);
+        const popupDataEvent = new CustomEvent('setPopupData', {
+            detail: { data: data.filtered_context } 
+        });
+        window.dispatchEvent(popupDataEvent);
+      }
 
       // --- Use the answer from the backend response ---
       const botMessage: Message = {

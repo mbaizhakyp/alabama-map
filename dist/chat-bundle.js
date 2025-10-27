@@ -24022,6 +24022,7 @@
           throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log("Chat component received data from server:", data);
         if (data.error) {
           throw new Error(data.error);
         }
@@ -24030,6 +24031,13 @@
             detail: { countyName: data.county_name }
           });
           window.dispatchEvent(highlightEvent);
+        }
+        if (data.filtered_context) {
+          console.log("Dispatching setPopupData event with data:", data.filtered_context);
+          const popupDataEvent = new CustomEvent("setPopupData", {
+            detail: { data: data.filtered_context }
+          });
+          window.dispatchEvent(popupDataEvent);
         }
         const botMessage = {
           id: (Date.now() + 1).toString(),
