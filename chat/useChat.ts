@@ -77,6 +77,15 @@ export function useChat() {
          // Handle errors reported by the backend/python script
         throw new Error(data.error);
       }
+      // --- NEW FEATURE: Handle county_name from response ---
+      // If we received a county_name, dispatch a global event for the map
+      if (data.county_name) {
+        const highlightEvent = new CustomEvent('highlightCounty', {
+          detail: { countyName: data.county_name }
+        });
+        window.dispatchEvent(highlightEvent);
+      }
+      // --- END NEW FEATURE ---
 
       // --- Use the answer from the backend response ---
       const botMessage: Message = {

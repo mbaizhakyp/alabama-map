@@ -28,6 +28,7 @@ const SVI_DATA = {
     }
 };
 let forecastData = [];
+let allCountyGeometries = []; // <-- ADD THIS
 
 // --- MAP INITIALIZATION ---
 const map = new mapboxgl.Map({
@@ -87,6 +88,24 @@ function addSourcesAndLayers() {
     
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
     map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
+    // --- ADD NEW HIGHLIGHT LAYER ---
+    map.addSource('highlight-county-source', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] } // Start empty
+    });
+
+    map.addLayer({
+        id: 'highlight-county-layer-line',
+        type: 'line',
+        source: 'highlight-county-source',
+        paint: {
+            'line-color': '#005a9c', // A distinct blue
+            'line-width': 3,
+            'line-opacity': 0.9
+        },
+        layout: { 'visibility': 'visible' }
+    });
+    // --- END NEW HIGHLIGHT LAYER ---
 }
 
 // --- Interaction Listeners ---
@@ -295,6 +314,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     riverFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
     flashFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
+
+    // --- ADD THIS LISTENER ---
+    // Listen for the custom event dispatched from useChat.ts
+    window.addEventListener('highlightCounty', (event) => {
+        const countyName = event.detail.countyName;
+        if (countyName) {
+            highlightCountyOnMap(countyName);
+        }
+    });
+    // --- END ADD ---
 });
 
 map.on('load', () => {
@@ -302,6 +331,16 @@ map.on('load', () => {
     updateMapState();
     setupInteractionListeners();
     fetchForecastData();
+    // --- ADD THIS ---
+    // Fetch the county geometry file so we can search it later
+    fetch('precipitation-data/january.geojson')
+        .then(res => res.json())
+        .then(geojson => {
+            allCountyGeometries = geojson.features;
+            console.log(`Loaded ${allCountyGeometries.length} county geometries for highlighting.`);
+        })
+        .catch(err => console.error("Error loading county geometry file:", err));
+    // --- END ADD ---
 });
 
 function updateFloodDataSources() {
@@ -370,3 +409,79 @@ function updateMapState() {
         });
     }
 }
+// --- ADD THIS NEW HELPER FUNCTION ---
+/**
+ * Calculates the simple center (centroid) of a county feature's geometry.
+ * Handles both Polygon and MultiPolygon shapes.
+ */
+function getCountyCenter(feature) {
+    const geometryType = feature.geometry.type;
+    const coordinates = feature.geometry.coordinates;
+    let lonSum = 0;
+    let latSum = 0;
+    let pointCount = 0;
+
+    if (geometryType === 'Polygon') {
+        // coordinates[0] is the outer ring
+        coordinates[0].forEach(coord => {
+            lonSum += coord[0]; // lng
+            latSum += coord[1]; // lat
+            pointCount++;
+        });
+    } else if (geometryType === 'MultiPolygon') {
+        // Iterate through each polygon in the multipolygon
+        coordinates.forEach(polygon => {
+            // polygon[0] is the outer ring of that specific polygon
+            polygon[0].forEach(coord => {
+                lonSum += coord[0]; // lng
+                latSum += coord[1]; // lat
+                pointCount++;
+            });
+        });
+    }
+
+    if (pointCount === 0) {
+        // Fallback to Alabama's center just in case
+        return { lng: -86.9, lat: 32.8 }; 
+    }
+
+    return {
+        lng: lonSum / pointCount,
+        lat: latSum / pointCount
+    };
+}
+// --- ADD THIS NEW FUNCTION ---
+function highlightCountyOnMap(countyName) {
+    if (!countyName || allCountyGeometries.length === 0) {
+        console.warn('Cannot highlight county: No name provided or geometries not loaded.');
+        return;
+    }
+    console.log(`Highlighting county: ${countyName}`);
+    
+    // Find the feature (this part is unchanged)
+    const countyFeature = allCountyGeometries.find(
+        f => f.properties.name && f.properties.name.toLowerCase().includes(countyName.toLowerCase())
+    );
+
+    if (countyFeature) {
+        // 1. Update the highlight layer's data (unchanged)
+        map.getSource('highlight-county-source').setData(countyFeature);
+
+        // --- MODIFICATION ---
+        // 2. Calculate the center using the new helper function
+        const countyCenter = getCountyCenter(countyFeature);
+        
+        // 3. Fly the map to the center with a fixed zoom
+        map.flyTo({
+            center: [countyCenter.lng, countyCenter.lat],
+            zoom: 9, // Zoom level 9 is good for a single county
+            padding: 40 // Keep padding for the sidebar
+        });
+        // --- END MODIFICATION ---
+
+    } else {
+        console.warn(`County "${countyName}" not found in geometries.`);
+        map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
+    }
+}
+// --- END NEW FUNCTION ---

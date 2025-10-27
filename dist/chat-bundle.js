@@ -24025,6 +24025,12 @@
         if (data.error) {
           throw new Error(data.error);
         }
+        if (data.county_name) {
+          const highlightEvent = new CustomEvent("highlightCounty", {
+            detail: { countyName: data.county_name }
+          });
+          window.dispatchEvent(highlightEvent);
+        }
         const botMessage = {
           id: (Date.now() + 1).toString(),
           text: data.answer || "Sorry, I couldn't get a proper answer.",

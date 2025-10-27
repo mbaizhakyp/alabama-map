@@ -29,6 +29,47 @@ function getCentroid(coordinates) {
         lon: lonSum / polygon.length,
     };
 }
+// --- ADD THIS NEW HELPER FUNCTION ---
+/**
+ * Calculates the simple center (centroid) of a county feature's geometry.
+ * Handles both Polygon and MultiPolygon shapes.
+ */
+function getCountyCenter(feature) {
+    const geometryType = feature.geometry.type;
+    const coordinates = feature.geometry.coordinates;
+    let lonSum = 0;
+    let latSum = 0;
+    let pointCount = 0;
+
+    if (geometryType === 'Polygon') {
+        // coordinates[0] is the outer ring
+        coordinates[0].forEach(coord => {
+            lonSum += coord[0]; // lng
+            latSum += coord[1]; // lat
+            pointCount++;
+        });
+    } else if (geometryType === 'MultiPolygon') {
+        // Iterate through each polygon in the multipolygon
+        coordinates.forEach(polygon => {
+            // polygon[0] is the outer ring of that specific polygon
+            polygon[0].forEach(coord => {
+                lonSum += coord[0]; // lng
+                latSum += coord[1]; // lat
+                pointCount++;
+            });
+        });
+    }
+
+    if (pointCount === 0) {
+        // Fallback to Alabama's center just in case
+        return { lng: -86.9, lat: 32.8 }; 
+    }
+
+    return {
+        lng: lonSum / pointCount,
+        lat: latSum / pointCount
+    };
+}
 
 // Existing /api/forecast endpoint
 app.get('/api/forecast', async (req, res) => {
@@ -185,7 +226,10 @@ app.post('/api/chat', (req, res) => {
 
             if (result && result.answer) {
                 console.log("Successfully parsed answer from Python script.");
-                res.json({ answer: result.answer });
+                res.json({
+                    answer: result.answer,
+                    county_name: result.county_name || null
+                 });
             } else if (result && result.error) { // Handle JSON errors reported by Python script
                 console.error("Python script returned a JSON error:", result.error);
                 res.status(500).json({ error: result.error });
