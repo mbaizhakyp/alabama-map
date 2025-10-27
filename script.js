@@ -106,6 +106,21 @@ function addSourcesAndLayers() {
         layout: { 'visibility': 'visible' }
     });
     // --- END NEW HIGHLIGHT LAYER ---
+    map.addSource('all-counties-source', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] } // Start empty
+    });
+    map.addLayer({
+        id: 'county-mask-layer',
+        type: 'fill',
+        source: 'all-counties-source', // Use the new source
+        paint: {
+            'fill-color': '#000', // Black
+            'fill-opacity': 0.5    // 50% opacity. Adjust this value to make it lighter/darker
+        },
+        // This filter ["==", ["get", "name"], ""] means "show nothing" by default.
+        filter: ["==", ["get", "name"], ""]
+    }, 'highlight-county-layer-line');
 }
 
 // --- Interaction Listeners ---
@@ -207,6 +222,15 @@ function setupInteractionListeners() {
         }
         openModal(content);
     });
+}
+
+function clearCountyHighlight() {
+    if (map.getSource('highlight-county-source')) {
+        map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
+    }
+    if (map.getLayer('county-mask-layer')) {
+        map.setFilter('county-mask-layer', ["==", ["get", "name"], ""]);
+    }
 }
 
 function createVisualizerHTML(value, type) {
@@ -338,6 +362,13 @@ map.on('load', () => {
         .then(geojson => {
             allCountyGeometries = geojson.features;
             console.log(`Loaded ${allCountyGeometries.length} county geometries for highlighting.`);
+            
+            // --- ADD THIS ---
+            // Now, populate the new mask source with all the county geometries
+            if (map.getSource('all-counties-source')) {
+                map.getSource('all-counties-source').setData(geojson);
+            }
+            // --- END ADD ---
         })
         .catch(err => console.error("Error loading county geometry file:", err));
     // --- END ADD ---
@@ -378,6 +409,8 @@ function updateSviLayer() {
 function updateMapState() {
     if (!map.isStyleLoaded()) return;
 
+    clearCountyHighlight(); // Clear any existing highlight/mask
+    
     const activeHeader = document.querySelector('.accordion-header.active');
     const selectedCategory = activeHeader ? activeHeader.dataset.category : null;
 
@@ -450,7 +483,7 @@ function getCountyCenter(feature) {
         lat: latSum / pointCount
     };
 }
-// --- ADD THIS NEW FUNCTION ---
+// --- REPLACE YOUR OLD FUNCTION WITH THIS ---
 function highlightCountyOnMap(countyName) {
     if (!countyName || allCountyGeometries.length === 0) {
         console.warn('Cannot highlight county: No name provided or geometries not loaded.');
@@ -458,30 +491,39 @@ function highlightCountyOnMap(countyName) {
     }
     console.log(`Highlighting county: ${countyName}`);
     
-    // Find the feature (this part is unchanged)
     const countyFeature = allCountyGeometries.find(
         f => f.properties.name && f.properties.name.toLowerCase().includes(countyName.toLowerCase())
     );
 
     if (countyFeature) {
-        // 1. Update the highlight layer's data (unchanged)
+        // 1. Update the highlight line (unchanged)
         map.getSource('highlight-county-source').setData(countyFeature);
 
-        // --- MODIFICATION ---
-        // 2. Calculate the center using the new helper function
+        // 2. Calculate the center (unchanged)
         const countyCenter = getCountyCenter(countyFeature);
         
-        // 3. Fly the map to the center with a fixed zoom
+        // 3. Fly the map (unchanged)
         map.flyTo({
             center: [countyCenter.lng, countyCenter.lat],
-            zoom: 9, // Zoom level 9 is good for a single county
-            padding: 40 // Keep padding for the sidebar
+            zoom: 9, 
+            padding: 40
         });
-        // --- END MODIFICATION ---
+
+        // --- ADD THIS ---
+        // 4. Update the mask filter
+        // This filter tells the mask layer to cover every county *except* the one we found.
+        const highlightedCountyName = countyFeature.properties.name;
+        map.setFilter('county-mask-layer', ["!=", ["get", "name"], highlightedCountyName]);
+        // --- END ADD ---
 
     } else {
         console.warn(`County "${countyName}" not found in geometries.`);
+        // Clear highlight line
         map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
+        
+        // --- ADD THIS ---
+        // Reset the mask filter to show nothing
+        map.setFilter('county-mask-layer', ["==", ["get", "name"], ""]);
+        // --- END ADD ---
     }
 }
-// --- END NEW FUNCTION ---
