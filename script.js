@@ -107,7 +107,7 @@ function addSourcesAndLayers() {
         source: 'all-counties-source', // Uses the source populated on map load
         paint: {
             'line-color': '#A0AEC0', // A light-medium gray
-            'line-width': 1,
+            'line-width': 3,
             'line-opacity': 0.8
         },
         layout: {
@@ -121,7 +121,7 @@ function addSourcesAndLayers() {
         source: 'highlight-county-source',
         paint: {
             'line-color': '#005a9c', // A distinct blue
-            'line-width': 3,
+            'line-width': 5,
             'line-opacity': 0.9
         },
         layout: { 'visibility': 'visible' }
@@ -132,8 +132,8 @@ function addSourcesAndLayers() {
         type: 'fill',
         source: 'all-counties-source', // Use the new source
         paint: {
-            'fill-color': '#000', // Black
-            'fill-opacity': 0.5    // 50% opacity. Adjust this value to make it lighter/darker
+            'fill-color': 'yellow', // Black
+            'fill-opacity': 0.2    // 50% opacity. Adjust this value to make it lighter/darker
         },
         filter: ["==", ["get", "name"], ""], // Show nothing by default
     }, 'highlight-county-layer-line'); // Place mask *under* the blue highlight
