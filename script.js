@@ -106,9 +106,9 @@ function addSourcesAndLayers() {
         type: 'line',
         source: 'all-counties-source', // Uses the source populated on map load
         paint: {
-            'line-color': '#A0AEC0', // A light-medium gray
-            'line-width': 3,
-            'line-opacity': 0.8
+            'line-color': 'black', // A light-medium gray
+            'line-width': 1,
+            'line-opacity': 0.5
         },
         layout: {
             'visibility': 'visible' // Visible by default
@@ -120,7 +120,7 @@ function addSourcesAndLayers() {
         type: 'line',
         source: 'highlight-county-source',
         paint: {
-            'line-color': '#005a9c', // A distinct blue
+            'line-color': 'red', // A distinct blue
             'line-width': 5,
             'line-opacity': 0.9
         },
@@ -135,7 +135,7 @@ function addSourcesAndLayers() {
             'fill-color': 'yellow', // Black
             'fill-opacity': 0.2    // 50% opacity. Adjust this value to make it lighter/darker
         },
-        filter: ["==", ["get", "name"], ""], // Show nothing by default
+        filter: ["==", ["get", "COUNTY"], ""], // Show nothing by default
     }, 'highlight-county-layer-line'); // Place mask *under* the blue highlight
     
     map.addLayer({
@@ -280,7 +280,7 @@ function clearCountyHighlight() {
         map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
     }
     if (map.getLayer('county-mask-layer')) {
-        map.setFilter('county-mask-layer', ["==", ["get", "name"], ""]);
+        map.setFilter('county-mask-layer', ["==", ["get", "COUNTY"], ""]);
     }
     // Show the default gray borders
     if (map.getLayer('all-counties-borders-layer')) {
@@ -411,7 +411,7 @@ map.on('load', () => {
     setupInteractionListeners();
     fetchForecastData();
     
-    fetch('precipitation-data/january.geojson')
+    fetch('svi-data/alabama_svi_tracts_master.geojson')
         .then(res => res.json())
         .then(geojson => {
             allCountyGeometries = geojson.features;
@@ -544,16 +544,28 @@ function highlightCountyOnMap(countyName) {
     }
     console.log(`Highlighting county: ${countyName}`);
     
-    const countyFeature = allCountyGeometries.find(
-        f => f.properties.name && f.properties.name.toLowerCase().includes(countyName.toLowerCase())
+    const countyFeatures = allCountyGeometries.filter(
+        f => f.properties.COUNTY && f.properties.COUNTY.toLowerCase().includes(countyName.toLowerCase())
     );
 
-    if (countyFeature) {
+    if (countyFeatures.length > 0) {
+        const featureCollection = { type: 'FeatureCollection', features: countyFeatures };
+        
         // 1. Update the highlight line
-        map.getSource('highlight-county-source').setData(countyFeature);
+        map.getSource('highlight-county-source').setData(featureCollection);
 
-        // 2. Calculate the center
-        const countyCenter = getCountyCenter(countyFeature);
+        // 2. Calculate the center of all found tracts
+        let lngSum = 0;
+        let latSum = 0;
+        countyFeatures.forEach(feature => {
+            const center = getCountyCenter(feature);
+            lngSum += center.lng;
+            latSum += center.lat;
+        });
+        const countyCenter = {
+            lng: lngSum / countyFeatures.length,
+            lat: latSum / countyFeatures.length
+        };
         
         // 3. Fly the map
         map.flyTo({
@@ -563,8 +575,8 @@ function highlightCountyOnMap(countyName) {
         });
 
         // 4. Update the mask filter
-        const highlightedCountyName = countyFeature.properties.name;
-        map.setFilter('county-mask-layer', ["!=", ["get", "name"], highlightedCountyName]);
+        const highlightedCountyName = countyFeatures[0].properties.COUNTY;
+        map.setFilter('county-mask-layer', ["!=", ["get", "COUNTY"], highlightedCountyName]);
         
         // 5. Hide the default gray borders
         map.setLayoutProperty('all-counties-borders-layer', 'visibility', 'none');
@@ -575,7 +587,7 @@ function highlightCountyOnMap(countyName) {
         map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
         
         // Reset the mask filter
-        map.setFilter('county-mask-layer', ["==", ["get", "name"], ""]);
+        map.setFilter('county-mask-layer', ["==", ["get", "COUNTY"], ""]);
 
         // Show the default gray borders again
         map.setLayoutProperty('all-counties-borders-layer', 'visibility', 'visible');
