@@ -89,10 +89,30 @@ function addSourcesAndLayers() {
     
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
     map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
-    // --- ADD NEW HIGHLIGHT LAYER ---
+    
+    map.addSource('all-counties-source', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] } // Start empty
+    });
+    
     map.addSource('highlight-county-source', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] } // Start empty
+    });
+
+    // --- ADD THE NEW DEFAULT BORDERS LAYER ---
+    map.addLayer({
+        id: 'all-counties-borders-layer',
+        type: 'line',
+        source: 'all-counties-source', // Uses the source populated on map load
+        paint: {
+            'line-color': '#A0AEC0', // A light-medium gray
+            'line-width': 1,
+            'line-opacity': 0.8
+        },
+        layout: {
+            'visibility': 'visible' // Visible by default
+        }
     });
 
     map.addLayer({
@@ -106,11 +126,7 @@ function addSourcesAndLayers() {
         },
         layout: { 'visibility': 'visible' }
     });
-    // --- END NEW HIGHLIGHT LAYER ---
-    map.addSource('all-counties-source', {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] } // Start empty
-    });
+    
     map.addLayer({
         id: 'county-mask-layer',
         type: 'fill',
@@ -119,9 +135,9 @@ function addSourcesAndLayers() {
             'fill-color': '#000', // Black
             'fill-opacity': 0.5    // 50% opacity. Adjust this value to make it lighter/darker
         },
-        // This filter ["==", ["get", "name"], ""] means "show nothing" by default.
-        filter: ["==", ["get", "name"], ""]
-    }, 'highlight-county-layer-line');
+        filter: ["==", ["get", "name"], ""], // Show nothing by default
+    }, 'highlight-county-layer-line'); // Place mask *under* the blue highlight
+    
     map.addLayer({
         id: 'highlight-county-layer-fill', // <-- NEW CLICK TARGET
         type: 'fill',
@@ -130,13 +146,13 @@ function addSourcesAndLayers() {
             'fill-color': '#000', // Color doesn't matter
             'fill-opacity': 0.0      // Totally invisible
         }
-    }, 'county-mask-layer'); // Place it under the mask, but this order doesn't really matter
+    }, 'county-mask-layer');
 }
 
 // --- Interaction Listeners ---
 function setupInteractionListeners() {
     const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer', 'highlight-county-layer-fill'];
-    console.log('Clickable layers set:', clickableLayers); // <-- LOG
+    console.log('Clickable layers set:', clickableLayers); 
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
     const hoverLayers = {
@@ -190,20 +206,24 @@ function setupInteractionListeners() {
     map.on('click', (e) => {
         console.log('Map clicked at', e.lngLat);
         const features = map.queryRenderedFeatures(e.point, { layers: clickableLayers });
-        if (!features.length) return;
-        console.log('Clicked on feature(s) from layers:', features.map(f => f.layer.id)); // <-- LOG
+        
+        if (!features.length) {
+            closeModal(); // Close modal if user clicks empty space
+            return;
+        }
+
+        console.log('Clicked on feature(s) from layers:', features.map(f => f.layer.id)); 
         popup.remove();
         const feature = features[0];
         let content = '';
         switch (feature.layer.id) {
             case 'highlight-county-layer-fill':
-                console.log("CLICKED ON 'highlight-county-layer-line'"); // <-- LOG
+                console.log("CLICKED ON 'highlight-county-layer-fill'"); 
                 if (lastHighlightedData) {
-                    // Call a new function to build the visual info HTML
-                    console.log('Data found, building popup HTML...'); // <-- LOG
+                    console.log('Data found, building popup HTML...');
                     content = buildPopupHtmlFromData(lastHighlightedData);
                 } else {
-                    console.log('Data is NULL, showing generic popup.'); // <-- LOG
+                    console.log('Data is NULL, showing generic popup.'); 
                     content = "<h3>Highlighted County</h3><p>No detailed data available for this query.</p>";
                 }
                 openModal(content); // Use your existing modal
@@ -211,16 +231,19 @@ function setupInteractionListeners() {
             case 'forecast-layer':
                 const forecastValue = feature.properties.predicted_precipitation_inches;
                 content = `<h3>${feature.properties.name}</h3><p>Forecast Value: <strong>${forecastValue.toFixed(2)} in</strong></p>${createVisualizerHTML(forecastValue, "forecast")}`;
+                openModal(content);
                 break;
             case 'precipitation-layer':
                 const precipValue = feature.properties.total_precipitation_inches;
                 content = `<h3>${feature.properties.name}</h3><p>Total Precipitation: <strong>${precipValue.toFixed(2)} in</strong></p>${createVisualizerHTML(precipValue, "precipitation")}`;
+                openModal(content);
                 break;
             case 'river-flood-layer':
             case 'flash-flood-layer':
                 const date = new Date(feature.properties.BEGIN_DATE).toLocaleDateString();
                 const floodTitle = feature.layer.id === 'river-flood-layer' ? 'River Flood' : 'Flash Flood';
                 content = `<h3>${floodTitle} Event</h3><p>County: <strong>${feature.properties.CZ_NAME_STR}</strong></p><p>Date: <strong>${date}</strong></p>`;
+                openModal(content);
                 break;
             case 'svi-layer':
                 const props = feature.properties; 
@@ -243,18 +266,25 @@ function setupInteractionListeners() {
                         content += `<p>${SVI_DATA[selectedThemeKey].factors[factorKey]} Index: <strong>${props[factorKey].toFixed(3)}</strong></p>`; 
                     } 
                 } 
+                openModal(content);
                 break;
         }
-        openModal(content);
     });
 }
 
+/**
+ * Clears the county highlight line, blur mask, and restores default borders.
+ */
 function clearCountyHighlight() {
     if (map.getSource('highlight-county-source')) {
         map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
     }
     if (map.getLayer('county-mask-layer')) {
         map.setFilter('county-mask-layer', ["==", ["get", "name"], ""]);
+    }
+    // Show the default gray borders
+    if (map.getLayer('all-counties-borders-layer')) {
+        map.setLayoutProperty('all-counties-borders-layer', 'visibility', 'visible');
     }
 }
 
@@ -318,9 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // --- MODIFIED ---: This line was removed to prevent a default selection.
-    // document.querySelector('.accordion-header[data-category="precipitation"]').click();
-    
     for (const key in SVI_DATA) { sviThemeSelect.add(new Option(SVI_DATA[key].title, key)); }
     sviThemeSelect.dispatchEvent(new Event('change'));
 
@@ -364,16 +391,16 @@ document.addEventListener('DOMContentLoaded', () => {
     riverFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
     flashFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
 
-   console.log('Map script loaded. Attaching event listeners...');
+    console.log('Map script loaded. Attaching event listeners...');
     window.addEventListener('highlightCounty', (event) => {
         const countyName = event.detail.countyName;
-        console.log('highlightCounty event HEARD! County:', countyName); // <-- LOG
+        console.log('highlightCounty event HEARD! County:', countyName);
         if (countyName) {
             highlightCountyOnMap(countyName);
         }
     });
     window.addEventListener('setPopupData', (event) => {
-        console.log('setPopupData event HEARD! Data:', event.detail.data); // <-- LOG
+        console.log('setPopupData event HEARD! Data:', event.detail.data);
         lastHighlightedData = event.detail.data;
     });
 });
@@ -383,23 +410,18 @@ map.on('load', () => {
     updateMapState();
     setupInteractionListeners();
     fetchForecastData();
-    // --- ADD THIS ---
-    // Fetch the county geometry file so we can search it later
+    
     fetch('precipitation-data/january.geojson')
         .then(res => res.json())
         .then(geojson => {
             allCountyGeometries = geojson.features;
             console.log(`Loaded ${allCountyGeometries.length} county geometries for highlighting.`);
             
-            // --- ADD THIS ---
-            // Now, populate the new mask source with all the county geometries
             if (map.getSource('all-counties-source')) {
                 map.getSource('all-counties-source').setData(geojson);
             }
-            // --- END ADD ---
         })
         .catch(err => console.error("Error loading county geometry file:", err));
-    // --- END ADD ---
 });
 
 function updateFloodDataSources() {
@@ -470,7 +492,7 @@ function updateMapState() {
         });
     }
 }
-// --- ADD THIS NEW HELPER FUNCTION ---
+
 /**
  * Calculates the simple center (centroid) of a county feature's geometry.
  * Handles both Polygon and MultiPolygon shapes.
@@ -511,7 +533,10 @@ function getCountyCenter(feature) {
         lat: latSum / pointCount
     };
 }
-// --- REPLACE YOUR OLD FUNCTION WITH THIS ---
+
+/**
+ * Finds, highlights, and zooms to a county on the map.
+ */
 function highlightCountyOnMap(countyName) {
     if (!countyName || allCountyGeometries.length === 0) {
         console.warn('Cannot highlight county: No name provided or geometries not loaded.');
@@ -524,35 +549,36 @@ function highlightCountyOnMap(countyName) {
     );
 
     if (countyFeature) {
-        // 1. Update the highlight line (unchanged)
+        // 1. Update the highlight line
         map.getSource('highlight-county-source').setData(countyFeature);
 
-        // 2. Calculate the center (unchanged)
+        // 2. Calculate the center
         const countyCenter = getCountyCenter(countyFeature);
         
-        // 3. Fly the map (unchanged)
+        // 3. Fly the map
         map.flyTo({
             center: [countyCenter.lng, countyCenter.lat],
-            zoom: 7, 
+            zoom: 9, // <-- Increased zoom level for a single county
             padding: 40
         });
 
-        // --- ADD THIS ---
         // 4. Update the mask filter
-        // This filter tells the mask layer to cover every county *except* the one we found.
         const highlightedCountyName = countyFeature.properties.name;
         map.setFilter('county-mask-layer', ["!=", ["get", "name"], highlightedCountyName]);
-        // --- END ADD ---
+        
+        // 5. Hide the default gray borders
+        map.setLayoutProperty('all-counties-borders-layer', 'visibility', 'none');
 
     } else {
         console.warn(`County "${countyName}" not found in geometries.`);
         // Clear highlight line
         map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
         
-        // --- ADD THIS ---
-        // Reset the mask filter to show nothing
+        // Reset the mask filter
         map.setFilter('county-mask-layer', ["==", ["get", "name"], ""]);
-        // --- END ADD ---
+
+        // Show the default gray borders again
+        map.setLayoutProperty('all-counties-borders-layer', 'visibility', 'visible');
     }
 }
 /**

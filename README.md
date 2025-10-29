@@ -40,7 +40,7 @@ The project is a web application with a Node.js backend and a vanilla JavaScript
 *   **`script.js`**: The core of the frontend application. It initializes the Mapbox map, fetches data, adds layers, and handles all user interactions like sliders, checkboxes, and popups.
 *   **`server.js`**: A Node.js Express server that serves the static frontend files and provides a simple API.
     *   The `/api/forecast` endpoint fetches 3-day weather forecast data from the Google Weather API for each county in Alabama, processes it, and sends it to the frontend.
-*   **`package.json`**: Defines the project's Node.js dependencies (like Express and a CORS) and scripts for running the application (e.g., `npm start`).
+*   **`package.json`**: Defines the project's Node.s dependencies (like Express and a CORS) and scripts for running the application (e.g., `npm start`).
 
 ### Data Directories
 
@@ -62,6 +62,25 @@ This directory contains a React-based chat component that provides a user interf
 *   **`index.tsx`**: The main entry point for the React component.
 *   **`ChatPanel.tsx`**: The main chat panel component.
 *   The component is built using `esbuild` into a bundle file (`dist/chat-bundle.js`) which is then included in `index.html`.
+
+## How to Run
+
+1.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+2.  **Build the chat component:**
+    ```bash
+    npm run build:chat
+    ```
+
+3.  **Start the server:**
+    ```bash
+    npm start
+    ```
+
+    The application will be available at `http://localhost:3000`.
 
 ## How They Interact
 
