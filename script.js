@@ -598,32 +598,38 @@ function highlightCountyOnMap(countyName) {
  * This mimics the structure of your Markdown/PDF reports.
  */
 function buildPopupHtmlFromData(context) {
-    let html = '';
-    // The data is an array of locations, get the first one
-    const locationData = context.filtered_data[0]; 
-
+    const locationData = context.filtered_data?.[0];
     if (!locationData) {
         return "<h3>Error</h3><p>Could not find location data.</p>";
     }
-    
+
     const locName = locationData.input_location?.name || "Selected Area";
-    html += `<h3>${locName}</h3>`;
+    
+    const sections = [
+        {
+            condition: locationData.county_data,
+            builder: () => buildCountyTable(locationData.county_data)
+        },
+        {
+            condition: locationData.social_vulnerability_index,
+            builder: () => buildSviTable(locationData.social_vulnerability_index)
+        },
+        {
+            condition: locationData.precipitation_forecast?.length > 0,
+            builder: () => buildForecastTable(locationData.precipitation_forecast)
+        },
+        {
+            condition: locationData.flood_event_history?.length > 0,
+            builder: () => buildFloodHistoryTable(locationData.flood_event_history)
+        }
+    ];
 
-    // Add sections
-    if (locationData.county_data) {
-        html += buildCountyTable(locationData.county_data);
-    }
-    if (locationData.social_vulnerability_index) {
-        html += buildSviTable(locationData.social_vulnerability_index);
-    }
-    if (locationData.precipitation_forecast?.length > 0) {
-        html += buildForecastTable(locationData.precipitation_forecast);
-    }
-    if (locationData.flood_event_history?.length > 0) {
-        html += buildFloodHistoryTable(locationData.flood_event_history);
-    }
+    const sectionsHtml = sections
+        .filter(s => s.condition)
+        .map(s => s.builder())
+        .join('');
 
-    return html;
+    return `<h3>${locName}</h3>${sectionsHtml}`;
 }
 
 /** Helper function to build County Info table */
