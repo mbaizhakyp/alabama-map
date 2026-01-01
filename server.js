@@ -14,6 +14,9 @@ const port = 3001;
 app.use(cors());
 app.use(express.json()); // <-- Add this to parse JSON request bodies
 
+// Serve static files
+app.use(express.static('.'));
+
 // Helper function to calculate the rough center (centroid) of a county polygon
 function getCentroid(coordinates) {
     // ...(keep existing function)...
