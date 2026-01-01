@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.venv/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude
+.claude/
+
+# Development files
+*.md
+README.md
+
+# Chat source (we only need the built bundle)
+chat/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment (will be passed via env_file)
+# .env
+
+# Build artifacts
+*.tgz

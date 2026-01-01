@@ -4,7 +4,8 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWJhaXpoYWt5cCIsImEiOiJjbWdndndyMzkwbmFqMmtxN
 // --- CONFIGURATION ---
 const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 const years = [2020, 2021, 2022, 2023, 2024, 2025];
-const dayLabels = ['Today', 'Tomorrow', '+2 Days'];
+const dayLabels = ['Today', 'Tomorrow', '+2 Days', '+3 Days', '+4 Days', '+5 Days', '+6 Days', '+7 Days', '+8 Days', '+9 Days'];
+const gaugeForecastDayLabels = ['Today', 'Tomorrow', 'Day After Tomorrow'];
 const INITIAL_VIEW_STATE = { center: [-86.9, 32.8], zoom: 6.5 };
 const MAP_BG_COLOR = '#e2e8f0';
 const FLOOD_COLORS = { river: '#319795', flash: '#dd6b20' };
@@ -30,6 +31,9 @@ const SVI_DATA = {
 let forecastData = [];
 let allCountyGeometries = [];
 let lastHighlightedData = null;
+let riverGaugeData = null;
+let riverGaugeHistoryData = null;
+let riverGaugeForecastData = [];
 
 // --- MAP INITIALIZATION ---
 const map = new mapboxgl.Map({
@@ -38,6 +42,54 @@ const map = new mapboxgl.Map({
 });
 
 // --- DATA FETCHING ---
+async function fetchRiverGaugeData() {
+    try {
+        const response = await fetch('http://localhost:3001/api/river-gauges');
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+
+        riverGaugeData = await response.json();
+        console.log(`Fetched ${riverGaugeData.features.length} river gauge sites.`);
+
+        if (map.isStyleLoaded() && map.getSource('river-gauge-data')) {
+            map.getSource('river-gauge-data').setData(riverGaugeData);
+        }
+    } catch (error) {
+        console.error("Failed to fetch river gauge data:", error);
+    }
+}
+
+async function fetchRiverGaugeHistoryData(year = 2020) {
+    try {
+        const response = await fetch(`river-gauge-data/River_Gauge_${year}.geojson`);
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+
+        riverGaugeHistoryData = await response.json();
+        console.log(`Loaded ${riverGaugeHistoryData.features.length} river gauge history sites for ${year}.`);
+
+        if (map.isStyleLoaded() && map.getSource('river-gauge-history-data')) {
+            map.getSource('river-gauge-history-data').setData(riverGaugeHistoryData);
+        }
+    } catch (error) {
+        console.error("Failed to load river gauge history data:", error);
+    }
+}
+
+async function fetchRiverGaugeForecastData() {
+    try {
+        const response = await fetch('http://localhost:3001/api/river-gauge-forecast');
+        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+
+        riverGaugeForecastData = await response.json();
+        console.log(`Fetched river gauge forecasts for ${riverGaugeForecastData.length} days.`);
+
+        if (map.isStyleLoaded() && map.getSource('river-gauge-forecast-data') && riverGaugeForecastData.length > 0) {
+            map.getSource('river-gauge-forecast-data').setData(riverGaugeForecastData[0]);
+        }
+    } catch (error) {
+        console.error("Failed to fetch river gauge forecast data:", error);
+    }
+}
+
 async function fetchForecastData() {
     try {
         const response = await fetch('http://localhost:3001/api/forecast');
@@ -89,7 +141,91 @@ function addSourcesAndLayers() {
     
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
     map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
-    
+
+    // River gauge layer (live)
+    map.addSource('river-gauge-data', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({
+        id: 'river-gauge-layer',
+        type: 'circle',
+        source: 'river-gauge-data',
+        paint: {
+            'circle-radius': [
+                'interpolate', ['linear'],
+                ['coalesce', ['get', 'discharge'], 0],
+                0, 5,
+                1000, 8,
+                10000, 12,
+                50000, 16
+            ],
+            'circle-color': [
+                'interpolate', ['linear'],
+                ['coalesce', ['get', 'gageHeight'], 0],
+                0, '#2ecc71',    // Low - green
+                5, '#f1c40f',    // Medium - yellow
+                15, '#e74c3c',   // High - red
+                30, '#8e44ad'    // Very high - purple
+            ],
+            'circle-stroke-color': '#fff',
+            'circle-stroke-width': 2,
+            'circle-opacity': 0.85
+        },
+        layout: { visibility: 'none' }
+    });
+
+    // River gauge history layer
+    map.addSource('river-gauge-history-data', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({
+        id: 'river-gauge-history-layer',
+        type: 'circle',
+        source: 'river-gauge-history-data',
+        paint: {
+            'circle-radius': [
+                'interpolate', ['linear'],
+                ['coalesce', ['get', 'discharge'], 0],
+                0, 5,
+                1000, 8,
+                10000, 12,
+                50000, 16
+            ],
+            'circle-color': [
+                'interpolate', ['linear'],
+                ['coalesce', ['get', 'gageHeight'], 0],
+                0, '#2ecc71',    // Low - green
+                5, '#f1c40f',    // Medium - yellow
+                15, '#e74c3c',   // High - red
+                30, '#8e44ad'    // Very high - purple
+            ],
+            'circle-stroke-color': '#fff',
+            'circle-stroke-width': 2,
+            'circle-opacity': 0.85
+        },
+        layout: { visibility: 'none' }
+    });
+
+    // River gauge forecast layer
+    map.addSource('river-gauge-forecast-data', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({
+        id: 'river-gauge-forecast-layer',
+        type: 'circle',
+        source: 'river-gauge-forecast-data',
+        paint: {
+            'circle-radius': 8,
+            'circle-color': [
+                'match', ['get', 'status'],
+                'major-flood', '#7b2cbf',    // Dark purple - major flood
+                'moderate-flood', '#8e44ad', // Purple - moderate flood
+                'minor-flood', '#c0392b',    // Dark red - minor flood
+                'near-flood', '#e74c3c',     // Red - near flood
+                'action', '#f1c40f',         // Yellow - action stage
+                '#2ecc71'                    // Green - normal
+            ],
+            'circle-stroke-color': '#fff',
+            'circle-stroke-width': 2,
+            'circle-opacity': 0.9
+        },
+        layout: { visibility: 'none' }
+    });
+
     map.addSource('all-counties-source', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] } // Start empty
@@ -151,7 +287,7 @@ function addSourcesAndLayers() {
 
 // --- Interaction Listeners ---
 function setupInteractionListeners() {
-    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer', 'highlight-county-layer-fill'];
+    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer', 'river-gauge-layer', 'river-gauge-history-layer', 'river-gauge-forecast-layer', 'highlight-county-layer-fill'];
     console.log('Clickable layers set:', clickableLayers); 
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
@@ -174,6 +310,26 @@ function setupInteractionListeners() {
             const props = e.features[0].properties;
             const value = props.predicted_precipitation_inches.toFixed(2);
             return `<h3>${props.name} County</h3><p>Forecast Value: <strong>${value}</strong></p>`;
+        },
+        'river-gauge-layer': (e) => {
+            const props = e.features[0].properties;
+            const height = props.gageHeight !== null ? `${props.gageHeight.toFixed(2)} ${props.gageHeightUnit}` : 'N/A';
+            const flow = props.discharge !== null ? `${props.discharge.toLocaleString()} ${props.dischargeUnit}` : 'N/A';
+            return `<strong>${props.siteName}</strong><br>Water Level: ${height}<br>Flow Rate: ${flow}`;
+        },
+        'river-gauge-history-layer': (e) => {
+            const props = e.features[0].properties;
+            const height = props.gageHeight !== null ? `${props.gageHeight.toFixed(2)} ${props.gageHeightUnit}` : 'N/A';
+            const flow = props.discharge !== null ? `${props.discharge.toLocaleString()} ${props.dischargeUnit}` : 'N/A';
+            return `<strong>${props.siteName}</strong><br>Year: ${props.year}<br>Avg. Water Level: ${height}<br>Avg. Flow Rate: ${flow}`;
+        },
+        'river-gauge-forecast-layer': (e) => {
+            const props = e.features[0].properties;
+            const stageValue = props.primaryValue !== null ? `${props.primaryValue.toFixed(2)} ${props.primaryUnit}` : 'N/A';
+            const flowValue = props.secondaryValue !== null ? `${props.secondaryValue.toLocaleString()} ${props.secondaryUnit}` : 'N/A';
+            const statusLabels = { 'major-flood': 'MAJOR FLOOD', 'moderate-flood': 'MODERATE FLOOD', 'minor-flood': 'MINOR FLOOD', 'near-flood': 'Near Flood', 'action': 'Action Stage', 'normal': 'Normal' };
+            const dataType = props.dataSource === 'forecast' ? 'Forecast' : 'Observed';
+            return `<strong>${props.siteName}</strong><br>Stage: ${stageValue}<br>Flow: ${flowValue}<br>${dataType} | ${statusLabels[props.status] || 'Normal'}`;
         }
     };
 
@@ -245,10 +401,77 @@ function setupInteractionListeners() {
                 content = `<h3>${floodTitle} Event</h3><p>County: <strong>${feature.properties.CZ_NAME_STR}</strong></p><p>Date: <strong>${date}</strong></p>`;
                 openModal(content);
                 break;
+            case 'river-gauge-layer':
+                const gaugeProps = feature.properties;
+                const gageHeight = gaugeProps.gageHeight !== null ? `${gaugeProps.gageHeight.toFixed(2)} ${gaugeProps.gageHeightUnit}` : 'N/A';
+                const discharge = gaugeProps.discharge !== null ? `${gaugeProps.discharge.toLocaleString()} ${gaugeProps.dischargeUnit}` : 'N/A';
+                const heightTime = gaugeProps.gageHeightTime ? new Date(gaugeProps.gageHeightTime).toLocaleString() : 'N/A';
+                const dischargeTime = gaugeProps.dischargeTime ? new Date(gaugeProps.dischargeTime).toLocaleString() : 'N/A';
+                content = `
+                    <h3>${gaugeProps.siteName}</h3>
+                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                    <p><strong>Water Level (Gage Height)</strong></p>
+                    <p style="font-size: 1.5em; margin: 5px 0;">${gageHeight}</p>
+                    <p style="font-size: 0.8em; color: #666;">Updated: ${heightTime}</p>
+                    ${createVisualizerHTML(gaugeProps.gageHeight || 0, "gauge-height")}
+                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                    <p><strong>Flow Rate (Discharge)</strong></p>
+                    <p style="font-size: 1.5em; margin: 5px 0;">${discharge}</p>
+                    <p style="font-size: 0.8em; color: #666;">Updated: ${dischargeTime}</p>
+                `;
+                openModal(content);
+                break;
+            case 'river-gauge-history-layer':
+                const histProps = feature.properties;
+                const histGageHeight = histProps.gageHeight !== null ? `${histProps.gageHeight.toFixed(2)} ${histProps.gageHeightUnit}` : 'N/A';
+                const histDischarge = histProps.discharge !== null ? `${histProps.discharge.toLocaleString()} ${histProps.dischargeUnit}` : 'N/A';
+                const histMaxHeight = histProps.gageHeightMax !== null ? `${histProps.gageHeightMax.toFixed(2)} ${histProps.gageHeightUnit}` : 'N/A';
+                const histMaxDischarge = histProps.dischargeMax !== null ? `${histProps.dischargeMax.toLocaleString()} ${histProps.dischargeUnit}` : 'N/A';
+                content = `
+                    <h3>${histProps.siteName}</h3>
+                    <p class="location">Year: ${histProps.year}</p>
+                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                    <p><strong>Annual Avg. Water Level</strong></p>
+                    <p style="font-size: 1.5em; margin: 5px 0;">${histGageHeight}</p>
+                    <p style="font-size: 0.8em; color: #666;">Max: ${histMaxHeight} | ${histProps.gageHeightReadings || 0} readings</p>
+                    ${createVisualizerHTML(histProps.gageHeight || 0, "gauge-height")}
+                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                    <p><strong>Annual Avg. Flow Rate</strong></p>
+                    <p style="font-size: 1.5em; margin: 5px 0;">${histDischarge}</p>
+                    <p style="font-size: 0.8em; color: #666;">Max: ${histMaxDischarge} | ${histProps.dischargeReadings || 0} readings</p>
+                `;
+                openModal(content);
+                break;
+            case 'river-gauge-forecast-layer':
+                const fcstProps = feature.properties;
+                const fcstStage = fcstProps.primaryValue !== null ? `${fcstProps.primaryValue.toFixed(2)} ${fcstProps.primaryUnit}` : 'N/A';
+                const fcstFlow = fcstProps.secondaryValue !== null ? `${fcstProps.secondaryValue.toLocaleString()} ${fcstProps.secondaryUnit}` : 'N/A';
+                const fcstFlood = fcstProps.floodStage !== null ? `${fcstProps.floodStage} ${fcstProps.primaryUnit}` : 'N/A';
+                const fcstAction = fcstProps.actionStage !== null ? `${fcstProps.actionStage} ${fcstProps.primaryUnit}` : 'N/A';
+                const fcstTime = fcstProps.validTime ? new Date(fcstProps.validTime).toLocaleString() : 'N/A';
+                const dataType = fcstProps.dataSource === 'forecast' ? 'Forecast' : 'Observed';
+                const statusLabels = { 'major-flood': 'MAJOR FLOOD', 'moderate-flood': 'MODERATE FLOOD', 'minor-flood': 'MINOR FLOOD', 'near-flood': 'Near Flood Stage', 'action': 'Action Stage', 'normal': 'Normal' };
+                const statusColors = { 'major-flood': '#7b2cbf', 'moderate-flood': '#8e44ad', 'minor-flood': '#c0392b', 'near-flood': '#e74c3c', 'action': '#f1c40f', 'normal': '#2ecc71' };
+                content = `
+                    <h3>${fcstProps.siteName}</h3>
+                    <p class="location">${fcstProps.dayLabel} - ${dataType} as of: ${fcstTime}</p>
+                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                    <p><strong>Water Level (Stage)</strong></p>
+                    <p style="font-size: 1.5em; margin: 5px 0;">${fcstStage}</p>
+                    <p style="font-size: 0.85em; color: #666;">Flood Stage: ${fcstFlood} | Action Stage: ${fcstAction}</p>
+                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                    <p><strong>Flow Rate (Discharge)</strong></p>
+                    <p style="font-size: 1.5em; margin: 5px 0;">${fcstFlow}</p>
+                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
+                    <p><strong>Status</strong></p>
+                    <p style="font-size: 1.2em; margin: 5px 0; color: ${statusColors[fcstProps.status] || '#666'};">${statusLabels[fcstProps.status] || 'Unknown'}</p>
+                `;
+                openModal(content);
+                break;
             case 'svi-layer':
-                const props = feature.properties; 
-                const selectedThemeKey = document.getElementById('svi-theme-select').value; 
-                const selectedFactorKey = document.getElementById('svi-factor-select').value; 
+                const props = feature.properties;
+                const selectedThemeKey = document.getElementById('svi-theme-select').value;
+                const selectedFactorKey = document.getElementById('svi-factor-select').value;
                 content = `<h3>${props.COUNTY}</h3><p class="location">${props.LOCATION}</p>`; 
                 if (selectedThemeKey === 'RPL_THEMES_state') { 
                     content += `<p>Overall Vulnerability Index: <strong>${props.RPL_THEMES_state.toFixed(3)}</strong></p>${createVisualizerHTML(props.RPL_THEMES_state, "svi")}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`; 
@@ -306,6 +529,10 @@ function createVisualizerHTML(value, type) {
         percentage = Math.max(0, Math.min(((value - min) / (max - min)), 1)) * 100;
         gradientClass = 'forecast-gradient';
         labels = ['~0.5', '~0.8+'];
+    } else if (type === 'gauge-height') {
+        percentage = Math.min(value / 30, 1) * 100;
+        gradientClass = 'gauge-height-gradient';
+        labels = ['0 ft', '30+ ft'];
     }
     return `<div class="modal-visualizer"><div class="modal-gradient-bar"><div class="gradient-marker" style="left: ${percentage}%;"></div><div class="${gradientClass}"></div></div><div class="modal-labels"><span>${labels[0]}</span><span>${labels[1]}</span></div></div>`;
 }
@@ -388,6 +615,26 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFloodDataSources();
     });
 
+    // Gauge history year slider
+    const gaugeYearSlider = document.getElementById('gauge-year-slider');
+    const gaugeYearLabel = document.getElementById('gauge-year-label');
+    gaugeYearSlider.addEventListener('input', (e) => {
+        const year = years[parseInt(e.target.value, 10)];
+        gaugeYearLabel.textContent = year;
+        fetchRiverGaugeHistoryData(year);
+    });
+
+    // Gauge forecast day slider
+    const gaugeForecastDaySlider = document.getElementById('gauge-forecast-day-slider');
+    const gaugeForecastDayLabel = document.getElementById('gauge-forecast-day-label');
+    gaugeForecastDaySlider.addEventListener('input', (e) => {
+        const dayIndex = parseInt(e.target.value, 10);
+        gaugeForecastDayLabel.textContent = gaugeForecastDayLabels[dayIndex];
+        if (map.getSource('river-gauge-forecast-data') && riverGaugeForecastData.length > dayIndex) {
+            map.getSource('river-gauge-forecast-data').setData(riverGaugeForecastData[dayIndex]);
+        }
+    });
+
     riverFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
     flashFloodCheckbox.addEventListener('change', updateFloodLayersVisibility);
 
@@ -410,6 +657,9 @@ map.on('load', () => {
     updateMapState();
     setupInteractionListeners();
     fetchForecastData();
+    fetchRiverGaugeData();
+    fetchRiverGaugeHistoryData(years[0]); // Fetch initial year (2020)
+    fetchRiverGaugeForecastData(); // Fetch river gauge forecasts
     
     fetch('svi-data/alabama_svi_tracts_master.geojson')
         .then(res => res.json())
@@ -464,12 +714,15 @@ function updateMapState() {
     const activeHeader = document.querySelector('.accordion-header.active');
     const selectedCategory = activeHeader ? activeHeader.dataset.category : null;
 
-    const legends = { forecast: document.getElementById('forecast-legend'), precipitation: document.getElementById('precipitation-legend'), floods: document.getElementById('flood-legend'), svi: document.getElementById('svi-legend') };
+    const legends = { forecast: document.getElementById('forecast-legend'), precipitation: document.getElementById('precipitation-legend'), floods: document.getElementById('flood-legend'), svi: document.getElementById('svi-legend'), gauges: document.getElementById('gauge-legend'), 'gauge-history': document.getElementById('gauge-history-legend'), 'gauge-forecast': document.getElementById('gauge-forecast-legend') };
     const layers = {
         forecast: ['forecast-layer'],
         precipitation: ['precipitation-layer'],
         floods: ['river-flood-layer', 'flash-flood-layer'],
-        svi: ['svi-layer']
+        svi: ['svi-layer'],
+        gauges: ['river-gauge-layer'],
+        'gauge-history': ['river-gauge-history-layer'],
+        'gauge-forecast': ['river-gauge-forecast-layer']
     };
 
     for (const category in layers) {

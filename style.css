@@ -155,15 +155,17 @@ select:focus {
 }
 #flood-legend div:not(:last-child) { margin-bottom: 5px; }
 
-.svi-gradient, .precip-gradient, .forecast-gradient {
+.svi-gradient, .precip-gradient, .forecast-gradient, .gauge-height-gradient {
     height: 15px; width: 100%; border-radius: 3px; margin-bottom: 5px;
 }
 .svi-gradient { background: linear-gradient(to right, #4d9221, #f1b621, #c51b7d); }
 .precip-gradient { background: linear-gradient(to right, #ffffcc, #a1dab4, #41b6c4, #2c7fb8, #253494); }
 /* --- UPDATED ---: A more natural blue gradient for the forecast. */
 .forecast-gradient { background: linear-gradient(to right, #edf8fb, #74a9cf, #023858); }
+/* River gauge water level gradient: green (low) -> yellow -> red -> purple (very high) */
+.gauge-height-gradient { background: linear-gradient(to right, #2ecc71, #f1c40f, #e74c3c, #8e44ad); }
 
-.svi-labels, .precip-labels {
+.svi-labels, .precip-labels, .gauge-labels {
     display: flex; justify-content: space-between; font-size: 0.8em; color: var(--text-secondary);
 }
 
@@ -233,13 +235,13 @@ body.sidebar-active header { transform: translateX(320px); width: calc(100% - 32
   transition: left 0.3s ease-in-out;
   z-index: 2; 
 
-  /* --- CHATBOX-LIKE STYLE --- */
-  background: rgba(255, 255, 255, 0.8); /* Translucent white from chatbox */
-  backdrop-filter: blur(12px); /* Frosted glass effect */
-  border: 3px solid var(--border-color); /* Thicker border with theme color */
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  color: var(--text-primary); /* Default dark text color */
+  /* --- VIBRANT, COLORFUL STYLE --- */
+  background: linear-gradient(135deg, rgba(230, 245, 255, 0.85), rgba(200, 225, 255, 0.9)); /* Light blue gradient */
+  backdrop-filter: blur(14px); /* Slightly stronger blur */
+  /* border: 2px solid #007BFF; Bright blue border */
+  border-radius: 16px; /* Softer corners */
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3), 0 4px 10px rgba(0, 0, 0, 0.1); /* Enhanced shadow with color */
+  color: #1A202C; /* Darker text for better contrast */
 }
 
 /* --- ADD THIS NEW RULE --- */
@@ -286,15 +288,15 @@ body.sidebar-active #modal {
 
 #modal-content h3 {
     font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--text-primary);
+    font-weight: 800;
+    color: #2d3748;
     margin-bottom: 8px;
 }
 
 #modal-content h4 {
     font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--text-secondary);
+    font-weight: 700;
+    color: #2d3748;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     margin-bottom: 10px;
@@ -346,7 +348,7 @@ body.sidebar-active #modal {
 
 .modal-table th {
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 700;
     text-transform: uppercase;
     font-size: 0.9em;
     padding-bottom: 6px;
@@ -363,7 +365,7 @@ body.sidebar-active #modal {
 }
 .modal-table td b {
     color: var(--text-primary);
-    font-weight: 600;
+    font-weight: 800;
 }
 
 .modal-table tr:last-child td {

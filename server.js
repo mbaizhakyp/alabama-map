@@ -74,7 +74,7 @@ function getCountyCenter(feature) {
 // Existing /api/forecast endpoint
 app.get('/api/forecast', async (req, res) => {
     // ...(keep existing endpoint code)...
-    console.log("Received request for 3-day Google Weather forecast...");
+    console.log("Received request for 10-day Google Weather forecast...");
 
     const apiKey = process.env.GOOGLE_API;
     if (!apiKey) {
@@ -85,7 +85,7 @@ app.get('/api/forecast', async (req, res) => {
         const geojsonTemplate = JSON.parse(await fs.readFile('precipitation-data/january.geojson', 'utf-8'));
 
         // Request Imperial units (Fahrenheit, Inches) directly from the API
-        const API_BASE_URL = `https://weather.googleapis.com/v1/forecast/days:lookup?days=3&unitsSystem=IMPERIAL&key=${apiKey}`;
+        const API_BASE_URL = `https://weather.googleapis.com/v1/forecast/days:lookup?days=10&unitsSystem=IMPERIAL&key=${apiKey}`;
 
         const promises = geojsonTemplate.features.map(feature => {
             const centroid = getCentroid(feature.geometry.coordinates);
@@ -97,7 +97,7 @@ app.get('/api/forecast', async (req, res) => {
         console.log(`Successfully fetched data from Google for ${results.filter(r => r).length} of 67 counties.`);
 
         const forecastDays = [];
-        for (let dayIndex = 0; dayIndex < 3; dayIndex++) {
+        for (let dayIndex = 0; dayIndex < 10; dayIndex++) {
 
             const dayFeatures = results.map((countyData, featureIndex) => {
                 const feature = geojsonTemplate.features[featureIndex];
@@ -140,12 +140,359 @@ app.get('/api/forecast', async (req, res) => {
             forecastDays.push({ type: 'FeatureCollection', features: dayFeatures });
         }
 
-        console.log("Successfully processed Google Weather data into 3 daily GeoJSONs.");
+        console.log("Successfully processed Google Weather data into 10 daily GeoJSONs.");
         res.json(forecastDays);
 
     } catch (error) {
         console.error('Error in Google API processing:', error.message);
         res.status(500).json({ error: 'Failed to fetch or process forecast data.' });
+    }
+});
+
+// --- RIVER GAUGES ENDPOINT ---
+let riverGaugeCache = { data: null, timestamp: 0 };
+const GAUGE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+app.get('/api/river-gauges', async (req, res) => {
+    console.log("Received request for USGS river gauge data...");
+
+    // Check cache
+    if (riverGaugeCache.data && (Date.now() - riverGaugeCache.timestamp) < GAUGE_CACHE_DURATION) {
+        console.log("Returning cached river gauge data.");
+        return res.json(riverGaugeCache.data);
+    }
+
+    try {
+        // Fetch from USGS IV service - Alabama, gage height (00065) and discharge (00060)
+        const USGS_URL = 'https://waterservices.usgs.gov/nwis/iv/?format=json&stateCd=AL&parameterCd=00065,00060&siteStatus=active';
+
+        const response = await fetch(USGS_URL);
+        if (!response.ok) {
+            throw new Error(`USGS API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const timeSeries = data.value?.timeSeries || [];
+
+        // Group by site
+        const sitesMap = new Map();
+
+        timeSeries.forEach(series => {
+            const siteCode = series.sourceInfo?.siteCode?.[0]?.value;
+            const siteName = series.sourceInfo?.siteName;
+            const lat = parseFloat(series.sourceInfo?.geoLocation?.geogLocation?.latitude);
+            const lon = parseFloat(series.sourceInfo?.geoLocation?.geogLocation?.longitude);
+            const paramCode = series.variable?.variableCode?.[0]?.value;
+            const paramName = series.variable?.variableName;
+            const unit = series.variable?.unit?.unitCode;
+            const values = series.values?.[0]?.value || [];
+            const latestValue = values.length > 0 ? values[values.length - 1] : null;
+
+            if (!siteCode || isNaN(lat) || isNaN(lon)) return;
+
+            if (!sitesMap.has(siteCode)) {
+                sitesMap.set(siteCode, {
+                    siteCode,
+                    siteName,
+                    lat,
+                    lon,
+                    gageHeight: null,
+                    gageHeightUnit: null,
+                    gageHeightTime: null,
+                    discharge: null,
+                    dischargeUnit: null,
+                    dischargeTime: null
+                });
+            }
+
+            const site = sitesMap.get(siteCode);
+
+            if (paramCode === '00065' && latestValue) {
+                // Gage height (water level)
+                site.gageHeight = parseFloat(latestValue.value);
+                site.gageHeightUnit = unit || 'ft';
+                site.gageHeightTime = latestValue.dateTime;
+            } else if (paramCode === '00060' && latestValue) {
+                // Discharge (flow rate)
+                site.discharge = parseFloat(latestValue.value);
+                site.dischargeUnit = unit || 'ft3/s';
+                site.dischargeTime = latestValue.dateTime;
+            }
+        });
+
+        // Convert to GeoJSON
+        const features = Array.from(sitesMap.values())
+            .filter(site => site.gageHeight !== null || site.discharge !== null)
+            .map(site => ({
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [site.lon, site.lat]
+                },
+                properties: {
+                    siteCode: site.siteCode,
+                    siteName: site.siteName,
+                    gageHeight: site.gageHeight,
+                    gageHeightUnit: site.gageHeightUnit,
+                    gageHeightTime: site.gageHeightTime,
+                    discharge: site.discharge,
+                    dischargeUnit: site.dischargeUnit,
+                    dischargeTime: site.dischargeTime
+                }
+            }));
+
+        const geojson = {
+            type: 'FeatureCollection',
+            features
+        };
+
+        console.log(`Successfully processed ${features.length} river gauge sites.`);
+
+        // Cache the result
+        riverGaugeCache = { data: geojson, timestamp: Date.now() };
+
+        res.json(geojson);
+
+    } catch (error) {
+        console.error('Error fetching USGS data:', error.message);
+        res.status(500).json({ error: 'Failed to fetch river gauge data.' });
+    }
+});
+
+// --- RIVER GAUGE FORECAST ENDPOINT ---
+let riverGaugeForecastCache = { data: null, timestamp: 0 };
+const GAUGE_FORECAST_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
+// Helper: delay function for throttling
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper: fetch with retry and throttle
+async function fetchWithRetry(url, options, retries = 2) {
+    for (let i = 0; i <= retries; i++) {
+        try {
+            const response = await fetch(url, options);
+            if (response.ok) return response;
+            if (response.status === 429 && i < retries) {
+                console.log(`Rate limited, waiting before retry ${i + 1}...`);
+                await delay(2000 * (i + 1));
+                continue;
+            }
+            return response;
+        } catch (err) {
+            if (i === retries) throw err;
+            await delay(1000);
+        }
+    }
+}
+
+app.get('/api/river-gauge-forecast', async (req, res) => {
+    console.log("Received request for NOAA river gauge forecast data...");
+
+    // Check cache
+    if (riverGaugeForecastCache.data && (Date.now() - riverGaugeForecastCache.timestamp) < GAUGE_FORECAST_CACHE_DURATION) {
+        console.log("Returning cached river gauge forecast data.");
+        return res.json(riverGaugeForecastCache.data);
+    }
+
+    const requestHeaders = {
+        'Accept': 'application/json',
+        'User-Agent': 'AlabamaFloodMap/1.0 (Educational Project)'
+    };
+
+    try {
+        // Step 1: Fetch ALL Alabama gauges
+        console.log("Fetching all Alabama gauges...");
+        const listResponse = await fetchWithRetry(
+            'https://api.water.noaa.gov/nwps/v1/gauges?state=AL',
+            { headers: requestHeaders }
+        );
+
+        if (!listResponse.ok) {
+            throw new Error(`NOAA API error: ${listResponse.statusText}`);
+        }
+
+        const listData = await listResponse.json();
+        // Filter for Alabama gauges with coordinates and forecast capability
+        // Filter by state.abbreviation === 'AL' and check for forecast PEDTS code
+        const alabamaGauges = (listData.gauges || []).filter(g =>
+            g.state?.abbreviation === 'AL' &&
+            g.latitude &&
+            g.longitude &&
+            g.lid &&
+            g.pedts?.forecast // Has forecast capability
+        );
+        console.log(`Found ${alabamaGauges.length} Alabama gauges with forecast capability`);
+
+        // Step 2: Fetch stageflow data for each gauge with throttling
+        const BATCH_SIZE = 10;
+        const BATCH_DELAY = 500; // ms between batches
+        const stageflowResults = [];
+
+        for (let i = 0; i < alabamaGauges.length; i += BATCH_SIZE) {
+            const batch = alabamaGauges.slice(i, i + BATCH_SIZE);
+            console.log(`Fetching stageflow batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(alabamaGauges.length / BATCH_SIZE)}...`);
+
+            const batchPromises = batch.map(async (gauge) => {
+                try {
+                    const sfResponse = await fetchWithRetry(
+                        `https://api.water.noaa.gov/nwps/v1/gauges/${gauge.lid}/stageflow`,
+                        { headers: requestHeaders }
+                    );
+                    if (!sfResponse.ok) return null;
+                    const sfData = await sfResponse.json();
+                    return { gauge, stageflow: sfData };
+                } catch (err) {
+                    console.log(`Failed to fetch stageflow for ${gauge.lid}: ${err.message}`);
+                    return null;
+                }
+            });
+
+            const batchResults = await Promise.all(batchPromises);
+            stageflowResults.push(...batchResults);
+
+            // Delay between batches to avoid rate limiting
+            if (i + BATCH_SIZE < alabamaGauges.length) {
+                await delay(BATCH_DELAY);
+            }
+        }
+
+        // Filter for gauges with valid data (forecast OR observed)
+        const validResults = stageflowResults.filter(r => {
+            if (!r) return false;
+            const hasForecast = r.stageflow?.forecast?.data?.length > 0;
+            const hasObserved = r.stageflow?.observed?.data?.length > 0;
+            return hasForecast || hasObserved;
+        });
+        console.log(`Got stageflow data for ${validResults.length} gauges`);
+
+        // Step 3: Process into 3 daily GeoJSONs (Today, Tomorrow, Day After Tomorrow)
+        const forecastDays = [];
+        const dayLabels = ['Today', 'Tomorrow', 'Day After Tomorrow'];
+
+        for (let dayIndex = 0; dayIndex < 3; dayIndex++) {
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + dayIndex);
+            const dayStart = new Date(targetDate.setHours(0, 0, 0, 0)).getTime();
+            const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+            const targetNoon = dayStart + 12 * 60 * 60 * 1000; // ~12:00 PM
+            const targetDateStr = new Date(dayStart).toISOString().split('T')[0];
+
+            const features = validResults.map(({ gauge, stageflow }) => {
+                const forecastData = stageflow.forecast?.data || [];
+                const observedData = stageflow.observed?.data || [];
+                const floodCategories = stageflow.flood?.categories || gauge.flood?.categories || {};
+                const floodStage = floodCategories.minor?.stage > 0 ? floodCategories.minor.stage : null;
+                const actionStage = floodCategories.action?.stage > 0 ? floodCategories.action.stage : null;
+                const moderateStage = floodCategories.moderate?.stage > 0 ? floodCategories.moderate.stage : null;
+                const majorStage = floodCategories.major?.stage > 0 ? floodCategories.major.stage : null;
+                const primaryUnit = stageflow.forecast?.primaryUnits || stageflow.observed?.primaryUnits || 'ft';
+                const secondaryUnit = stageflow.forecast?.secondaryUnits || stageflow.observed?.secondaryUnits || 'cfs';
+
+                // Find the data point closest to noon for this day
+                let bestPoint = null;
+                let bestTimeDiff = Infinity;
+                let dataSource = 'none';
+
+                // First try forecast data
+                for (const point of forecastData) {
+                    const pointTime = new Date(point.validTime).getTime();
+                    if (pointTime >= dayStart && pointTime < dayEnd) {
+                        const timeDiff = Math.abs(pointTime - targetNoon);
+                        if (timeDiff < bestTimeDiff) {
+                            bestTimeDiff = timeDiff;
+                            bestPoint = point;
+                            dataSource = 'forecast';
+                        }
+                    }
+                }
+
+                // If no forecast, use observed for today only
+                if (!bestPoint && dayIndex === 0) {
+                    for (const point of observedData) {
+                        const pointTime = new Date(point.validTime).getTime();
+                        if (pointTime >= dayStart && pointTime < dayEnd) {
+                            const timeDiff = Math.abs(pointTime - targetNoon);
+                            if (timeDiff < bestTimeDiff) {
+                                bestTimeDiff = timeDiff;
+                                bestPoint = point;
+                                dataSource = 'observed';
+                            }
+                        }
+                    }
+                }
+
+                // If still no data for this day, skip
+                if (!bestPoint) return null;
+
+                const primaryValue = bestPoint.primary;
+                const secondaryValue = bestPoint.secondary;
+
+                // Determine flood status based on primary value (stage)
+                let status = 'normal';
+                if (primaryValue !== null && primaryValue !== undefined) {
+                    if (majorStage && primaryValue >= majorStage) {
+                        status = 'major-flood';
+                    } else if (moderateStage && primaryValue >= moderateStage) {
+                        status = 'moderate-flood';
+                    } else if (floodStage && primaryValue >= floodStage) {
+                        status = 'minor-flood';
+                    } else if (actionStage && primaryValue >= actionStage) {
+                        status = 'action';
+                    } else if (floodStage && primaryValue >= floodStage * 0.85) {
+                        status = 'near-flood';
+                    }
+                }
+
+                return {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [gauge.longitude, gauge.latitude]
+                    },
+                    properties: {
+                        siteName: gauge.name || 'Unknown',
+                        lid: gauge.lid,
+                        primaryValue: primaryValue,
+                        primaryUnit: primaryUnit,
+                        secondaryValue: secondaryValue,
+                        secondaryUnit: secondaryUnit,
+                        floodStage: floodStage,
+                        actionStage: actionStage,
+                        moderateStage: moderateStage,
+                        majorStage: majorStage,
+                        status: status,
+                        dataSource: dataSource,
+                        validTime: bestPoint.validTime,
+                        dayIndex: dayIndex,
+                        dayLabel: dayLabels[dayIndex]
+                    }
+                };
+            }).filter(f => f !== null);
+
+            forecastDays.push({
+                type: 'FeatureCollection',
+                features: features,
+                metadata: {
+                    dayIndex: dayIndex,
+                    dayLabel: dayLabels[dayIndex],
+                    date: targetDateStr
+                }
+            });
+        }
+
+        console.log(`Successfully processed forecasts into 3 daily GeoJSONs.`);
+        for (let i = 0; i < forecastDays.length; i++) {
+            console.log(`  ${dayLabels[i]}: ${forecastDays[i].features.length} gauges`);
+        }
+
+        // Cache the result
+        riverGaugeForecastCache = { data: forecastDays, timestamp: Date.now() };
+
+        res.json(forecastDays);
+
+    } catch (error) {
+        console.error('Error fetching NOAA forecast data:', error.message);
+        res.status(500).json({ error: 'Failed to fetch river gauge forecast data.' });
     }
 });
 

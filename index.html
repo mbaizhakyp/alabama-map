@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AL ClimateView</title>
+    <title>FLAI</title>
     
     <link rel="icon" href="data:,">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +35,7 @@
     <header>
         <div class="logo">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12S7.59 4 12 4S20 7.59 20 12S16.41 20 12 20Z"/><path d="M12 6C9.17 6 6.84 8.04 6.22 10.78C6.09 11.33 6.49 11.89 7.04 11.89C7.43 11.89 7.77 11.64 7.89 11.27C8.31 9.93 9.77 9 12 9C14.23 9 15.69 9.93 16.11 11.27C16.23 11.64 16.57 11.89 16.96 11.89C17.51 11.89 17.91 11.33 17.78 10.78C17.16 8.04 14.83 6 12 6Z"/></svg>
-            <h1>AL ClimateView</h1>
+            <h1>FLAI</h1>
         </div>
     </header>
 
@@ -46,7 +46,7 @@
         <div id="sidebar-content">
             <h2>Controls</h2>
             <div id="accordion-container">
-                <button class="accordion-header" data-category="precipitation">Precipitation</button>
+                <button class="accordion-header" data-category="precipitation">Precipitation History</button>
                 <div class="accordion-panel">
                     <div class="control-group">
                         <label for="month-slider">Month: <strong id="month-label">January</strong></label>
@@ -54,15 +54,15 @@
                     </div>
                 </div>
 
-                <button class="accordion-header" data-category="forecast">Forecast</button>
+                <button class="accordion-header" data-category="forecast">Weather Forecast</button>
                 <div class="accordion-panel">
                     <div class="control-group">
                         <label for="day-slider">Day: <strong id="day-label">Today</strong></label>
-                        <input id="day-slider" type="range" min="0" max="2" step="1" value="0">
+                        <input id="day-slider" type="range" min="0" max="9" step="1" value="0">
                     </div>
                 </div>
 
-                <button class="accordion-header" data-category="floods">Floods</button>
+                <button class="accordion-header" data-category="floods">Flood History</button>
                 <div class="accordion-panel">
                     <div class="control-group">
                         <label>Visible Flood Types</label>
@@ -85,7 +85,36 @@
                     </div>
                 </div>
 
-                <button class="accordion-header" data-category="svi">Social Vulnerability</button>
+                <button class="accordion-header" data-category="gauges">River Gauges (Live)</button>
+                <div class="accordion-panel">
+                    <div class="control-group">
+                        <p style="font-size: 0.85em; color: #666; margin: 0;">Real-time water level and flow data from USGS stream gauges across Alabama.</p>
+                    </div>
+                </div>
+
+                <button class="accordion-header" data-category="gauge-history">River Gauge History</button>
+                <div class="accordion-panel">
+                    <div class="control-group">
+                        <label for="gauge-year-slider">Year: <strong id="gauge-year-label">2020</strong></label>
+                        <input id="gauge-year-slider" type="range" min="0" max="5" step="1" value="0">
+                    </div>
+                    <div class="control-group">
+                        <p style="font-size: 0.85em; color: #666; margin: 0;">Annual average water levels and flow rates from USGS stream gauges.</p>
+                    </div>
+                </div>
+
+                <button class="accordion-header" data-category="gauge-forecast">River Gauge Status</button>
+                <div class="accordion-panel">
+                    <div class="control-group">
+                        <label for="gauge-forecast-day-slider">Day: <strong id="gauge-forecast-day-label">Today</strong></label>
+                        <input id="gauge-forecast-day-slider" type="range" min="0" max="2" step="1" value="0">
+                    </div>
+                    <div class="control-group">
+                        <p style="font-size: 0.85em; color: #666; margin: 0;">River levels and flood status forecast from NOAA for Alabama gauges.</p>
+                    </div>
+                </div>
+
+                <button class="accordion-header" data-category="svi">Social Vulnerability (Historical)</button>
                 <div class="accordion-panel">
                     <div class="control-group">
                         <label for="svi-theme-select">Vulnerability Theme</label>
@@ -114,6 +143,25 @@
     <div id="precipitation-legend" class="legend" style="display: none;"><h4 >Precipitation (in)</h4><div class="precip-gradient"></div><div class="precip-labels"><span>0</span><span>100+</span></div></div>
     <div id="flood-legend" class="legend" style="display: none;"><h4>Flood Events</h4><div><span class="legend-key" style="background-color: #319795;"></span><span>River Flood</span></div><div><span class="legend-key" style="background-color: #dd6b20;"></span><span>Flash Flood</span></div></div>
     <div id="svi-legend" class="legend" style="display: none;"><h4 id="svi-legend-title">Overall SVI</h4><div class="svi-gradient"></div><div class="svi-labels"><span>0</span><span>1</span></div></div>
+    <div id="gauge-legend" class="legend" style="display: none;">
+        <h4>Water Level (ft)</h4>
+        <div class="gauge-height-gradient"></div>
+        <div class="gauge-labels"><span>0</span><span>5</span><span>15</span><span>30+</span></div>
+    </div>
+    <div id="gauge-history-legend" class="legend" style="display: none;">
+        <h4>Avg. Water Level (ft)</h4>
+        <div class="gauge-height-gradient"></div>
+        <div class="gauge-labels"><span>0</span><span>5</span><span>15</span><span>30+</span></div>
+    </div>
+    <div id="gauge-forecast-legend" class="legend" style="display: none;">
+        <h4>River Status</h4>
+        <div><span class="legend-key" style="background-color: #2ecc71;"></span><span>Normal</span></div>
+        <div><span class="legend-key" style="background-color: #f1c40f;"></span><span>Action Stage</span></div>
+        <div><span class="legend-key" style="background-color: #e74c3c;"></span><span>Near Flood</span></div>
+        <div><span class="legend-key" style="background-color: #c0392b;"></span><span>Minor Flood</span></div>
+        <div><span class="legend-key" style="background-color: #8e44ad;"></span><span>Moderate Flood</span></div>
+        <div><span class="legend-key" style="background-color: #7b2cbf;"></span><span>Major Flood</span></div>
+    </div>
 
     <div id="modal" class="hidden"><button id="modal-close-btn">&times;</button><div id="modal-content"></div></div>
     <div id="chat-root"></div>

@@ -1,0 +1,3723 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.1963308,
+          32.9015159
+        ]
+      },
+      "properties": {
+        "siteName": "OSELIGEE CREEK NEAR LANETT AL",
+        "year": 2020,
+        "gageHeight": 4.809329446064138,
+        "gageHeightMax": 15.1,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 343,
+        "discharge": 211.01530054644815,
+        "dischargeMax": 3770,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.014931,
+          32.31681467
+        ]
+      },
+      "properties": {
+        "siteName": "UCHEE CREEK NEAR FORT MITCHELL, AL.",
+        "year": 2020,
+        "gageHeight": 2.590192307692311,
+        "gageHeightMax": 16.45,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": 720.3939890710383,
+        "dischargeMax": 12600,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.0591667,
+          31.62219444
+        ]
+      },
+      "properties": {
+        "siteName": "CHATTAHOOCHEE R .36 MI DS WFG DAM NR FT GAINES, GA",
+        "year": 2020,
+        "gageHeight": 105.77333333333334,
+        "gageHeightMax": 124.43,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 276,
+        "discharge": 15654.83606557377,
+        "dischargeMax": 92000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.6104912,
+          31.3429492
+        ]
+      },
+      "properties": {
+        "siteName": "CHOCTAWHATCHEE RIVER NEAR NEWTON, AL.",
+        "year": 2020,
+        "gageHeight": 5.185437158469942,
+        "gageHeightMax": 24.75,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 871.5472677595629,
+        "dischargeMax": 12600,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.7843789,
+          31.15934229
+        ]
+      },
+      "properties": {
+        "siteName": "CHOCTAWHATCHEE RIVER NEAR BELLWOOD AL",
+        "year": 2020,
+        "gageHeight": 6.850612813370485,
+        "gageHeightMax": 16.04,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 359,
+        "discharge": 1854.363387978142,
+        "dischargeMax": 18300,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.8521574,
+          31.0412902
+        ]
+      },
+      "properties": {
+        "siteName": "CHOCTAWHATCHEE RIVER NEAR GENEVA, ALABAMA",
+        "year": 2020,
+        "gageHeight": 6.772772861356936,
+        "gageHeightMax": 28.63,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 339,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.9582737,
+          31.27239318
+        ]
+      },
+      "properties": {
+        "siteName": "LITTLE DOUBLE BRIDGES CREEK NR ENTERPRISE, AL.",
+        "year": 2020,
+        "gageHeight": 3.3128142076502747,
+        "gageHeightMax": 7.52,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 31.25338797814203,
+        "dischargeMax": 1110,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.7829975,
+          31.59488716
+        ]
+      },
+      "properties": {
+        "siteName": "PEA RIVER NEAR ARITON AL",
+        "year": 2020,
+        "gageHeight": 3.672647887323945,
+        "gageHeightMax": 20.6,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 355,
+        "discharge": 821.4956284153002,
+        "dischargeMax": 24700,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.0630019,
+          31.4134998
+        ]
+      },
+      "properties": {
+        "siteName": "PEA RIVER AT ELBA, AL.",
+        "year": 2020,
+        "gageHeight": 5.24252840909091,
+        "gageHeightMax": 25.73,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 352,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.0993868,
+          31.11267588
+        ]
+      },
+      "properties": {
+        "siteName": "PEA RIVER NEAR SAMSON AL",
+        "year": 2020,
+        "gageHeight": 9.200849315068492,
+        "gageHeightMax": 34.16,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 1928.24043715847,
+        "dischargeMax": 16700,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7099567,
+          31.02767985
+        ]
+      },
+      "properties": {
+        "siteName": "BLACKWATER RIVER NEAR BRADLEY AL",
+        "year": 2020,
+        "gageHeight": 1.8097245179063357,
+        "gageHeightMax": 10.28,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": 200.8237704918033,
+        "dischargeMax": 10900,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.2516226,
+          31.57349458
+        ]
+      },
+      "properties": {
+        "siteName": "CONECUH RIVER AT BRANTLEY AL",
+        "year": 2020,
+        "gageHeight": 4.532814207650273,
+        "gageHeightMax": 20.66,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 816.4631147540982,
+        "dischargeMax": 11800,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.40551809,
+          31.59627177
+        ]
+      },
+      "properties": {
+        "siteName": "PATSALIGA CREEK NEAR BRANTLEY AL",
+        "year": 2020,
+        "gageHeight": 6.85574603174603,
+        "gageHeightMax": 19.88,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 315,
+        "discharge": 644.5972677595627,
+        "dischargeMax": 6510,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.5196826,
+          31.3612799
+        ]
+      },
+      "properties": {
+        "siteName": "CONECUH RIVER BEL PT A DAM NR RIVER FALLS, AL.",
+        "year": 2020,
+        "gageHeight": 9.998524590163935,
+        "gageHeightMax": 37.94,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 1688.6564784053155,
+        "dischargeMax": 24700,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 301
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.5294047,
+          31.34822474
+        ]
+      },
+      "properties": {
+        "siteName": "CONECUH RIVER AT RIVER FALLS, ALABAMA",
+        "year": 2020,
+        "gageHeight": 6.538032786885239,
+        "gageHeightMax": 37.09,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 2093.5819672131147,
+        "dischargeMax": 19500,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7869139,
+          31.4537758
+        ]
+      },
+      "properties": {
+        "siteName": "SEPULGA RIVER NEAR MCKENZIE AL",
+        "year": 2020,
+        "gageHeight": 4.5234482758620675,
+        "gageHeightMax": 14.27,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 348,
+        "discharge": 753.0532786885248,
+        "dischargeMax": 8020,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.0616644,
+          31.06715578
+        ]
+      },
+      "properties": {
+        "siteName": "CONECUH RIVER AT STATE HWY 41 NEAR BREWTON, AL.",
+        "year": 2020,
+        "gageHeight": 14.49729166666668,
+        "gageHeightMax": 28.63,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 288,
+        "discharge": 5047.224043715847,
+        "dischargeMax": 36700,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9866403,
+          31.41850006
+        ]
+      },
+      "properties": {
+        "siteName": "MURDER CREEK NEAR EVERGREEN AL",
+        "year": 2020,
+        "gageHeight": 4.770249999999999,
+        "gageHeightMax": 10.77,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 360,
+        "discharge": 270.70983606557377,
+        "dischargeMax": 2580,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.06885829,
+          31.10101137
+        ]
+      },
+      "properties": {
+        "siteName": "MURDER CREEK AT STATE HWY 41 AT BREWTON, AL.",
+        "year": 2020,
+        "gageHeight": 11.364289617486333,
+        "gageHeightMax": 26.56,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 868.25956284153,
+        "dischargeMax": 17900,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.0871928,
+          31.1298991
+        ]
+      },
+      "properties": {
+        "siteName": "BURNT CORN CREEK AT STATE HWY 41 NEAR BREWTON, AL.",
+        "year": 2020,
+        "gageHeight": 4.161777777777776,
+        "gageHeightMax": 15.97,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 360,
+        "discharge": 320.4909836065572,
+        "dischargeMax": 7170,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.3705353,
+          31.12962115
+        ]
+      },
+      "properties": {
+        "siteName": "BIG ESCAMBIA CR AT SARDINE BR NR STANLEY CROSSROAD",
+        "year": 2020,
+        "gageHeight": 2.0849025069637857,
+        "gageHeightMax": 8.54,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 359,
+        "discharge": 316.3114754098361,
+        "dischargeMax": 3590,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.2627814,
+          31.01076847
+        ]
+      },
+      "properties": {
+        "siteName": "BIG ESCAMBIA CREEK AT FLOMATON AL",
+        "year": 2020,
+        "gageHeight": 7.640683060109286,
+        "gageHeightMax": 17.58,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 598.9398907103825,
+        "dischargeMax": 9290,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.6072359,
+          30.6371679
+        ]
+      },
+      "properties": {
+        "siteName": "STYX R NR LOXLEY, AT SMITHS SIDING, ALA",
+        "year": 2020,
+        "gageHeight": 4.725564738292008,
+        "gageHeightMax": 11.39,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.5472342,
+          30.6057799
+        ]
+      },
+      "properties": {
+        "siteName": "STYX RIVER NEAR ELSANOR, AL.",
+        "year": 2020,
+        "gageHeight": 2.7099449035812686,
+        "gageHeightMax": 9.63,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": 430.6830601092896,
+        "dischargeMax": 21000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.4627577,
+          30.51825089
+        ]
+      },
+      "properties": {
+        "siteName": "STYX RIVER AT SEMINOLE, ALA",
+        "year": 2020,
+        "gageHeight": 9.314285714285718,
+        "gageHeightMax": 20.81,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 357,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.65279277,
+          30.38828617
+        ]
+      },
+      "properties": {
+        "siteName": "WOLF CREEK BELOW FOLEY, ALA",
+        "year": 2020,
+        "gageHeight": 6.439779614325072,
+        "gageHeightMax": 14.07,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": 18.18172131147541,
+        "dischargeMax": 2010,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.7369323,
+          30.40658669
+        ]
+      },
+      "properties": {
+        "siteName": "MAGNOLIA RIVER AT US 98 NEAR FOLEY, ALABAMA",
+        "year": 2020,
+        "gageHeight": 3.124150417827302,
+        "gageHeightMax": 12.99,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 359,
+        "discharge": 49.29562841530057,
+        "dischargeMax": 6570,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.7986304,
+          30.54550384
+        ]
+      },
+      "properties": {
+        "siteName": "FISH RIVER NEAR SILVER HILL AL",
+        "year": 2020,
+        "gageHeight": 1.760409836065573,
+        "gageHeightMax": 16.62,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 127.6628415300546,
+        "dischargeMax": 7730,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.8026444,
+          30.47466944
+        ]
+      },
+      "properties": {
+        "siteName": "FISH RIVER NEAR MARLOW, AL",
+        "year": 2020,
+        "gageHeight": 1.3147267759562853,
+        "gageHeightMax": 8.01,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.8896472,
+          30.65206944
+        ]
+      },
+      "properties": {
+        "siteName": "D'OLIVE CREEK NEAR BRIDGEHEAD, AL",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 10.37491638795986,
+        "dischargeMax": 423,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 299
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.8917917,
+          30.6427861
+        ]
+      },
+      "properties": {
+        "siteName": "TIAWASEE CREEK NEAR BRIDGEHEAD, AL",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 8.563478260869568,
+        "dischargeMax": 605,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 299
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.45325,
+          34.20194444
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER AT STATE LINE, AL/GA",
+        "year": 2020,
+        "gageHeight": 13.442759562841532,
+        "gageHeightMax": 18.42,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 9993.11475409836,
+        "dischargeMax": 41100,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.5091172,
+          34.29040777
+        ]
+      },
+      "properties": {
+        "siteName": "CHATTOOGA RIVER ABOVE GAYLESVILLE AL",
+        "year": 2020,
+        "gageHeight": 5.891803278688531,
+        "gageHeightMax": 20.16,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 946.6912568306011,
+        "dischargeMax": 11900,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.6805204,
+          34.2889813
+        ]
+      },
+      "properties": {
+        "siteName": "LITTLE RIVER NEAR BLUE POND AL",
+        "year": 2020,
+        "gageHeight": 4.203863013698632,
+        "gageHeightMax": 10.73,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 654.8188524590164,
+        "dischargeMax": 18300,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.7538469,
+          34.1767993
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER AT LEESBURG AL",
+        "year": 2020,
+        "gageHeight": 562.283087431694,
+        "gageHeightMax": 566.16,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.6141287,
+          34.06509836
+        ]
+      },
+      "properties": {
+        "siteName": "TERRAPIN CREEK AT ELLISVILLE AL",
+        "year": 2020,
+        "gageHeight": 8.150546448087443,
+        "gageHeightMax": 12.08,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 524.9245901639345,
+        "dischargeMax": 4600,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.9702488,
+          34.01398655
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER AT GADSDEN STEAM PLANT NR GADSDEN, AL",
+        "year": 2020,
+        "gageHeight": 21.825614525139652,
+        "gageHeightMax": 25.76,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 358,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.9977494,
+          34.0103752
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER AT GADSDEN AL",
+        "year": 2020,
+        "gageHeight": 21.583482142857132,
+        "gageHeightMax": 24.61,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 336,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.7671907,
+          34.43814386
+        ]
+      },
+      "properties": {
+        "siteName": "BIG WILLS CREEK AT STATE HWY 35 NR FORT PAYNE, AL",
+        "year": 2020,
+        "gageHeight": 5.214502164502167,
+        "gageHeightMax": 12.77,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 231,
+        "discharge": 130.7664207650274,
+        "dischargeMax": 3100,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.0380286,
+          34.0981515
+        ]
+      },
+      "properties": {
+        "siteName": "BIG WILLS CREEK NEAR REECE CITY",
+        "year": 2020,
+        "gageHeight": 3.588579234972683,
+        "gageHeightMax": 12.99,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 479.2188524590165,
+        "dischargeMax": 8610,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.02608309,
+          33.9431535
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER NR SOUTHSIDE, ALA",
+        "year": 2020,
+        "gageHeight": 4.368376068376068,
+        "gageHeightMax": 5.45,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 351,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.2627559,
+          33.8398211
+        ]
+      },
+      "properties": {
+        "siteName": "BIG CANOE CREEK AT ASHVILLE AL",
+        "year": 2020,
+        "gageHeight": 3.7312876712328777,
+        "gageHeightMax": 15.94,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 399.41939890710415,
+        "dischargeMax": 6890,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.9983035,
+          33.7803769
+        ]
+      },
+      "properties": {
+        "siteName": "OHATCHEE CREEK AT OHATCHEE, AL",
+        "year": 2020,
+        "gageHeight": 4.065792349726771,
+        "gageHeightMax": 17.29,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 558.4166666666669,
+        "dischargeMax": 5300,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.7852411,
+          33.60204998
+        ]
+      },
+      "properties": {
+        "siteName": "CHOCCOLOCCO CREEK NEAR BOILING SPRING, ALABAMA",
+        "year": 2020,
+        "gageHeight": 5.049970674486809,
+        "gageHeightMax": 13.76,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 341,
+        "discharge": 466.8472677595628,
+        "dischargeMax": 3960,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.0969163,
+          33.5484383
+        ]
+      },
+      "properties": {
+        "siteName": "CHOCCOLOCCO CREEK AT JACKSON SHOAL NR LINCOLN AL",
+        "year": 2020,
+        "gageHeight": 19.326448087431704,
+        "gageHeightMax": 27.67,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 1137.8251366120219,
+        "dischargeMax": 9930,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.3869219,
+          33.4476497
+        ]
+      },
+      "properties": {
+        "siteName": "KELLY CREEK NEAR VINCENT AL",
+        "year": 2020,
+        "gageHeight": 3.7222625698324014,
+        "gageHeightMax": 15.64,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 358,
+        "discharge": 514.8530054644809,
+        "dischargeMax": 7750,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.2341414,
+          33.35955497
+        ]
+      },
+      "properties": {
+        "siteName": "TALLADEGA CREEK AT ALPINE AL",
+        "year": 2020,
+        "gageHeight": 4.970928961748633,
+        "gageHeightMax": 13.35,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 400.7560109289619,
+        "dischargeMax": 5310,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.273308,
+          33.21178164
+        ]
+      },
+      "properties": {
+        "siteName": "SHIRTEE CREEK NEAR ODENA, ALABAMA",
+        "year": 2020,
+        "gageHeight": 3.2795329670329725,
+        "gageHeightMax": 5.66,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": 51.90245901639344,
+        "dischargeMax": 545,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.3638657,
+          33.29182009
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER AT CHILDERSBURG AL",
+        "year": 2020,
+        "gageHeight": 14.780302197802191,
+        "gageHeightMax": 22.2,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": 20757.486338797815,
+        "dischargeMax": 93400,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.4952592,
+          33.32066689
+        ]
+      },
+      "properties": {
+        "siteName": "YELLOWLEAF CREEK NEAR WESTOVER, AL",
+        "year": 2020,
+        "gageHeight": 3.8075409836065592,
+        "gageHeightMax": 15.27,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 333.4801092896175,
+        "dischargeMax": 4840,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.4583132,
+          33.24122519
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER AT GASTON STEAM PLANT NR WILSONVILLE",
+        "year": 2020,
+        "gageHeight": 13.885054945054957,
+        "gageHeightMax": 17.19,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.5791667,
+          32.89027778
+        ]
+      },
+      "properties": {
+        "siteName": "WALNUT CREEK ABOVE CLANTON, ALA",
+        "year": 2020,
+        "gageHeight": 4.236718266253871,
+        "gageHeightMax": 11.18,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 323,
+        "discharge": 105.11734972677604,
+        "dischargeMax": 3180,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.2702519,
+          32.9168292
+        ]
+      },
+      "properties": {
+        "siteName": "HATCHET CREEK BELOW ROCKFORD AL",
+        "year": 2020,
+        "gageHeight": 3.638457300275479,
+        "gageHeightMax": 15.55,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": 756.6420765027323,
+        "dischargeMax": 11100,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.208857,
+          32.53707835
+        ]
+      },
+      "properties": {
+        "siteName": "COOSA RIVER AT WETUMPKA AL",
+        "year": 2020,
+        "gageHeight": 17.473032786885245,
+        "gageHeightMax": 42.14,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.5132894,
+          33.622885
+        ]
+      },
+      "properties": {
+        "siteName": "TALLAPOOSA RIVER NEAR HEFLIN, AL",
+        "year": 2020,
+        "gageHeight": 5.051204481792717,
+        "gageHeightMax": 19.36,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 357,
+        "discharge": 904.5806010928961,
+        "dischargeMax": 8500,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.399118,
+          33.43733498
+        ]
+      },
+      "properties": {
+        "siteName": "LITTLE TALLAPOOSA RIVER NEAR NEWELL AL",
+        "year": 2020,
+        "gageHeight": 4.022412790697675,
+        "gageHeightMax": 13.04,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 344,
+        "discharge": 862.6311475409836,
+        "dischargeMax": 6690,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.5607875,
+          33.11678684
+        ]
+      },
+      "properties": {
+        "siteName": "TALLAPOOSA RIVER AT WADLEY AL",
+        "year": 2020,
+        "gageHeight": 5.602103825136615,
+        "gageHeightMax": 13.69,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 4069.502732240437,
+        "dischargeMax": 21000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.7396804,
+          32.97738315
+        ]
+      },
+      "properties": {
+        "siteName": "TALLAPOOSA RIVER NR NEW SITE, AL.(HORSESHOE BEND)",
+        "year": 2020,
+        "gageHeight": 4.68806629834254,
+        "gageHeightMax": 10.81,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 362,
+        "discharge": 4788.934426229508,
+        "dischargeMax": 30200,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.8780186,
+          33.06539786
+        ]
+      },
+      "properties": {
+        "siteName": "HILLABEE CREEK NEAR HACKNEYVILLE AL",
+        "year": 2020,
+        "gageHeight": 6.766731301939064,
+        "gageHeightMax": 16.34,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 361,
+        "discharge": 578.3704918032785,
+        "dischargeMax": 7410,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.5880076,
+          32.62680015
+        ]
+      },
+      "properties": {
+        "siteName": "SOUGAHATCHEE CREEK AT CO RD 188 NR LOACHAPOKA, AL.",
+        "year": 2020,
+        "gageHeight": 1.9895081967213126,
+        "gageHeightMax": 7.4,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 148.83278688524607,
+        "dischargeMax": 5690,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.4805044,
+          32.5481918
+        ]
+      },
+      "properties": {
+        "siteName": "CHEWACLA CREEK AT CHEWACLA STATE PARK NR AUBURN",
+        "year": 2020,
+        "gageHeight": 2.1781043956043944,
+        "gageHeightMax": 6.46,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": 84.92467213114752,
+        "dischargeMax": 2460,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.69495709,
+          32.4768401
+        ]
+      },
+      "properties": {
+        "siteName": "UPHAPEE CREEK NEAR TUSKEGEE AL",
+        "year": 2020,
+        "gageHeight": 3.120519125683061,
+        "gageHeightMax": 16.75,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 646.107923497268,
+        "dischargeMax": 10300,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.897458,
+          32.44902654
+        ]
+      },
+      "properties": {
+        "siteName": "TALLAPOOSA RIVER AT MILSTEAD AL",
+        "year": 2020,
+        "gageHeight": 9.218299711815567,
+        "gageHeightMax": 41.36,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 347,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.1955275,
+          32.43989677
+        ]
+      },
+      "properties": {
+        "siteName": "TALLAPOOSA RIVER NEAR MONT.-MONT. WATER WORKS",
+        "year": 2020,
+        "gageHeight": 10.715041095890419,
+        "gageHeightMax": 33.73,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 9497.021857923497,
+        "dischargeMax": 81400,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.3154056,
+          32.3922361
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER AT MONTGOMERY AL",
+        "year": 2020,
+        "gageHeight": 24.790776119402974,
+        "gageHeightMax": 42.69,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 335,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.40830579,
+          32.41152597
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER NEAR MONTGOMERY, AL.",
+        "year": 2020,
+        "gageHeight": 29.231878612716777,
+        "gageHeightMax": 44.27,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 346,
+        "discharge": 36467.15846994535,
+        "dischargeMax": 156000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.2994126,
+          32.30736239
+        ]
+      },
+      "properties": {
+        "siteName": "CATOMA CREEK NEAR MONTGOMERY AL",
+        "year": 2020,
+        "gageHeight": 3.7514754098360643,
+        "gageHeightMax": 22.49,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 459.1760928961748,
+        "dischargeMax": 8820,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7847045,
+          32.32513829
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER AT ROBERT F HENRY LOCK AND DAM",
+        "year": 2020,
+        "gageHeight": 124.93657534246579,
+        "gageHeightMax": 126.63,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7838712,
+          32.32236057
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER BL ROBERT F HENRY L&D NEAR BENTON,AL",
+        "year": 2020,
+        "gageHeight": 91.04139726027405,
+        "gageHeightMax": 125.95,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9035991,
+          32.5829103
+        ]
+      },
+      "properties": {
+        "siteName": "MULBERRY CREEK AT JONES AL",
+        "year": 2020,
+        "gageHeight": 1.553790087463557,
+        "gageHeightMax": 12.8,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 343,
+        "discharge": 469.9852459016393,
+        "dischargeMax": 10100,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.0186007,
+          32.40569225
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER AT SELMA AL",
+        "year": 2020,
+        "gageHeight": 23.838481012658214,
+        "gageHeightMax": 49.64,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 316,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.599431,
+          33.62232504
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER AT TRUSSVILLE, AL.",
+        "year": 2020,
+        "gageHeight": 2.045068493150685,
+        "gageHeightMax": 6.87,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 42.983579234972645,
+        "dischargeMax": 1540,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.5491517,
+          33.60371416
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR WHITES CHAPEL AL",
+        "year": 2020,
+        "gageHeight": 1.8630327868852483,
+        "gageHeightMax": 11.05,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 144.6412568306011,
+        "dischargeMax": 4750,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7127653,
+          33.4817724
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR MOUNTAIN BROOK AL",
+        "year": 2020,
+        "gageHeight": 1.4789890710382516,
+        "gageHeightMax": 13.2,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 419.0190983606562,
+        "dischargeMax": 10500,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.5624847,
+          33.53454886
+        ]
+      },
+      "properties": {
+        "siteName": "LITTLE CAHABA RIVER BELOW LEEDS, AL.",
+        "year": 2020,
+        "gageHeight": 1.7744808743169407,
+        "gageHeightMax": 7.27,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 48.92314207650271,
+        "dischargeMax": 812,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.6141521,
+          33.4998273
+        ]
+      },
+      "properties": {
+        "siteName": "LITTLE CAHABA RIVER NR JEFFERSON PARK, AL.",
+        "year": 2020,
+        "gageHeight": 0.6237758112094396,
+        "gageHeightMax": 3.97,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 339,
+        "discharge": 70.63475409836069,
+        "dischargeMax": 1130,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.6988757,
+          33.43987215
+        ]
+      },
+      "properties": {
+        "siteName": "LITTLE CAHABA RIVER AT CAH BEA RD NR CAHABA HTS AL",
+        "year": 2020,
+        "gageHeight": 1.5368219178082183,
+        "gageHeightMax": 7.43,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 142.44355191256832,
+        "dischargeMax": 1850,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7397099,
+          33.4156637
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR CAHABA HEIGHTS AL",
+        "year": 2020,
+        "gageHeight": 2.2308563535911614,
+        "gageHeightMax": 16.07,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 362,
+        "discharge": 428.53587431694024,
+        "dischargeMax": 8550,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7841551,
+          33.3692767
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR HOOVER, AL",
+        "year": 2020,
+        "gageHeight": 4.8303367003366935,
+        "gageHeightMax": 26.29,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 297,
+        "discharge": 540.407513661202,
+        "dischargeMax": 8680,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8130446,
+          33.36344373
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR ACTON AL",
+        "year": 2020,
+        "gageHeight": 4.163278688524586,
+        "gageHeightMax": 25.99,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 591.1262295081967,
+        "dischargeMax": 9070,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7594183,
+          33.3449441
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA VALLEY CR AT INDIAN TRAIL RD NR INDIAN SPRS",
+        "year": 2020,
+        "gageHeight": 4.238410404624274,
+        "gageHeightMax": 9.28,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 346,
+        "discharge": 28.619972677595637,
+        "dischargeMax": 477,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8063775,
+          33.31344546
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA VALLEY CREEK AT CROSS CR RD AT PELHAM, AL.",
+        "year": 2020,
+        "gageHeight": 2.814480874316943,
+        "gageHeightMax": 8.56,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 67.05622950819678,
+        "dischargeMax": 1190,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8824901,
+          33.28455786
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR HELENA AL",
+        "year": 2020,
+        "gageHeight": 2.939033149171273,
+        "gageHeightMax": 25.14,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 362,
+        "discharge": 796.905737704918,
+        "dischargeMax": 12500,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.71693178,
+          33.52098134
+        ]
+      },
+      "properties": {
+        "siteName": "SHADES CREEK AT ELDER ST NEAR SPRINGDALE AL",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 29.715273224043703,
+        "dischargeMax": 862,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8136007,
+          33.4487185
+        ]
+      },
+      "properties": {
+        "siteName": "SHADES CREEK NR HOMEWOOD, ALA",
+        "year": 2020,
+        "gageHeight": 4.02789617486339,
+        "gageHeightMax": 10.74,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 69.6961475409836,
+        "dischargeMax": 2160,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9497141,
+          33.3262234
+        ]
+      },
+      "properties": {
+        "siteName": "SHADES CREEK NEAR GREENWOOD AL",
+        "year": 2020,
+        "gageHeight": 3.1657650273223994,
+        "gageHeightMax": 13.54,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 201.30863387978127,
+        "dischargeMax": 3560,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.1391623,
+          32.9451238
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER AT CENTREVILLE AL",
+        "year": 2020,
+        "gageHeight": 4.5184657534246595,
+        "gageHeightMax": 29.84,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 2473.844262295082,
+        "dischargeMax": 40000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.198884,
+          32.5293002
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR SUTTLE, AL.",
+        "year": 2020,
+        "gageHeight": 8.903005464480866,
+        "gageHeightMax": 38.35,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.180279,
+          32.4440634
+        ]
+      },
+      "properties": {
+        "siteName": "CAHABA RIVER NEAR MARION JUNCTION AL",
+        "year": 2020,
+        "gageHeight": 8.195068870523412,
+        "gageHeightMax": 39.01,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": 3971.191256830601,
+        "dischargeMax": 47600,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.0683313,
+          31.99629727
+        ]
+      },
+      "properties": {
+        "siteName": "PINE BARREN CREEK NEAR SNOW HILL, AL.",
+        "year": 2020,
+        "gageHeight": 4.39513888888889,
+        "gageHeightMax": 20.09,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 360,
+        "discharge": 394.2956284153005,
+        "dischargeMax": 5710,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.3991621,
+          32.10070089
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER AT MILLERS FERRY DAM, NR. CAMDEN, AL",
+        "year": 2020,
+        "gageHeight": 80.05191256830612,
+        "gageHeightMax": 80.7,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.39777319,
+          32.10014534
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER BELOW MILLERS FERRY L&D NR CAMDEN AL",
+        "year": 2020,
+        "gageHeight": 44.56321428571429,
+        "gageHeightMax": 77.95,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.550548,
+          31.61515849
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER AT CLAIBORNE L&D NEAR MONROEVILLE",
+        "year": 2020,
+        "gageHeight": 37.093839541547275,
+        "gageHeightMax": 54,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 349,
+        "discharge": 42729.39890710382,
+        "dischargeMax": 175000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.550548,
+          31.61349189
+        ]
+      },
+      "properties": {
+        "siteName": "ALABAMA RIVER BEL CLAIB. L&D NR MONROEVILLE, AL.",
+        "year": 2020,
+        "gageHeight": 23.44601648351649,
+        "gageHeightMax": 53.58,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.2886454,
+          33.21067874
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE RIVER AT BEVILL L&D NR PICKENSVILLE, AL",
+        "year": 2020,
+        "gageHeight": 136.50816479400748,
+        "gageHeightMax": 142.77,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 267,
+        "discharge": 14438.38524590164,
+        "dischargeMax": 130000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.2886454,
+          33.21040097
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE RIVER BEL BEVIL L&D NR PICKENSVILLE, AL.",
+        "year": 2020,
+        "gageHeight": 113.16577557755767,
+        "gageHeightMax": 140.4,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 303,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.776408,
+          33.2570987
+        ]
+      },
+      "properties": {
+        "siteName": "SIPSEY RIVER NR ELROD, AL",
+        "year": 2020,
+        "gageHeight": 9.37647540983607,
+        "gageHeightMax": 15.64,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 1247.207650273224,
+        "dischargeMax": 9820,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.1561363,
+          32.8481856
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE R AT HEFLIN L&D NR GAINESVILLE, AL",
+        "year": 2020,
+        "gageHeight": 109.58593406593408,
+        "gageHeightMax": 117.32,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 273,
+        "discharge": 17656.029304029304,
+        "dischargeMax": 74300,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 273
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.1541918,
+          32.85235218
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE R BLW HEFLIN L&D NR GAINESVILLE, ALA",
+        "year": 2020,
+        "gageHeight": 81.26191256830599,
+        "gageHeightMax": 116.4,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.2978103,
+          32.9326287
+        ]
+      },
+      "properties": {
+        "siteName": "NOXUBEE RIVER NR GEIGER, AL",
+        "year": 2020,
+        "gageHeight": 14.852836676217782,
+        "gageHeightMax": 40.91,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 349,
+        "discharge": 2904.092896174863,
+        "dischargeMax": 29100,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.3119761,
+          32.80707585
+        ]
+      },
+      "properties": {
+        "siteName": "BODKA CREEK NEAR GEIGER, AL.",
+        "year": 2020,
+        "gageHeight": 4.971475409836064,
+        "gageHeightMax": 21.84,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 426.4810382513658,
+        "dischargeMax": 10700,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.69388889,
+          34.1725
+        ]
+      },
+      "properties": {
+        "siteName": "DUCK RIVER ABOVE HWY 278 NEAR BERLIN, AL",
+        "year": 2020,
+        "gageHeight": 2.2697126436781634,
+        "gageHeightMax": 3.9,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 348,
+        "discharge": 101.62645604395614,
+        "dischargeMax": 310,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 364
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.6077617,
+          34.07985725
+        ]
+      },
+      "properties": {
+        "siteName": "BLUE SPRINGS CREEK NEAR BLOUNTSVILLE, AL.",
+        "year": 2020,
+        "gageHeight": 2.6519834710743786,
+        "gageHeightMax": 8.56,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": 28.949043715847015,
+        "dischargeMax": 1380,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9222211,
+          33.87204689
+        ]
+      },
+      "properties": {
+        "siteName": "MULBERRY FORK NEAR ARKADELPHIA, AL.",
+        "year": 2020,
+        "gageHeight": 4.993643835616443,
+        "gageHeightMax": 32.92,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 1426.0262295081968,
+        "dischargeMax": 21400,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.3989084,
+          34.28537757
+        ]
+      },
+      "properties": {
+        "siteName": "SIPSEY FORK NEAR GRAYSON AL",
+        "year": 2020,
+        "gageHeight": 4.508124999999999,
+        "gageHeightMax": 18.42,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 352,
+        "discharge": 262.25825136612,
+        "dischargeMax": 4540,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.422793,
+          34.08121506
+        ]
+      },
+      "properties": {
+        "siteName": "CLEAR C AT NEW HOPE CHURCH NR POPLAR SPRINGS, AL.",
+        "year": 2020,
+        "gageHeight": 2.3754098360655744,
+        "gageHeightMax": 10.6,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 334.1953551912568,
+        "dischargeMax": 5010,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.2569514,
+          33.90843985
+        ]
+      },
+      "properties": {
+        "siteName": "BLACKWATER CREEK NEAR MANCHESTER AL",
+        "year": 2020,
+        "gageHeight": 3.537912087912089,
+        "gageHeightMax": 8.73,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": 523.6560109289619,
+        "dischargeMax": 4770,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.1702791,
+          33.75760677
+        ]
+      },
+      "properties": {
+        "siteName": "MULBERRY FORK AT CORDOVA AL",
+        "year": 2020,
+        "gageHeight": 11.847802816901407,
+        "gageHeightMax": 19.79,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 355,
+        "discharge": 5475.502732240438,
+        "dischargeMax": 33400,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.3269483,
+          33.7417756
+        ]
+      },
+      "properties": {
+        "siteName": "LOST CREEK ABOVE PARRISH, AL.",
+        "year": 2020,
+        "gageHeight": 6.762431693989072,
+        "gageHeightMax": 23.45,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 363.65218579234977,
+        "dischargeMax": 4960,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.5741573,
+          34.02454235
+        ]
+      },
+      "properties": {
+        "siteName": "LOCUST FORK NEAR CLEVELAND, AL.",
+        "year": 2020,
+        "gageHeight": 2.6554143646408854,
+        "gageHeightMax": 14.22,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 362,
+        "discharge": 808.1734972677602,
+        "dischargeMax": 17800,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.4458124,
+          33.86069558
+        ]
+      },
+      "properties": {
+        "siteName": "BLACKBURN FORK LITTLE WARRIOR R NR HOLLY SPRINGS",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 86.9528961748634,
+        "dischargeMax": 2820,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.6961013,
+          33.71121273
+        ]
+      },
+      "properties": {
+        "siteName": "TURKEY CREEK AT SEWAGE PLANT NEAR PINSON AL",
+        "year": 2020,
+        "gageHeight": 4.903934426229508,
+        "gageHeightMax": 7.86,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 72.37568306010925,
+        "dischargeMax": 1580,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.81249019,
+          33.74042063
+        ]
+      },
+      "properties": {
+        "siteName": "TURKEY CREEK AT MORRIS AL",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 203.16639344262302,
+        "dischargeMax": 4590,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9833305,
+          33.7098268
+        ]
+      },
+      "properties": {
+        "siteName": "LOCUST FORK AT SAYRE, AL.",
+        "year": 2020,
+        "gageHeight": 6.513087431693988,
+        "gageHeightMax": 35.62,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 2467.3767759562843,
+        "dischargeMax": 32800,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8680483,
+          33.5970492
+        ]
+      },
+      "properties": {
+        "siteName": "FIVEMILE CREEK NEAR REPUBLIC, AL",
+        "year": 2020,
+        "gageHeight": 1.6824637681159416,
+        "gageHeightMax": 7.43,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 345,
+        "discharge": 126.70000000000002,
+        "dischargeMax": 2960,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9736073,
+          33.66343834
+        ]
+      },
+      "properties": {
+        "siteName": "FIVE MILE CREEK NR SAYRE, ALA",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 274.3109289617487,
+        "dischargeMax": 5630,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7188778,
+          33.5770483
+        ]
+      },
+      "properties": {
+        "siteName": "VILLAGE CREEK AT 86TH ST NORTH AT ROEBUCK, AL.",
+        "year": 2020,
+        "gageHeight": 1.386106442577032,
+        "gageHeightMax": 4.18,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 357,
+        "discharge": 13.820491803278701,
+        "dischargeMax": 268,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.7613783,
+          33.54843779
+        ]
+      },
+      "properties": {
+        "siteName": "TRIB TO VILLAGE CREEK AT 50th ST IN BIRMINGHAM",
+        "year": 2020,
+        "gageHeight": 1.4093169398907106,
+        "gageHeightMax": 2.87,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 12.033688524590154,
+        "dischargeMax": 292,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8174907,
+          33.54260504
+        ]
+      },
+      "properties": {
+        "siteName": "VILLAGE CREEK AT 24TH ST. AT BIRMINGHAM, AL",
+        "year": 2020,
+        "gageHeight": 0.6703005464480877,
+        "gageHeightMax": 6.14,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 76.92978142076507,
+        "dischargeMax": 1860,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.87915889,
+          33.5176481
+        ]
+      },
+      "properties": {
+        "siteName": "VILLAGE CREEK AT AVENUE W AT ENSLEY, AL",
+        "year": 2020,
+        "gageHeight": 2.377486338797815,
+        "gageHeightMax": 7.97,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 115.04890710382519,
+        "dischargeMax": 2820,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8911032,
+          33.5239948
+        ]
+      },
+      "properties": {
+        "siteName": "VILLAGE CREEK NEAR PRATT CITY, ALABAMA",
+        "year": 2020,
+        "gageHeight": 1.6647513812154693,
+        "gageHeightMax": 10,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 362,
+        "discharge": 124.40792349726783,
+        "dischargeMax": 2960,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9258266,
+          33.5481615
+        ]
+      },
+      "properties": {
+        "siteName": "VILLAGE CREEK NEAR DOCENA, ALABAMA",
+        "year": 2020,
+        "gageHeight": 1.6470308123249275,
+        "gageHeightMax": 8.25,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 357,
+        "discharge": 225.66174863387985,
+        "dischargeMax": 3420,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.0069405,
+          33.6056616
+        ]
+      },
+      "properties": {
+        "siteName": "VILLAGE CREEK NEAR ADAMSVILLE, AL.",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 154.81397849462363,
+        "dischargeMax": 1270,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 93
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8721722,
+          33.4926111
+        ]
+      },
+      "properties": {
+        "siteName": "VALLEY CREEK AT AVE W NEAR ENSLEY, AL",
+        "year": 2020,
+        "gageHeight": 4.047540983606546,
+        "gageHeightMax": 6.5,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 44.21666666666666,
+        "dischargeMax": 731,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9527705,
+          33.4256647
+        ]
+      },
+      "properties": {
+        "siteName": "VALLEY CREEK BELOW BRIGHTON, ALA",
+        "year": 2020,
+        "gageHeight": 1.8326098901098906,
+        "gageHeightMax": 8.04,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9827711,
+          33.4192762
+        ]
+      },
+      "properties": {
+        "siteName": "VALLEY CREEK NEAR BESSEMER, AL",
+        "year": 2020,
+        "gageHeight": 6.116089385474861,
+        "gageHeightMax": 11.38,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 358,
+        "discharge": 146.9442622950821,
+        "dischargeMax": 2670,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.1222186,
+          33.44733226
+        ]
+      },
+      "properties": {
+        "siteName": "VALLEY CREEK NEAR OAK GROVE AL",
+        "year": 2020,
+        "gageHeight": 3.6846131805157643,
+        "gageHeightMax": 15.79,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 349,
+        "discharge": 402.30464480874315,
+        "dischargeMax": 6370,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.3541677,
+          33.4584457
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR R AT BANKHEAD L&D NEAR BESSEMER AL",
+        "year": 2020,
+        "gageHeight": 254.60422740524766,
+        "gageHeightMax": 254.92,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 343,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.355001,
+          33.45705687
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR R BL BANKHEAD L&D NEAR BESSEMER AL",
+        "year": 2020,
+        "gageHeight": 186.63187311178254,
+        "gageHeightMax": 187.68,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 331,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.4491703,
+          33.25317258
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR RIVER AT HOLT L&D NEAR HOLT AL.",
+        "year": 2020,
+        "gageHeight": 186.48847645429365,
+        "gageHeightMax": 186.89,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 361,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.4513926,
+          33.2528948
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR RIVER BELOW HOLT L&D NEAR HOLT AL",
+        "year": 2020,
+        "gageHeight": 125.6816764705882,
+        "gageHeightMax": 141.52,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 340,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.5972297,
+          33.47928058
+        ]
+      },
+      "properties": {
+        "siteName": "NORTH RIVER NEAR SAMANTHA AL",
+        "year": 2020,
+        "gageHeight": 3.1652325581395346,
+        "gageHeightMax": 17.6,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 344,
+        "discharge": 531.697786885246,
+        "dischargeMax": 9410,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.5061161,
+          33.2673393
+        ]
+      },
+      "properties": {
+        "siteName": "LAKE TUSCALOOSA NEAR TUSCALOOSA, ALABAMA",
+        "year": 2020,
+        "gageHeight": 223.74920765027323,
+        "gageHeightMax": 226.57,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.5900074,
+          33.20928528
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR RIVER AT NORTHPORT AL",
+        "year": 2020,
+        "gageHeight": 125.21489071038249,
+        "gageHeightMax": 136.83,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 13318.390710382513,
+        "dischargeMax": 147000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.5933408,
+          33.20789644
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR R BL OLIVER L&D NEAR TUSCALOOSA, AL.",
+        "year": 2020,
+        "gageHeight": 102.29819672131151,
+        "gageHeightMax": 133.85,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.5647288,
+          33.17484164
+        ]
+      },
+      "properties": {
+        "siteName": "CRIBBS MILL CREEK AT WW PLANT AT TUSCALOOSA, AL.",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 30.015163934426248,
+        "dischargeMax": 648,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.6222295,
+          32.99734636
+        ]
+      },
+      "properties": {
+        "siteName": "ELLIOTTS CREEK AT MOUNDVILLE AL",
+        "year": 2020,
+        "gageHeight": 2.7683287671232857,
+        "gageHeightMax": 7.78,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 63.03196721311473,
+        "dischargeMax": 1660,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.8405687,
+          32.77790835
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR RIVER AT SELDEN L & D NEAR EUTAW, AL",
+        "year": 2020,
+        "gageHeight": 96.25526027397268,
+        "gageHeightMax": 104.24,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.841402,
+          32.7773528
+        ]
+      },
+      "properties": {
+        "siteName": "BLACK WARRIOR RIVER BELOW SELDEN DAM NR EUTAW, AL",
+        "year": 2020,
+        "gageHeight": 79.6185792349727,
+        "gageHeightMax": 103.63,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.8783476,
+          32.51958077
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE R AT DEMOPOLIS L&D NEAR COATOPA, AL.",
+        "year": 2020,
+        "gageHeight": 76.68728937728937,
+        "gageHeightMax": 86.88,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 273,
+        "discharge": 54911.02564102564,
+        "dischargeMax": 413000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 273
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.8800143,
+          32.52096964
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE RIVER BL DEMOPOLIS L&D NEAR COATOPA AL",
+        "year": 2020,
+        "gageHeight": 45.384945355191284,
+        "gageHeightMax": 85.2,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.1933648,
+          32.5737822
+        ]
+      },
+      "properties": {
+        "siteName": "SUCARNOOCHEE RIVER AT LIVINGSTON AL",
+        "year": 2020,
+        "gageHeight": 5.791092896174862,
+        "gageHeightMax": 24.27,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 1381.2185792349726,
+        "dischargeMax": 12000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.0411267,
+          32.13014697
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE RIVER NEAR NANAFALIA, AL.",
+        "year": 2020,
+        "gageHeight": 39.07586592178772,
+        "gageHeightMax": 63.59,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 358,
+        "discharge": 46399.18032786885,
+        "dischargeMax": 216000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.1291763,
+          31.75849066
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE R AT COFFEEVILLE L&D NR COFFEEVILLE, AL.",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 48236.92857142857,
+        "dischargeMax": 284000,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 364
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.1250095,
+          31.7571018
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE R BL COFFEEVILLE L&D NEAR COFFEEVILLE",
+        "year": 2020,
+        "gageHeight": 15.941763085399458,
+        "gageHeightMax": 46.83,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.0225066,
+          31.7443247
+        ]
+      },
+      "properties": {
+        "siteName": "SATILPA CREEK NEAR COFFEEVILLE AL",
+        "year": 2020,
+        "gageHeight": 6.019672131147541,
+        "gageHeightMax": 14.11,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 312.4303278688523,
+        "dischargeMax": 4680,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.9088882,
+          31.48599734
+        ]
+      },
+      "properties": {
+        "siteName": "TOMBIGBEE RIVER AT STEAMPLANT NR LEROY, AL",
+        "year": 2020,
+        "gageHeight": 12.904710743801648,
+        "gageHeightMax": 33.23,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 363,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.7472402,
+          31.8640785
+        ]
+      },
+      "properties": {
+        "siteName": "BASSETT CREEK AT US HIGHWAY 43 NR THOMASVILLE, AL.",
+        "year": 2020,
+        "gageHeight": 3.8384065934065994,
+        "gageHeightMax": 9.2,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 364,
+        "discharge": 17.97579234972677,
+        "dischargeMax": 314,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.0119444,
+          31.0072222
+        ]
+      },
+      "properties": {
+        "siteName": "MOBILE RIVER AT BARRY STEAMPLANT NR BUCKS (INTAKE)",
+        "year": 2020,
+        "gageHeight": 4.2394246575342445,
+        "gageHeightMax": 15.12,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.1433355,
+          30.80296466
+        ]
+      },
+      "properties": {
+        "siteName": "CHICKASAW CREEK NEAR KUSHLA AL",
+        "year": 2020,
+        "gageHeight": 4.617896174863391,
+        "gageHeightMax": 13.09,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 225.560655737705,
+        "dischargeMax": 2190,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.1813906,
+          30.50075106
+        ]
+      },
+      "properties": {
+        "siteName": "FOWL RIVER AT HALF-MILE RD NEAR LAURENDINE, AL.",
+        "year": 2020,
+        "gageHeight": 2.2355307262569846,
+        "gageHeightMax": 6.59,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 358,
+        "discharge": 34.64781420765029,
+        "dischargeMax": 503,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.3338988,
+          30.85601968
+        ]
+      },
+      "properties": {
+        "siteName": "BIG CREEK AT COUNTY RD 63 NEAR WILMER, AL.",
+        "year": 2020,
+        "gageHeight": 2.9179726027397273,
+        "gageHeightMax": 7.97,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 52.503825136612015,
+        "dischargeMax": 666,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.3188979,
+          30.78018805
+        ]
+      },
+      "properties": {
+        "siteName": "CROOKED CREEK NEAR FAIRVIEW, AL.",
+        "year": 2020,
+        "gageHeight": 0.3911498257839722,
+        "gageHeightMax": 4.28,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 287,
+        "discharge": 14.48729508196721,
+        "dischargeMax": 274,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.2764221,
+          30.72605413
+        ]
+      },
+      "properties": {
+        "siteName": "HAMILTON CREEK AT SNOW ROAD NEAR SEMMES, AL.",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 17.71612021857924,
+        "dischargeMax": 214,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.3930922,
+          30.6393899
+        ]
+      },
+      "properties": {
+        "siteName": "BIG CREEK NEAR SEVEN HILLS AL",
+        "year": 2020,
+        "gageHeight": 7.8400787401574785,
+        "gageHeightMax": 13.77,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 127,
+        "discharge": 131.97795275590542,
+        "dischargeMax": 933,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 127
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.9296966,
+          34.4986981
+        ]
+      },
+      "properties": {
+        "siteName": "SOUTH SAUTY CREEK NEAR RAINSVILLE, ALA",
+        "year": 2020,
+        "gageHeight": 8.355382513661203,
+        "gageHeightMax": 15.25,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 143.23636612021863,
+        "dischargeMax": 2380,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.1683333,
+          34.91
+        ]
+      },
+      "properties": {
+        "siteName": "ESTILL FORK AT ESTILLFORK AL",
+        "year": 2020,
+        "gageHeight": 5.414098360655737,
+        "gageHeightMax": 13.84,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 145.53120218579232,
+        "dischargeMax": 2490,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.3063635,
+          34.62428955
+        ]
+      },
+      "properties": {
+        "siteName": "PAINT ROCK RIVER NEAR WOODVILLE AL",
+        "year": 2020,
+        "gageHeight": 5.837049180327867,
+        "gageHeightMax": 18.61,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 1078.0707650273225,
+        "dischargeMax": 11700,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.48054629,
+          34.88064458
+        ]
+      },
+      "properties": {
+        "siteName": "FLINT R AT OSCAR PATTERSON ROAD NR HAZEL GREEN, AL",
+        "year": 2020,
+        "gageHeight": 2.85562841530055,
+        "gageHeightMax": 13.82,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 355.2051912568308,
+        "dischargeMax": 10600,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.4636024,
+          34.96092128
+        ]
+      },
+      "properties": {
+        "siteName": "HESTER CREEK AT BUDDY WILLIAMSON RD NR PLEVNA, AL",
+        "year": 2020,
+        "gageHeight": 3.1320273972602783,
+        "gageHeightMax": 6.32,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.5177588,
+          34.84511817
+        ]
+      },
+      "properties": {
+        "siteName": "BRIER FORK AT MOORE'S MILL RD NR MERIDIANVILLE, AL",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 264.89398907103856,
+        "dischargeMax": 6120,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.4466551,
+          34.7492568
+        ]
+      },
+      "properties": {
+        "siteName": "FLINT RIVER AT BROWNSBORO, AL.",
+        "year": 2020,
+        "gageHeight": 8.851065573770489,
+        "gageHeightMax": 20.93,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 1007.5273224043716,
+        "dischargeMax": 22600,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.6999967,
+          34.6973134
+        ]
+      },
+      "properties": {
+        "siteName": "INDIAN CREEK NEAR MADISON AL",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 1668.125,
+        "dischargeMax": 2290,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 8
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.687774,
+          34.4137049
+        ]
+      },
+      "properties": {
+        "siteName": "COTACO CREEK AT FLORETTE AL",
+        "year": 2020,
+        "gageHeight": 5.813333333333332,
+        "gageHeightMax": 10.81,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 42,
+        "discharge": null,
+        "dischargeMax": null,
+        "dischargeUnit": null,
+        "dischargeReadings": 0
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.8233348,
+          34.751757
+        ]
+      },
+      "properties": {
+        "siteName": "LIMESTONE CREEK NEAR ATHENS AL",
+        "year": 2020,
+        "gageHeight": 2.5481088825214897,
+        "gageHeightMax": 10.97,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 349,
+        "discharge": 329.8879781420765,
+        "dischargeMax": 7560,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.9336049,
+          34.373184
+        ]
+      },
+      "properties": {
+        "siteName": "FLINT CREEK NEAR FALKVILLE AL",
+        "year": 2020,
+        "gageHeight": 5.695027322404369,
+        "gageHeightMax": 14.44,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 259.10710382513656,
+        "dischargeMax": 9280,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.3172429,
+          34.67009046
+        ]
+      },
+      "properties": {
+        "siteName": "BIG NANCE CREEK AT COURTLAND AL",
+        "year": 2020,
+        "gageHeight": 4.169178082191779,
+        "gageHeightMax": 18.54,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 365,
+        "discharge": 517.6891530054647,
+        "dischargeMax": 5300,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.7005847,
+          34.8078655
+        ]
+      },
+      "properties": {
+        "siteName": "CYPRESS CREEK NEAR FLORENCE AL",
+        "year": 2020,
+        "gageHeight": 2.4936065573770474,
+        "gageHeightMax": 8.56,
+        "gageHeightUnit": "ft",
+        "gageHeightReadings": 366,
+        "discharge": 586.9409836065573,
+        "dischargeMax": 7520,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.12253,
+          34.65595549
+        ]
+      },
+      "properties": {
+        "siteName": "BEAR CREEK AT BISHOP,AL.",
+        "year": 2020,
+        "gageHeight": null,
+        "gageHeightMax": null,
+        "gageHeightUnit": null,
+        "gageHeightReadings": 0,
+        "discharge": 2098.9754098360654,
+        "dischargeMax": 10900,
+        "dischargeUnit": "ft3/s",
+        "dischargeReadings": 366
+      }
+    }
+  ]
+}

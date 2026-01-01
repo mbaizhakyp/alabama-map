@@ -1,98 +1,187 @@
-# AI-Assisted Weather Map 🗺️
-This project is an interactive map designed to visualize complex weather data in a simple and user-friendly way. It uses AI assistance to process and display real-time, forecast, and historical weather information from official government sources.
+# Alabama Flood Map
 
-## How It Works
-The map works in three main steps, using AI to bridge the gap between raw scientific data and a clear, interactive visualization.
+An interactive map for visualizing weather data, flood forecasts, and social vulnerability in Alabama. Uses AI assistance to process and display real-time, forecast, and historical weather information from official government sources.
 
-1. Data Fetching 📡
-The map connects directly to official government APIs (like those from NOAA and the USGS) to get the latest scientific data. This includes:
+## Features
 
-*   Precipitation forecasts (rain, snow)
-*   Streamflow and river level predictions
-*   Historical flood and inundation data
+- **Weather Forecast**: 10-day precipitation forecast from Google Weather API
+- **River Gauge Status**: 3-day river level forecasts from NOAA with flood status indicators
+- **Live River Gauges**: Real-time water level and flow data from USGS
+- **Historical Data**: Precipitation history, flood events, and river gauge history (2020-2025)
+- **Social Vulnerability Index (SVI)**: CDC/ATSDR vulnerability data by census tract
+- **AI Chat Assistant**: Natural language queries about flood risk and weather data
 
-This raw data is accurate but often too complex for a simple map.
+## Prerequisites
 
-2. AI-Powered Processing 🤖
-This is where the AI assistance comes in. Instead of just plotting raw data points, the system uses AI to process, simplify, and add context to the information. This includes:
+- Node.js 20+
+- npm or yarn
+- Docker (optional, for containerized deployment)
+- API Keys (see Environment Variables)
 
-*   Summarizing Data: Aggregating thousands of data points into simple, county-wide summaries.
-*   Interpreting Requests: Allowing users to potentially ask questions in natural language.
-*   Processing Geospatial Data: Performing complex tasks like calculating how gridded rainfall data applies to specific county shapes.
+## Environment Variables
 
-Essentially, the AI acts as a smart assistant that translates the complex scientific data into a clean, map-ready format.
+Create a `.env` file in the project root:
 
-3. Interactive Visualization ✨
-Once the data is processed, it's displayed on an interactive map (powered by Mapbox). You can then explore the data through several key features:
+```env
+# Required for weather forecast
+GOOGLE_API=your_google_weather_api_key
 
-*   Dynamic Layers: See data like precipitation volume shown with intuitive color gradients.
-*   Time-Slider & Animation: A "play" button and slider let you watch how a forecast (like a week of rain) changes over time.
-*   Interactive Popups: Hover or click on a specific county or river gauge to see detailed charts and exact data values.
+# Required for AI chat assistant
+OPENAI_API_KEY=your_openai_api_key
+
+# Optional: PostgreSQL for AI context (if using database features)
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=flood_data
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+```
+
+## Quick Start
+
+### Option 1: Local Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build the chat component
+npm run build:chat
+
+# Start the server
+npm start
+```
+
+The application will be available at `http://localhost:3001`
+
+### Option 2: Docker
+
+```bash
+# Build and run with docker-compose
+docker-compose up -d
+
+# Or build and run manually
+docker build -t alabama-map:latest .
+docker run -d -p 3001:3001 --env-file .env alabama-map:latest
+```
+
+The application will be available at `http://localhost:3001`
+
+### Option 3: Docker Hub (if published)
+
+```bash
+docker run -d -p 3001:3001 --env-file .env yourusername/alabama-map:latest
+```
 
 ## Project Structure
 
-The project is a web application with a Node.js backend and a vanilla JavaScript frontend. It also includes a Python-based AI component for data processing and a React-based chat component.
+```
+alabama-map/
+├── server.js              # Express backend server
+├── index.html             # Main HTML entry point
+├── script.js              # Frontend map logic (Mapbox GL JS)
+├── style.css              # Application styles
+├── package.json           # Node.js dependencies
+├── Dockerfile             # Docker build configuration
+├── docker-compose.yml     # Docker Compose configuration
+├── .env                   # Environment variables (create this)
+│
+├── AI_assistance_map/     # Python AI assistant module
+│   ├── get_flood_context.py
+│   ├── select_function.py
+│   └── requirements.txt
+│
+├── chat/                  # React chat component source
+│   ├── index.tsx
+│   └── ChatPanel.tsx
+│
+├── dist/                  # Built chat bundle
+│   └── chat-bundle.js
+│
+├── flood-data/            # Historical flood events (GeoJSON)
+├── precipitation-data/    # Monthly precipitation (GeoJSON)
+├── river-gauge-data/      # Historical river gauge data (GeoJSON)
+└── svi-data/              # Social Vulnerability Index (GeoJSON)
+```
 
-### Main Files and Directories
+## API Endpoints
 
-*   **`index.html`**: The main entry point of the web application. It sets up the HTML structure, including the map container, controls, and legends.
-*   **`style.css`**: Contains the main styles for the application, including the layout of the sidebar, controls, and map elements.
-*   **`script.js`**: The core of the frontend application. It initializes the Mapbox map, fetches data, adds layers, and handles all user interactions like sliders, checkboxes, and popups.
-*   **`server.js`**: A Node.js Express server that serves the static frontend files and provides a simple API.
-    *   The `/api/forecast` endpoint fetches 3-day weather forecast data from the Google Weather API for each county in Alabama, processes it, and sends it to the frontend.
-*   **`package.json`**: Defines the project's Node.s dependencies (like Express and a CORS) and scripts for running the application (e.g., `npm start`).
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/forecast` | GET | 10-day weather forecast for all Alabama counties |
+| `/api/river-gauges` | GET | Live USGS river gauge data (water level, discharge) |
+| `/api/river-gauge-forecast` | GET | 3-day NOAA river level forecasts with flood status |
+| `/api/chat` | POST | AI chat assistant (requires `query` in request body) |
 
-### Data Directories
+### Example API Usage
 
-*   **`flood-data/`**: Contains historical flood event data in GeoJSON format, separated by year and type (river vs. flash floods).
-*   **`precipitation-data/`**: Contains historical monthly precipitation data for Alabama counties in GeoJSON format.
-*   **`svi-data/`**: Contains Social Vulnerability Index (SVI) data for Alabama census tracts in GeoJSON format.
+```bash
+# Get live river gauges
+curl http://localhost:3001/api/river-gauges
 
-### AI Assistance Component (`AI_assistance_map/`)
+# Get river gauge forecasts
+curl http://localhost:3001/api/river-gauge-forecast
 
-This directory contains a separate Python-based component for more advanced AI-powered data analysis.
+# Chat with AI assistant
+curl -X POST http://localhost:3001/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What is the flood risk in Mobile County?"}'
+```
 
-*   **`get_flood_context.py`**: The main script that takes a user query, fetches data from a PostgreSQL database, and uses a language model to generate a natural language response.
-*   **`collected_data_db/`**: Contains the scripts and data needed to create and populate the PostgreSQL database with flood, precipitation, and SVI data.
+## Data Sources
 
-### Chat Component (`chat/`)
+- **Weather Forecast**: [Google Weather API](https://developers.google.com/maps/documentation/weather)
+- **River Gauges (Live)**: [USGS Water Services](https://waterservices.usgs.gov/)
+- **River Forecasts**: [NOAA National Water Prediction Service](https://api.water.noaa.gov/nwps/v1/)
+- **Social Vulnerability Index**: [CDC/ATSDR SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/)
+- **Flood Events**: [NOAA Storm Events Database](https://www.ncdc.noaa.gov/stormevents/)
 
-This directory contains a React-based chat component that provides a user interface for interacting with the AI assistant.
+## Map Layers
 
-*   **`index.tsx`**: The main entry point for the React component.
-*   **`ChatPanel.tsx`**: The main chat panel component.
-*   The component is built using `esbuild` into a bundle file (`dist/chat-bundle.js`) which is then included in `index.html`.
+| Layer | Description | Data Source |
+|-------|-------------|-------------|
+| Weather Forecast | 10-day precipitation forecast by county | Google Weather API |
+| Precipitation History | Monthly precipitation totals (2020-2024) | Local GeoJSON |
+| Flood History | Historical flood events by year | Local GeoJSON |
+| River Gauges (Live) | Real-time water levels and flow | USGS API |
+| River Gauge History | Annual average water levels (2020-2025) | Local GeoJSON |
+| River Gauge Status | 3-day flood forecasts | NOAA NWPS API |
+| Social Vulnerability | CDC SVI by census tract | Local GeoJSON |
 
-## How to Run
+## Development
 
-1.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+### Rebuild Chat Component
 
-2.  **Build the chat component:**
-    ```bash
-    npm run build:chat
-    ```
+```bash
+npm run build:chat
+```
 
-3.  **Start the server:**
-    ```bash
-    npm start
-    ```
+### Run in Development Mode
 
-    The application will be available at `http://localhost:3000`.
+```bash
+# Start server with auto-reload (if using nodemon)
+npx nodemon server.js
+```
 
-## How They Interact
+## Troubleshooting
 
-1.  The user opens `index.html` in their browser.
-2.  The `server.js` process serves the HTML, CSS, and JavaScript files.
-3.  The `script.js` file initializes the Mapbox map.
-4.  `script.js` makes a request to the `/api/forecast` endpoint on the `server.js` backend to get the latest weather forecast.
-5.  The backend fetches the data from the Google Weather API, processes it, and returns it to the frontend.
-6.  `script.js` also loads the local GeoJSON data from the `flood-data`, `precipitation-data`, and `svi-data` directories to display on the map.
-7.  The user can interact with the map controls (sliders, checkboxes) to change the displayed data layers.
-8.  The chat component (`dist/chat-bundle.js`) is loaded into the page, allowing the user to interact with the AI assistant.
+### Common Issues
 
-## Chat Component
+1. **"GOOGLE_API key not found"**: Create `.env` file with your Google API key
+2. **Port 3001 already in use**: Kill existing process or change port in `server.js`
+3. **Docker build fails**: Ensure Docker Desktop is running
+4. **Chat not working**: Check OpenAI API key and Python venv setup
 
-This project also includes a chat component for AI assistance. The chat component is built with React and Tailwind CSS.
+### Check Server Logs
+
+```bash
+# Local
+npm start
+
+# Docker
+docker logs alabama-map
+```
+
+## License
+
+ISC
