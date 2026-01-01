@@ -14,6 +14,22 @@ const port = 3001;
 app.use(cors());
 app.use(express.json()); // <-- Add this to parse JSON request bodies
 
+
+// CSP Middleware
+app.use((req, res, next) => {
+    res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self'; " +
+        "connect-src 'self' https://weather.googleapis.com https://api.water.noaa.gov https://api.mapbox.com; " +
+        "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://api.mapbox.com; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.mapbox.com; " +
+        "font-src 'self' https://fonts.gstatic.com; " +
+        "img-src 'self' data: blob:; " +
+        "worker-src 'self' blob:;"
+    );
+    next();
+});
+
 // Serve static files
 app.use(express.static('.'));
 
@@ -65,7 +81,7 @@ function getCountyCenter(feature) {
 
     if (pointCount === 0) {
         // Fallback to Alabama's center just in case
-        return { lng: -86.9, lat: 32.8 }; 
+        return { lng: -86.9, lat: 32.8 };
     }
 
     return {
@@ -153,114 +169,9 @@ app.get('/api/forecast', async (req, res) => {
 });
 
 // --- RIVER GAUGES ENDPOINT ---
-let riverGaugeCache = { data: null, timestamp: 0 };
-const GAUGE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-app.get('/api/river-gauges', async (req, res) => {
-    console.log("Received request for USGS river gauge data...");
 
-    // Check cache
-    if (riverGaugeCache.data && (Date.now() - riverGaugeCache.timestamp) < GAUGE_CACHE_DURATION) {
-        console.log("Returning cached river gauge data.");
-        return res.json(riverGaugeCache.data);
-    }
 
-    try {
-        // Fetch from USGS IV service - Alabama, gage height (00065) and discharge (00060)
-        const USGS_URL = 'https://waterservices.usgs.gov/nwis/iv/?format=json&stateCd=AL&parameterCd=00065,00060&siteStatus=active';
-
-        const response = await fetch(USGS_URL);
-        if (!response.ok) {
-            throw new Error(`USGS API error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const timeSeries = data.value?.timeSeries || [];
-
-        // Group by site
-        const sitesMap = new Map();
-
-        timeSeries.forEach(series => {
-            const siteCode = series.sourceInfo?.siteCode?.[0]?.value;
-            const siteName = series.sourceInfo?.siteName;
-            const lat = parseFloat(series.sourceInfo?.geoLocation?.geogLocation?.latitude);
-            const lon = parseFloat(series.sourceInfo?.geoLocation?.geogLocation?.longitude);
-            const paramCode = series.variable?.variableCode?.[0]?.value;
-            const paramName = series.variable?.variableName;
-            const unit = series.variable?.unit?.unitCode;
-            const values = series.values?.[0]?.value || [];
-            const latestValue = values.length > 0 ? values[values.length - 1] : null;
-
-            if (!siteCode || isNaN(lat) || isNaN(lon)) return;
-
-            if (!sitesMap.has(siteCode)) {
-                sitesMap.set(siteCode, {
-                    siteCode,
-                    siteName,
-                    lat,
-                    lon,
-                    gageHeight: null,
-                    gageHeightUnit: null,
-                    gageHeightTime: null,
-                    discharge: null,
-                    dischargeUnit: null,
-                    dischargeTime: null
-                });
-            }
-
-            const site = sitesMap.get(siteCode);
-
-            if (paramCode === '00065' && latestValue) {
-                // Gage height (water level)
-                site.gageHeight = parseFloat(latestValue.value);
-                site.gageHeightUnit = unit || 'ft';
-                site.gageHeightTime = latestValue.dateTime;
-            } else if (paramCode === '00060' && latestValue) {
-                // Discharge (flow rate)
-                site.discharge = parseFloat(latestValue.value);
-                site.dischargeUnit = unit || 'ft3/s';
-                site.dischargeTime = latestValue.dateTime;
-            }
-        });
-
-        // Convert to GeoJSON
-        const features = Array.from(sitesMap.values())
-            .filter(site => site.gageHeight !== null || site.discharge !== null)
-            .map(site => ({
-                type: 'Feature',
-                geometry: {
-                    type: 'Point',
-                    coordinates: [site.lon, site.lat]
-                },
-                properties: {
-                    siteCode: site.siteCode,
-                    siteName: site.siteName,
-                    gageHeight: site.gageHeight,
-                    gageHeightUnit: site.gageHeightUnit,
-                    gageHeightTime: site.gageHeightTime,
-                    discharge: site.discharge,
-                    dischargeUnit: site.dischargeUnit,
-                    dischargeTime: site.dischargeTime
-                }
-            }));
-
-        const geojson = {
-            type: 'FeatureCollection',
-            features
-        };
-
-        console.log(`Successfully processed ${features.length} river gauge sites.`);
-
-        // Cache the result
-        riverGaugeCache = { data: geojson, timestamp: Date.now() };
-
-        res.json(geojson);
-
-    } catch (error) {
-        console.error('Error fetching USGS data:', error.message);
-        res.status(500).json({ error: 'Failed to fetch river gauge data.' });
-    }
-});
 
 // --- RIVER GAUGE FORECAST ENDPOINT ---
 let riverGaugeForecastCache = { data: null, timestamp: 0 };
@@ -541,9 +452,9 @@ app.post('/api/chat', (req, res) => {
 
         // Log the complete stderr for context, regardless of exit code
         if (scriptError) {
-             console.log("--- Complete Python stderr START ---");
-             console.log(scriptError.trim());
-             console.log("--- Complete Python stderr END ---");
+            console.log("--- Complete Python stderr START ---");
+            console.log(scriptError.trim());
+            console.log("--- Complete Python stderr END ---");
         }
 
         // --- ERROR CHECK 1: Script Exit Code ---
@@ -551,10 +462,10 @@ app.post('/api/chat', (req, res) => {
         if (code !== 0) {
             console.error(`Python script failed with exit code ${code}.`);
             return res.status(500).json({
-                 error: 'Failed to process query due to a script execution error.',
-                 // Include stderr in details if it exists, otherwise just the code
-                 details: scriptError ? scriptError.trim() : `Script exited with code ${code}`
-                });
+                error: 'Failed to process query due to a script execution error.',
+                // Include stderr in details if it exists, otherwise just the code
+                details: scriptError ? scriptError.trim() : `Script exited with code ${code}`
+            });
         }
 
         // Proceed if code is 0
@@ -576,16 +487,16 @@ app.post('/api/chat', (req, res) => {
             // OR if it has an answer (e.g., {"answer": "...", ...})
             if (result && (result.answer || result.error)) {
                 console.log("Successfully parsed full result from Python script.");
-                
+
                 // --- SUCCESS ---
                 // Send the ENTIRE result object to the frontend
                 // This includes .answer, .county_name, .filtered_context, etc.
-                res.json(result); 
+                res.json(result);
 
             } else {
-                 // Handle cases where Python exited 0 but didn't produce valid JSON
-                 console.error("Parsed Python output missing 'answer' or 'error' key:", result);
-                 res.status(500).json({ error: 'Invalid response format from processing script.' });
+                // Handle cases where Python exited 0 but didn't produce valid JSON
+                console.error("Parsed Python output missing 'answer' or 'error' key:", result);
+                res.status(500).json({ error: 'Invalid response format from processing script.' });
             }
         } catch (parseError) {
             // --- ERROR CHECK 4: JSON Parsing Failed ---

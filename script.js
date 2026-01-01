@@ -31,7 +31,6 @@ const SVI_DATA = {
 let forecastData = [];
 let allCountyGeometries = [];
 let lastHighlightedData = null;
-let riverGaugeData = null;
 let riverGaugeHistoryData = null;
 let riverGaugeForecastData = [];
 
@@ -42,21 +41,7 @@ const map = new mapboxgl.Map({
 });
 
 // --- DATA FETCHING ---
-async function fetchRiverGaugeData() {
-    try {
-        const response = await fetch('http://localhost:3001/api/river-gauges');
-        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
 
-        riverGaugeData = await response.json();
-        console.log(`Fetched ${riverGaugeData.features.length} river gauge sites.`);
-
-        if (map.isStyleLoaded() && map.getSource('river-gauge-data')) {
-            map.getSource('river-gauge-data').setData(riverGaugeData);
-        }
-    } catch (error) {
-        console.error("Failed to fetch river gauge data:", error);
-    }
-}
 
 async function fetchRiverGaugeHistoryData(year = 2020) {
     try {
@@ -94,7 +79,7 @@ async function fetchForecastData() {
     try {
         const response = await fetch('http://localhost:3001/api/forecast');
         if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
-        
+
         forecastData = await response.json();
 
         if (map.isStyleLoaded() && !map.getSource('forecast-data')) {
@@ -114,7 +99,7 @@ async function fetchForecastData() {
                 },
                 layout: { 'visibility': 'none' }
             }, 'river-flood-layer');
-            
+
             // Set up listeners again to include the new forecast layer
             setupInteractionListeners();
         }
@@ -129,48 +114,20 @@ function addSourcesAndLayers() {
     if (map.getLayer('background-tint')) return;
 
     map.addLayer({ id: 'background-tint', type: 'background', paint: { 'background-color': MAP_BG_COLOR, 'background-opacity': 0.7 } }, 'land-structure-line');
-    
+
     map.addSource('precipitation-data', { type: 'geojson', data: `precipitation-data/${months[0]}.geojson` });
     map.addLayer({ id: 'precipitation-layer', type: 'fill', source: 'precipitation-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'total_precipitation_inches'], 0], 0, '#ffffcc', 10, '#a1dab4', 25, '#41b6c4', 50, '#2c7fb8', 100, '#253494'], 'fill-opacity': 0.7, 'fill-outline-color': MAP_BG_COLOR }, layout: { visibility: 'none' } });
-    
+
     map.addSource('svi-data', { type: 'geojson', data: 'svi-data/alabama_svi_tracts_master.geojson' });
     map.addLayer({ id: 'svi-layer', type: 'fill', source: 'svi-data', paint: { 'fill-color': ['interpolate', ['linear'], ['coalesce', ['get', 'RPL_THEMES_state'], 0], 0, '#4d9221', 0.5, '#f1b621', 1, '#c51b7d'], 'fill-opacity': 0.75, 'fill-outline-color': MAP_BG_COLOR }, layout: { visibility: 'none' } });
 
     map.addSource('river-flood-data', { type: 'geojson', data: `flood-data/river-flood-events/Flood_Events_${years[0]}.geojson` });
     map.addLayer({ id: 'river-flood-layer', type: 'circle', source: 'river-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.river, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
-    
+
     map.addSource('flash-flood-data', { type: 'geojson', data: `flood-data/flash-flood-events/AL_Flood_Events_${years[0]}.geojson` });
     map.addLayer({ id: 'flash-flood-layer', type: 'circle', source: 'flash-flood-data', paint: { 'circle-radius': 6, 'circle-color': FLOOD_COLORS.flash, 'circle-stroke-color': MAP_BG_COLOR, 'circle-stroke-width': 2 }, layout: { visibility: 'none' } });
 
-    // River gauge layer (live)
-    map.addSource('river-gauge-data', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-    map.addLayer({
-        id: 'river-gauge-layer',
-        type: 'circle',
-        source: 'river-gauge-data',
-        paint: {
-            'circle-radius': [
-                'interpolate', ['linear'],
-                ['coalesce', ['get', 'discharge'], 0],
-                0, 5,
-                1000, 8,
-                10000, 12,
-                50000, 16
-            ],
-            'circle-color': [
-                'interpolate', ['linear'],
-                ['coalesce', ['get', 'gageHeight'], 0],
-                0, '#2ecc71',    // Low - green
-                5, '#f1c40f',    // Medium - yellow
-                15, '#e74c3c',   // High - red
-                30, '#8e44ad'    // Very high - purple
-            ],
-            'circle-stroke-color': '#fff',
-            'circle-stroke-width': 2,
-            'circle-opacity': 0.85
-        },
-        layout: { visibility: 'none' }
-    });
+
 
     // River gauge history layer
     map.addSource('river-gauge-history-data', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
@@ -230,7 +187,7 @@ function addSourcesAndLayers() {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] } // Start empty
     });
-    
+
     map.addSource('highlight-county-source', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] } // Start empty
@@ -262,7 +219,7 @@ function addSourcesAndLayers() {
         },
         layout: { 'visibility': 'visible' }
     });
-    
+
     map.addLayer({
         id: 'county-mask-layer',
         type: 'fill',
@@ -273,7 +230,7 @@ function addSourcesAndLayers() {
         },
         filter: ["==", ["get", "COUNTY"], ""], // Show nothing by default
     }, 'highlight-county-layer-line'); // Place mask *under* the blue highlight
-    
+
     map.addLayer({
         id: 'highlight-county-layer-fill', // <-- NEW CLICK TARGET
         type: 'fill',
@@ -287,8 +244,8 @@ function addSourcesAndLayers() {
 
 // --- Interaction Listeners ---
 function setupInteractionListeners() {
-    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer', 'river-gauge-layer', 'river-gauge-history-layer', 'river-gauge-forecast-layer', 'highlight-county-layer-fill'];
-    console.log('Clickable layers set:', clickableLayers); 
+    const clickableLayers = ['precipitation-layer', 'svi-layer', 'river-flood-layer', 'flash-flood-layer', 'forecast-layer', 'river-gauge-history-layer', 'river-gauge-forecast-layer', 'highlight-county-layer-fill'];
+    console.log('Clickable layers set:', clickableLayers);
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
 
     const hoverLayers = {
@@ -311,12 +268,7 @@ function setupInteractionListeners() {
             const value = props.predicted_precipitation_inches.toFixed(2);
             return `<h3>${props.name} County</h3><p>Forecast Value: <strong>${value}</strong></p>`;
         },
-        'river-gauge-layer': (e) => {
-            const props = e.features[0].properties;
-            const height = props.gageHeight !== null ? `${props.gageHeight.toFixed(2)} ${props.gageHeightUnit}` : 'N/A';
-            const flow = props.discharge !== null ? `${props.discharge.toLocaleString()} ${props.dischargeUnit}` : 'N/A';
-            return `<strong>${props.siteName}</strong><br>Water Level: ${height}<br>Flow Rate: ${flow}`;
-        },
+
         'river-gauge-history-layer': (e) => {
             const props = e.features[0].properties;
             const height = props.gageHeight !== null ? `${props.gageHeight.toFixed(2)} ${props.gageHeightUnit}` : 'N/A';
@@ -362,24 +314,24 @@ function setupInteractionListeners() {
     map.on('click', (e) => {
         console.log('Map clicked at', e.lngLat);
         const features = map.queryRenderedFeatures(e.point, { layers: clickableLayers });
-        
+
         if (!features.length) {
             closeModal(); // Close modal if user clicks empty space
             return;
         }
 
-        console.log('Clicked on feature(s) from layers:', features.map(f => f.layer.id)); 
+        console.log('Clicked on feature(s) from layers:', features.map(f => f.layer.id));
         popup.remove();
         const feature = features[0];
         let content = '';
         switch (feature.layer.id) {
             case 'highlight-county-layer-fill':
-                console.log("CLICKED ON 'highlight-county-layer-fill'"); 
+                console.log("CLICKED ON 'highlight-county-layer-fill'");
                 if (lastHighlightedData) {
                     console.log('Data found, building popup HTML...');
                     content = buildPopupHtmlFromData(lastHighlightedData);
                 } else {
-                    console.log('Data is NULL, showing generic popup.'); 
+                    console.log('Data is NULL, showing generic popup.');
                     content = "<h3>Highlighted County</h3><p>No detailed data available for this query.</p>";
                 }
                 openModal(content); // Use your existing modal
@@ -401,26 +353,7 @@ function setupInteractionListeners() {
                 content = `<h3>${floodTitle} Event</h3><p>County: <strong>${feature.properties.CZ_NAME_STR}</strong></p><p>Date: <strong>${date}</strong></p>`;
                 openModal(content);
                 break;
-            case 'river-gauge-layer':
-                const gaugeProps = feature.properties;
-                const gageHeight = gaugeProps.gageHeight !== null ? `${gaugeProps.gageHeight.toFixed(2)} ${gaugeProps.gageHeightUnit}` : 'N/A';
-                const discharge = gaugeProps.discharge !== null ? `${gaugeProps.discharge.toLocaleString()} ${gaugeProps.dischargeUnit}` : 'N/A';
-                const heightTime = gaugeProps.gageHeightTime ? new Date(gaugeProps.gageHeightTime).toLocaleString() : 'N/A';
-                const dischargeTime = gaugeProps.dischargeTime ? new Date(gaugeProps.dischargeTime).toLocaleString() : 'N/A';
-                content = `
-                    <h3>${gaugeProps.siteName}</h3>
-                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
-                    <p><strong>Water Level (Gage Height)</strong></p>
-                    <p style="font-size: 1.5em; margin: 5px 0;">${gageHeight}</p>
-                    <p style="font-size: 0.8em; color: #666;">Updated: ${heightTime}</p>
-                    ${createVisualizerHTML(gaugeProps.gageHeight || 0, "gauge-height")}
-                    <hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">
-                    <p><strong>Flow Rate (Discharge)</strong></p>
-                    <p style="font-size: 1.5em; margin: 5px 0;">${discharge}</p>
-                    <p style="font-size: 0.8em; color: #666;">Updated: ${dischargeTime}</p>
-                `;
-                openModal(content);
-                break;
+
             case 'river-gauge-history-layer':
                 const histProps = feature.properties;
                 const histGageHeight = histProps.gageHeight !== null ? `${histProps.gageHeight.toFixed(2)} ${histProps.gageHeightUnit}` : 'N/A';
@@ -472,23 +405,23 @@ function setupInteractionListeners() {
                 const props = feature.properties;
                 const selectedThemeKey = document.getElementById('svi-theme-select').value;
                 const selectedFactorKey = document.getElementById('svi-factor-select').value;
-                content = `<h3>${props.COUNTY}</h3><p class="location">${props.LOCATION}</p>`; 
-                if (selectedThemeKey === 'RPL_THEMES_state') { 
-                    content += `<p>Overall Vulnerability Index: <strong>${props.RPL_THEMES_state.toFixed(3)}</strong></p>${createVisualizerHTML(props.RPL_THEMES_state, "svi")}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`; 
-                    Object.keys(SVI_DATA).forEach(themeKey => { 
+                content = `<h3>${props.COUNTY}</h3><p class="location">${props.LOCATION}</p>`;
+                if (selectedThemeKey === 'RPL_THEMES_state') {
+                    content += `<p>Overall Vulnerability Index: <strong>${props.RPL_THEMES_state.toFixed(3)}</strong></p>${createVisualizerHTML(props.RPL_THEMES_state, "svi")}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`;
+                    Object.keys(SVI_DATA).forEach(themeKey => {
                         if (themeKey !== 'RPL_THEMES_state') {
-                            content += `<p>${SVI_DATA[themeKey].title} Index: <strong>${props[themeKey].toFixed(3)}</strong></p>`; 
+                            content += `<p>${SVI_DATA[themeKey].title} Index: <strong>${props[themeKey].toFixed(3)}</strong></p>`;
                         }
-                    }); 
-                } else { 
-                    const currentFactorIsTheme = selectedFactorKey === selectedThemeKey; 
-                    const factorToVisualize = currentFactorIsTheme ? selectedThemeKey : selectedFactorKey; 
-                    const factorTitle = currentFactorIsTheme ? `Theme: ${SVI_DATA[selectedThemeKey].title}` : SVI_DATA[selectedThemeKey].factors[selectedFactorKey]; 
-                    content += `<p>${factorTitle} Index: <strong>${props[factorToVisualize].toFixed(3)}</strong></p>${createVisualizerHTML(props[factorToVisualize], "svi")}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`; 
-                    for (const factorKey in SVI_DATA[selectedThemeKey].factors) { 
-                        content += `<p>${SVI_DATA[selectedThemeKey].factors[factorKey]} Index: <strong>${props[factorKey].toFixed(3)}</strong></p>`; 
-                    } 
-                } 
+                    });
+                } else {
+                    const currentFactorIsTheme = selectedFactorKey === selectedThemeKey;
+                    const factorToVisualize = currentFactorIsTheme ? selectedThemeKey : selectedFactorKey;
+                    const factorTitle = currentFactorIsTheme ? `Theme: ${SVI_DATA[selectedThemeKey].title}` : SVI_DATA[selectedThemeKey].factors[selectedFactorKey];
+                    content += `<p>${factorTitle} Index: <strong>${props[factorToVisualize].toFixed(3)}</strong></p>${createVisualizerHTML(props[factorToVisualize], "svi")}<hr style="border: none; height: 1px; background-color: var(--border-color); margin: 15px 0;">`;
+                    for (const factorKey in SVI_DATA[selectedThemeKey].factors) {
+                        content += `<p>${SVI_DATA[selectedThemeKey].factors[factorKey]} Index: <strong>${props[factorKey].toFixed(3)}</strong></p>`;
+                    }
+                }
                 openModal(content);
                 break;
         }
@@ -574,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateMapState();
         });
     });
-    
+
     for (const key in SVI_DATA) { sviThemeSelect.add(new Option(SVI_DATA[key].title, key)); }
     sviThemeSelect.dispatchEvent(new Event('change'));
 
@@ -657,16 +590,16 @@ map.on('load', () => {
     updateMapState();
     setupInteractionListeners();
     fetchForecastData();
-    fetchRiverGaugeData();
+
     fetchRiverGaugeHistoryData(years[0]); // Fetch initial year (2020)
     fetchRiverGaugeForecastData(); // Fetch river gauge forecasts
-    
+
     fetch('svi-data/alabama_svi_tracts_master.geojson')
         .then(res => res.json())
         .then(geojson => {
             allCountyGeometries = geojson.features;
             console.log(`Loaded ${allCountyGeometries.length} county geometries for highlighting.`);
-            
+
             if (map.getSource('all-counties-source')) {
                 map.getSource('all-counties-source').setData(geojson);
             }
@@ -714,13 +647,12 @@ function updateMapState() {
     const activeHeader = document.querySelector('.accordion-header.active');
     const selectedCategory = activeHeader ? activeHeader.dataset.category : null;
 
-    const legends = { forecast: document.getElementById('forecast-legend'), precipitation: document.getElementById('precipitation-legend'), floods: document.getElementById('flood-legend'), svi: document.getElementById('svi-legend'), gauges: document.getElementById('gauge-legend'), 'gauge-history': document.getElementById('gauge-history-legend'), 'gauge-forecast': document.getElementById('gauge-forecast-legend') };
+    const legends = { forecast: document.getElementById('forecast-legend'), precipitation: document.getElementById('precipitation-legend'), floods: document.getElementById('flood-legend'), svi: document.getElementById('svi-legend'), 'gauge-history': document.getElementById('gauge-history-legend'), 'gauge-forecast': document.getElementById('gauge-forecast-legend') };
     const layers = {
         forecast: ['forecast-layer'],
         precipitation: ['precipitation-layer'],
         floods: ['river-flood-layer', 'flash-flood-layer'],
         svi: ['svi-layer'],
-        gauges: ['river-gauge-layer'],
         'gauge-history': ['river-gauge-history-layer'],
         'gauge-forecast': ['river-gauge-forecast-layer']
     };
@@ -778,7 +710,7 @@ function getCountyCenter(feature) {
 
     if (pointCount === 0) {
         // Fallback to Alabama's center just in case
-        return { lng: -86.9, lat: 32.8 }; 
+        return { lng: -86.9, lat: 32.8 };
     }
 
     return {
@@ -796,14 +728,14 @@ function highlightCountyOnMap(countyName) {
         return;
     }
     console.log(`Highlighting county: ${countyName}`);
-    
+
     const countyFeatures = allCountyGeometries.filter(
         f => f.properties.COUNTY && f.properties.COUNTY.toLowerCase().includes(countyName.toLowerCase())
     );
 
     if (countyFeatures.length > 0) {
         const featureCollection = { type: 'FeatureCollection', features: countyFeatures };
-        
+
         // 1. Update the highlight line
         map.getSource('highlight-county-source').setData(featureCollection);
 
@@ -819,7 +751,7 @@ function highlightCountyOnMap(countyName) {
             lng: lngSum / countyFeatures.length,
             lat: latSum / countyFeatures.length
         };
-        
+
         // 3. Fly the map
         map.flyTo({
             center: [countyCenter.lng, countyCenter.lat],
@@ -830,7 +762,7 @@ function highlightCountyOnMap(countyName) {
         // 4. Update the mask filter
         const highlightedCountyName = countyFeatures[0].properties.COUNTY;
         map.setFilter('county-mask-layer', ["!=", ["get", "COUNTY"], highlightedCountyName]);
-        
+
         // 5. Hide the default gray borders
         map.setLayoutProperty('all-counties-borders-layer', 'visibility', 'none');
 
@@ -838,7 +770,7 @@ function highlightCountyOnMap(countyName) {
         console.warn(`County "${countyName}" not found in geometries.`);
         // Clear highlight line
         map.getSource('highlight-county-source').setData({ type: 'FeatureCollection', features: [] });
-        
+
         // Reset the mask filter
         map.setFilter('county-mask-layer', ["==", ["get", "COUNTY"], ""]);
 
@@ -857,7 +789,7 @@ function buildPopupHtmlFromData(context) {
     }
 
     const locName = locationData.input_location?.name || "Selected Area";
-    
+
     const sections = [
         {
             condition: locationData.county_data,
@@ -903,7 +835,7 @@ function buildSviTable(data) {
     let themesHtml = Object.entries(data.themes || {})
         .map(([key, value]) => `<tr><td>${key}</td><td>${value?.toFixed(2) || 'N/A'}</td></tr>`)
         .join('');
-    
+
     return `
         <h4>Social Vulnerability Index (SVI)</h4>
         <table class="modal-table">
